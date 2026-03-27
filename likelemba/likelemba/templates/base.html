@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+
+    <!-- CSS -->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+</head>
+
+<body id="page-top">
+
+<div id="wrapper">
+
+    {% include 'components/sidebar.html' %}
+
+    <div id="content-wrapper" class="d-flex flex-column">
+
+        <div id="content">
+
+            {% include 'components/navbar.html' %}
+
+            <div class="container-fluid">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+        </div>
+
+        {% include 'components/footer.html' %}
+
+    </div>
+
+</div>
+
+{% include 'components/modal_logout.html' %}
+{% include 'components/scripts.html' %}
+
+</body>
+</html>

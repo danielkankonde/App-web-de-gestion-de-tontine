@@ -1,20 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
-
-# =====================
-# UTILISATEUR
-# =====================
-class Utilisateur(AbstractUser):
-
-    telephone = models.CharField(max_length=20)
-
-    ROLE_CHOICES = [
-        ('ADMIN', 'Admin'),
-        ('MEMBRE', 'Membre')
-    ]
-
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+from authentification.models import Utilisateur
 
 
 # =====================
