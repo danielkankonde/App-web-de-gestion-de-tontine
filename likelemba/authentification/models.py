@@ -1,3 +1,5 @@
+import random
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -18,5 +20,15 @@ class Utilisateur(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
     photo = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
+
+class OTP(models.Model):
+    user = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def generate_code(self):
+        self.code = str(random.randint(100000, 999999))
+        self.save()
 
 

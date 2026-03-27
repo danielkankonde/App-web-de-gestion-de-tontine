@@ -31,11 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-
-# EMAIL_HOST_USER = 'dkankonde36@gmail.com'
-# EMAIL_HOST_PASSWORD = 'jepwmogoxpkxpxpdr'
+# Configuration du code OTP dans la console
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Application definition
 

@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Vérification OTP</title>
+
+    <!-- Fonts -->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
+
+    <!-- CSS -->
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+<div class="container">
+
+    <div class="card o-hidden border-0 shadow-lg my-5">
+        <div class="card-body p-0">
+
+            <div class="row">
+                <!-- Image côté gauche -->
+                <div class="col-lg-5 d-none d-lg-block bg-password-image"></div>
+
+                <!-- Formulaire -->
+                <div class="col-lg-7">
+                    <div class="p-5">
+
+                        <div class="text-center">
+                            <h1 class="h4 text-gray-900 mb-2">Vérification</h1>
+                            <p class="mb-4">
+                                Entrez le code envoyé à votre email, un code à été envoyé à email.
+                            </p>
+                        </div>
+
+                        <!-- 🔴 MESSAGE ERREUR -->
+                        {% if error %}
+                            <div class="alert alert-danger text-center">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+
+                        <!-- 🔐 FORM OTP -->
+                        <form method="POST" class="user">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <input type="text"
+                                    name="code"
+                                    value="{{ request.POST.code }}"
+                                    class="form-control form-control-user text-center"
+                                    placeholder="Entrer le code OTP"
+                                    required>
+                            </div>
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-user btn-block">
+                                Vérifier
+                            </button>
+
+                        </form>
+
+                        <hr>
+
+                        <!-- 🔁 Renvoyer code (plus tard) -->
+                        <div class="text-center">
+                            <a class="small" href="#">
+                                Renvoyer le code
+                            </a>
+                        </div>
+
+                        <!-- 🔙 Retour login -->
+                        <div class="text-center">
+                            <a class="small" href="{% url 'login' %}">
+                                Retour à la connexion
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- JS -->
+<script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+<script src="{% static 'js/sb-admin-2.min.js' %}"></script>
+
+</body>
+</html>
