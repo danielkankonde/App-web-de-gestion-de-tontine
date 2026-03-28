@@ -31,4 +31,12 @@ class OTP(models.Model):
         self.code = str(random.randint(100000, 999999))
         self.save()
 
+# Le code OTP pour le mot de passe oublié
+class ResetPasswordOTP(models.Model):
+    user = models.ForeignKey(Utilisateur, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def generate_code(self):
+        self.code = str(random.randint(100000, 999999))
+        self.save()

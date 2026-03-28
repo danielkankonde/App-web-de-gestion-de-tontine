@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from .models import Utilisateur, OTP
+from .models import ResetPasswordOTP
 
 # Fonction pour se connecter
 def login_view(request):
@@ -17,6 +18,12 @@ def login_view(request):
         )
 
         if user is not None:
+            # Vérification si l'utilisateur a vérifié son email
+            if not user.is_verified:
+                request.session['user_id'] = user.id
+                return redirect('verify')
+            
+            # Connexion normale
             login(request, user)
             return redirect('dashboard')
 
@@ -105,3 +112,75 @@ def verify_view(request):
             })
 
     return render(request, 'verify.html')
+
+# Fonction pour le mot de passe oublié
+def forgot_password_view(request):
+
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        try:
+            user = Utilisateur.objects.get(email=email)
+
+            otp = ResetPasswordOTP.objects.create(user=user)
+            otp.generate_code()
+
+            send_mail(
+                'Réinitialisation mot de passe',
+                f'Votre code est : {otp.code}',
+                'test@gmail.com',
+                [email],
+            )
+
+            request.session['reset_user_id'] = user.id
+
+            return redirect('reset_verify')
+
+        except Utilisateur.DoesNotExist:
+            return render(request, 'forgot_password.html', {
+                'error': "Email introuvable"
+            })
+
+    return render(request, 'forgot_password.html')
+
+# Fonction pour vérifier le code OTP du mot de passe oublié
+def reset_verify_view(request):
+
+    user_id = request.session.get('reset_user_id')
+
+    if request.method == 'POST':
+        code = request.POST.get('code')
+
+        otp = ResetPasswordOTP.objects.filter(user_id=user_id, code=code).last()
+
+        if otp:
+            return redirect('reset_password')
+        else:
+            return render(request, 'reset_verify.html', {
+                'error': 'Code invalide'
+            })
+
+    return render(request, 'reset_verify.html')
+
+# Fonction pour réinitialiser le mot de passe
+def reset_password_view(request):
+
+    user_id = request.session.get('reset_user_id')
+
+    if request.method == 'POST':
+
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        if password != confirm_password:
+            return render(request, 'reset_password.html', {
+                'error': 'Les mots de passe ne correspondent pas'
+            })
+
+        user = Utilisateur.objects.get(id=user_id)
+        user.set_password(password)
+        user.save()
+
+        return redirect('login')
+
+    return render(request, 'reset_password.html')
