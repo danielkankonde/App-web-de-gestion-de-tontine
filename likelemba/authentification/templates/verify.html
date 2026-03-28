@@ -39,6 +39,13 @@
                                 Entrez le code envoyé à votre email, un code à été envoyé à email.
                             </p>
                         </div>
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-success text-center">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
 
                         <!-- 🔴 MESSAGE ERREUR -->
                         {% if error %}
@@ -71,7 +78,7 @@
 
                         <!-- 🔁 Renvoyer code (plus tard) -->
                         <div class="text-center">
-                            <a class="small" href="#">
+                            <a class="small" href="{% url 'resend_code' %}">
                                 Renvoyer le code
                             </a>
                         </div>
@@ -93,6 +100,6 @@
 </div>
 
 <!-- JS -->
-{% include 'components/footer.html' %}
+{% include 'components/scripts.html' %}
 </body>
 </html>

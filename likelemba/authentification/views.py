@@ -1,31 +1,36 @@
+from datetime import timezone
+from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail
 from .models import Utilisateur, OTP
 from .models import ResetPasswordOTP
+from django.contrib import messages
 
 # Fonction pour se connecter
+
 def login_view(request):
 
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
 
-        user = authenticate(
-            request,
-            username=username,
-            password=password
-        )
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            # Vérification si l'utilisateur a vérifié son email
-            if not user.is_verified:
-                request.session['user_id'] = user.id
-                return redirect('verify')
-            
-            # Connexion normale
             login(request, user)
-            return redirect('dashboard')
+
+            # 🔥 REDIRECTION SELON ROLE
+            if user.role == 'ADMIN':
+                return redirect('dashboard_admin')
+            else:
+                return redirect('dashboard_membre')
+
+        else:
+            return render(request, 'login.html', {
+                'error': 'Identifiants invalides'
+            })
 
     return render(request, 'login.html')
 
@@ -41,25 +46,28 @@ def register_view(request):
         telephone = request.POST.get('telephone')
         photo = request.FILES.get('photo')
 
-        # 🔴 Validation mot de passe
+        # Validation mot de passe
         if password != confirm_password:
             return render(request, 'register.html', {
                 'error': "Les mots de passe ne correspondent pas"
             })
 
-        # 🔴 Vérifier username déjà existant
+        # Vérifier username déjà existant
         if Utilisateur.objects.filter(username=username).exists():
             return render(request, 'register.html', {
                 'error': "Nom d'utilisateur déjà utilisé"
             })
 
-        # 🔴 Vérifier email déjà existant
+        # Vérifier email déjà existant
         if Utilisateur.objects.filter(email=email).exists():
             return render(request, 'register.html', {
                 'error': "Email déjà utilisé"
             })
 
-        # ✅ Création utilisateur
+        # Définir rôle (par défaut MEMBRE)
+        role = request.POST.get('role', 'MEMBRE')
+
+        # Création utilisateur
         user = Utilisateur.objects.create_user(
             username=username,
             email=email,
@@ -68,10 +76,11 @@ def register_view(request):
 
         user.telephone = telephone
         user.photo = photo
+        user.role = role
         user.is_active = False
         user.save()
 
-        # 🔐 OTP
+        # OTP
         otp = OTP.objects.create(user=user)
         otp.generate_code()
 
@@ -184,3 +193,36 @@ def reset_password_view(request):
         return redirect('login')
 
     return render(request, 'reset_password.html')
+
+
+# Renvoyer un code
+def resend_code_view(request):
+
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        return redirect('register')
+
+    user = Utilisateur.objects.get(id=user_id)
+
+    # 🔐 Vérifier dernier OTP AVANT
+    last_otp = OTP.objects.filter(user=user).last()
+
+    if last_otp and (timezone.now() - last_otp.created_at).seconds < 60:
+        messages.error(request, "Attendez 1 minute avant de renvoyer un code")
+        return redirect('verify')
+
+    # ✅ Générer nouveau OTP
+    otp = OTP.objects.create(user=user)
+    otp.generate_code()
+
+    send_mail(
+        'Nouveau code de vérification',
+        f'Votre nouveau code est : {otp.code}',
+        'test@gmail.com',
+        [user.email],
+    )
+
+    messages.success(request, "Un nouveau code a été envoyé")
+
+    return redirect('verify')
