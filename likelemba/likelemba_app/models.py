@@ -8,6 +8,18 @@ from authentification.models import Utilisateur
 # =====================
 class Groupe(models.Model):
 
+    FREQUENCE_CHOICES = [
+        ('QUOTIDIEN', 'Quotidien'),
+        ('HEBDOMADAIRE', 'Hebdomadaire'),
+        ('MENSUEL', 'Mensuel'),
+        ('ANNUEL', 'Annuel')
+    ]
+
+    STATUT_CHOICES = [
+        ('ACTIF', 'Actif'),
+        ('TERMINE', 'Terminé')
+    ]
+
     nom = models.CharField(max_length=100)
 
     montant_cotisation = models.DecimalField(
@@ -15,22 +27,21 @@ class Groupe(models.Model):
         decimal_places=2
     )
 
-    frequence = models.CharField(max_length=20)
+    frequence = models.CharField(max_length=20, choices=FREQUENCE_CHOICES)
 
     date_debut = models.DateField()
 
-    statut = models.CharField(
-        max_length=20,
-        choices=[
-            ('ACTIF', 'Actif'),
-            ('TERMINE', 'Terminé')
-        ]
-    )
+    statut = models.CharField(max_length=20, choices = STATUT_CHOICES, default='ACTIF')
+
+    date_creation = models.DateTimeField(auto_now_add=True, null=True)
 
     admin = models.ForeignKey(
         Utilisateur,
         on_delete=models.CASCADE
     )
+
+    def __str__(self):
+        return self.nom
 
 
 # =====================
@@ -49,6 +60,9 @@ class MembreGroupe(models.Model):
     )
 
     ordre_reception = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.utilisateur} - groupe : {self.groupe}'
 
 
 # =====================
@@ -76,6 +90,9 @@ class Paiement(models.Model):
         ]
     )
 
+    def __str__(self):
+        return f'{self.membre} - Paiement : {self.montant}'
+
 
 # =====================
 # TOUR
@@ -97,3 +114,6 @@ class Tour(models.Model):
     date_tour = models.DateField()
 
     completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.beneficiaire
