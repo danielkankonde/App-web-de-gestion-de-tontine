@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="h3 mb-4 text-gray-800">Créer un groupe</h1>
+
+<!-- Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- NOM -->
+            <div class="form-group">
+                <label>Nom du groupe</label>
+                {{ form.nom }}
+                <small class="text-danger">{{ form.nom.errors }}</small>
+            </div>
+
+            <!-- MONTANT -->
+            <div class="form-group">
+                <label>Montant de cotisation</label>
+                {{ form.montant_cotisation }}
+                <small class="text-danger">{{ form.montant_cotisation.errors }}</small>
+            </div>
+
+            <!-- FREQUENCE -->
+            <div class="form-group">
+                <label>Fréquence</label>
+                {{ form.frequence }}
+                <small class="text-danger">{{ form.frequence.errors }}</small>
+            </div>
+
+            <!-- DATE -->
+            <div class="form-group">
+                <label>Date de début</label>
+                {{ form.date_debut }}
+                <small class="text-danger">{{ form.date_debut.errors }}</small>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                Créer le groupe
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
