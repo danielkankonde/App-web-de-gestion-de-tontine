@@ -45,11 +45,48 @@
                         </td>
                         <td>{{ groupe.date_creation }}</td>
                         <td>
-                            <a href="" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i></a>
-                            <a href="" class="btn btn-primary btn-sm"><i class="fas fa-eye sm"></i></a>
-                            <a href="" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                            <a href="{% url "update_groupe" groupe.id %}" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i></a>
+                            <a href="{% url "detail_groupe" groupe.id %}" class="btn btn-primary btn-sm"><i class="fas fa-eye sm"></i></a>
+                            <button class="btn btn-danger btn-sm"
+                                    data-toggle="modal"
+                                    data-target="#deleteModal{{ groupe.id }}">
+                                    <i class="fas fa-trash sm"></i>
+                            </button>
                         </td>
                     </tr>
+                    <div class="modal fade" id="deleteModal{{ groupe.id }}" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmer suppression</h5>
+                                    <button class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <div class="modal-body">
+                                    Voulez-vous supprimer le groupe 
+                                    <strong>{{ groupe.nom }}</strong> ?
+                                </div>
+
+                                <div class="modal-footer">
+
+                                    <button class="btn btn-secondary" data-dismiss="modal">
+                                        Annuler
+                                    </button>
+
+                                    <!-- 🔥 FORM DELETE -->
+                                    <form method="POST" action="{% url 'delete_groupe' groupe.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">
+                                            Supprimer
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                     {% empty %}
                     <tr>
                         <td colspan="6" class="text-center">

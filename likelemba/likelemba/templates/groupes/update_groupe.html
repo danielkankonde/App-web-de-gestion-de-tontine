@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="h3 mb-4 text-gray-800">Modifier Groupe</h1>
+
+{% include 'partials/messages.html' %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button class="btn btn-warning">Modifier</button>
+</form>
+
+{% endblock %}

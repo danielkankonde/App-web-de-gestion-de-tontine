@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -39,6 +39,16 @@ def dashboard_membre(request):
 
     return render(request, 'pages/dashboard_membre.html')
 
+# Fonction pour afficher la liste de groupes
+def liste_groupes_view(request):
+
+    if request.user.role != 'ADMIN':
+        return redirect("dashboard_membre")
+    
+    groupes = Groupe.objects.filter(admin=request.user)
+    return render(request, "groupes/liste_groupes.html", {'groupes': groupes})
+
+#Fonction pour ajouter un groupe
 def create_groupe(request):
 
     # Vérification ADMIN pour la sécurité 
@@ -70,10 +80,43 @@ def create_groupe(request):
         'form': form
     })
 
-def liste_groupes_view(request):
+# Fonction pour modifier un groupe
+def update_groupe(request, id):
 
-    if request.user.role != 'ADMIN':
-        return redirect("dashboard_membre")
-    
-    groupes = Groupe.objects.filter(admin=request.user)
-    return render(request, "groupes/liste_groupes.html", {'groupes': groupes})
+    groupe = get_object_or_404(Groupe, id=id, admin=request.user)
+
+    form = GroupeForm(instance=groupe)
+
+    if request.method == 'POST':
+        form = GroupeForm(request.POST, instance=groupe)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Groupe modifié avec succès ✅")
+            return redirect('liste_groupes')
+        else:
+            messages.error(request, "Erreur lors de la modification ❌")
+
+    return render(request, 'groupes/update_groupe.html', {
+        'form': form
+    })
+# Fonction pour supprimer un groupe
+def delete_groupe(request, id):
+
+    groupe = get_object_or_404(Groupe, id=id, admin=request.user)
+
+    if request.method == 'POST':
+        groupe.delete()
+        messages.success(request, "Groupe supprimé avec succès 🗑")
+        return redirect('liste_groupes')
+
+    return redirect('liste_groupes')
+
+# Fonction pour voir detail d'un groupe
+def detail_groupe(request, id):
+
+    groupe = get_object_or_404(Groupe, id=id, admin=request.user)
+
+    return render(request, 'groupes/detail_groupe.html', {
+        'groupe': groupe
+    })
