@@ -5,16 +5,12 @@
     <div class="card-header py-3">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h3 class="m-0 font-weight-bold text-primary">Mes groupes</h3>
-            <a href="{% url 'create_groupe' %}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus"></i>Ajouter un groupe</a>
+            <a href="{% url 'create_groupe' %}" class="btn btn-primary btn-sm shadow-sm"><i class="fas fa-plus"></i> <span class="d-none d-sm-inline">Ajouter un groupe</span>
+            </a>
         </div>
     </div>
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+    <!-- Messages -->
+    {% include "partials/messages.html" %}
     <div class="card-body shadow mb-4">
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -44,12 +40,54 @@
                             {% endif %}
                         </td>
                         <td>{{ groupe.date_creation }}</td>
-                        <td>
-                            <a href="" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i></a>
-                            <a href="" class="btn btn-primary btn-sm"><i class="fas fa-eye sm"></i></a>
-                            <a href="" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+                        <td class="text-nowrap">
+                            <a href="{% url 'update_groupe' groupe.id %}" class="btn btn-warning btn-sm mb-1">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            <a href="{% url 'detail_groupe' groupe.id %}" class="btn btn-primary btn-sm mb-1">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <button class="btn btn-danger btn-sm mb-1"
+                                    data-toggle="modal"
+                                    data-target="#deleteModal{{ groupe.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </td>
                     </tr>
+                    <div class="modal fade" id="deleteModal{{ groupe.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmer</h5>
+                                    <button class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <div class="modal-body text-center">
+                                    <p>Supprimer ce groupe ?</p>
+                                    <strong>{{ groupe.nom }}</strong>
+                                </div>
+
+                                <div class="modal-footer justify-content-center">
+
+                                    <button class="btn btn-secondary" data-dismiss="modal">
+                                        Annuler
+                                    </button>
+
+                                    <form method="POST" action="{% url 'delete_groupe' groupe.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">
+                                            Supprimer
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                     {% empty %}
                     <tr>
                         <td colspan="6" class="text-center">

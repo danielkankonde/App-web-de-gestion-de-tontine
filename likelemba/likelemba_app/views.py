@@ -1,11 +1,11 @@
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import GroupeForm
 
 # Create your views here.
-@login_required(login_url="login")
+@login_required
 def dashboard(request):
 
     context = {
@@ -16,7 +16,7 @@ def dashboard(request):
     }
     return render(request, 'pages/dashboard.html', context)
 
-@login_required
+@login_required(login_url="login")
 def dashboard_admin(request):
 
     if request.user.role != 'ADMIN':
@@ -31,7 +31,7 @@ def dashboard_admin(request):
 
     return render(request, 'pages/dashboard_admin.html', context)
 
-@login_required
+@login_required(login_url="login")
 def dashboard_membre(request):
 
     if request.user.role != 'MEMBRE':
@@ -39,6 +39,18 @@ def dashboard_membre(request):
 
     return render(request, 'pages/dashboard_membre.html')
 
+# Fonction pour afficher la liste de groupes
+@login_required
+def liste_groupes_view(request):
+
+    if request.user.role != 'ADMIN':
+        return redirect("dashboard_membre")
+    
+    groupes = Groupe.objects.filter(admin=request.user)
+    return render(request, "groupes/liste_groupes.html", {'groupes': groupes})
+
+#Fonction pour ajouter un groupe
+@login_required(login_url="login")
 def create_groupe(request):
 
     # Vérification ADMIN pour la sécurité 
@@ -70,10 +82,46 @@ def create_groupe(request):
         'form': form
     })
 
-def liste_groupes_view(request):
+# Fonction pour modifier un groupe
+@login_required(login_url="login")
+def update_groupe(request, id):
 
-    if request.user.role != 'ADMIN':
-        return redirect("dashboard_membre")
-    
-    groupes = Groupe.objects.filter(admin=request.user)
-    return render(request, "groupes/liste_groupes.html", {'groupes': groupes})
+    groupe = get_object_or_404(Groupe, id=id, admin=request.user)
+
+    form = GroupeForm(instance=groupe)
+
+    if request.method == 'POST':
+        form = GroupeForm(request.POST, instance=groupe)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Groupe modifié avec succès ✅")
+            return redirect('liste_groupes')
+        else:
+            messages.error(request, "Erreur lors de la modification ❌")
+
+    return render(request, 'groupes/update_groupe.html', {
+        'form': form
+    })
+# Fonction pour supprimer un groupe
+@login_required(login_url="login")
+def delete_groupe(request, id):
+
+    groupe = get_object_or_404(Groupe, id=id, admin=request.user)
+
+    if request.method == 'POST':
+        groupe.delete()
+        messages.success(request, "Groupe supprimé avec succès 🗑")
+        return redirect('liste_groupes')
+
+    return redirect('liste_groupes')
+
+# Fonction pour voir detail d'un groupe
+@login_required(login_url="login")
+def detail_groupe(request, id):
+
+    groupe = get_object_or_404(Groupe, id=id, admin=request.user)
+
+    return render(request, 'groupes/detail_groupe.html', {
+        'groupe': groupe
+    })

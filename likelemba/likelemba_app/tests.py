@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Groupe
+from .models import Groupe, Utilisateur
 
 # On récupère ton modèle Utilisateur personnalisé
 User = get_user_model()

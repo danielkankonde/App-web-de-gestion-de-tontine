@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1 class="h3 mb-4 text-gray-800">Créer un groupe</h1>
+<h1 class="h3 mb-4 text-gray-800">Modifier un groupe</h1>
 
 <!-- Messages -->
 {% include "partials/messages.html" %}
@@ -42,7 +42,7 @@
             </div>
 
             <button type="submit" class="btn btn-success">
-                Créer le groupe
+                Modifier le groupe
             </button>
 
         </form>
@@ -50,4 +50,31 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Fermer les alertes avec animation
+    document.querySelectorAll('.alert').forEach(function(alert) {
+        const closeBtn = alert.querySelector('.close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alert.remove();
+                }, 150);
+            });
+        }
+    });
+    
+    // Fermer les alertes automatiquement après 5 secondes (optionnel)
+    // document.querySelectorAll('.alert').forEach(function(alert) {
+    //     setTimeout(() => {
+    //         if (alert.querySelector('.close')) {
+    //             alert.querySelector('.close').click();
+    //         }
+    //     }, 5000);
+    // });
+</script>
 {% endblock %}

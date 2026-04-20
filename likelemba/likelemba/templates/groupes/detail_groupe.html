@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="h3 mb-4 text-gray-800">Détails du Groupe</h1>
+
+<div class="card shadow">
+    <div class="card-body">
+
+        <p><strong>Nom :</strong> {{ groupe.nom }}</p>
+        <p><strong>Montant :</strong> {{ groupe.montant_cotisation }}</p>
+        <p><strong>Fréquence :</strong> {{ groupe.frequence }}</p>
+        <p><strong>Date début :</strong> {{ groupe.date_debut }}</p>
+        <p><strong>Statut :</strong> {{ groupe.statut }}</p>
+
+    </div>
+</div>
+
+{% endblock %}
