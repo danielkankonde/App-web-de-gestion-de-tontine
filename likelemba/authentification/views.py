@@ -1,15 +1,17 @@
 from datetime import timezone
 from django.utils import timezone
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from .models import Utilisateur, OTP
 from .models import ResetPasswordOTP
 from django.contrib import messages
 
 # Fonction pour se connecter
-
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard_membre')
 
     if request.method == 'POST':
 
@@ -36,6 +38,8 @@ def login_view(request):
 
 # Fonction pour la créer un compte
 def register_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard_membre')
 
     if request.method == 'POST':
 
@@ -97,6 +101,14 @@ def register_view(request):
 
     return render(request, 'register.html')
 
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+        return redirect('login')
+    # GET requests - redirect to home or previous page if authenticated
+    if request.user.is_authenticated:
+        return redirect('dashboard_membre')
+    return redirect('login')
 # Fonction pour la verification du code OTP
 def verify_view(request):
 

@@ -1,4 +1,4 @@
-<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion">
+<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion d-flex flex-column" style="min-height: 100vh;">
 
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
         <i class="fas fa-sync-alt fa-lg"></i>
@@ -54,4 +54,49 @@
     </li>
     {% endif %}
 
+    <!-- DÉCONNEXION - EN BAS -->
+    {% if request.user.is_authenticated %}
+    <hr class="sidebar-divider mt-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="#"
+            class="dropdown-item"
+            data-toggle="modal"
+            data-target="#logoutModal">
+            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            <span>Déconnexion</span>
+        </a>
+    </li>
+    {% endif %}
+    <div class="modal fade" id="logoutModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Se déconnecter ?</h5>
+                    <button class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body text-center">
+                    Voulez-vous vraiment quitter votre session ?
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button class="btn btn-secondary" data-dismiss="modal">
+                        Annuler
+                    </button>
+
+                    <!-- 🔐 FORM LOGOUT -->
+                    <form method="POST" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">
+                            Se déconnecter
+                        </button>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
 </ul>

@@ -5,7 +5,7 @@ from django.contrib import messages
 from .forms import GroupeForm
 
 # Create your views here.
-@login_required(login_url="login")
+@login_required
 def dashboard(request):
 
     context = {
@@ -16,7 +16,7 @@ def dashboard(request):
     }
     return render(request, 'pages/dashboard.html', context)
 
-@login_required
+@login_required(login_url="login")
 def dashboard_admin(request):
 
     if request.user.role != 'ADMIN':
@@ -31,7 +31,7 @@ def dashboard_admin(request):
 
     return render(request, 'pages/dashboard_admin.html', context)
 
-@login_required
+@login_required(login_url="login")
 def dashboard_membre(request):
 
     if request.user.role != 'MEMBRE':
@@ -40,6 +40,7 @@ def dashboard_membre(request):
     return render(request, 'pages/dashboard_membre.html')
 
 # Fonction pour afficher la liste de groupes
+@login_required
 def liste_groupes_view(request):
 
     if request.user.role != 'ADMIN':
@@ -49,6 +50,7 @@ def liste_groupes_view(request):
     return render(request, "groupes/liste_groupes.html", {'groupes': groupes})
 
 #Fonction pour ajouter un groupe
+@login_required(login_url="login")
 def create_groupe(request):
 
     # Vérification ADMIN pour la sécurité 
@@ -81,6 +83,7 @@ def create_groupe(request):
     })
 
 # Fonction pour modifier un groupe
+@login_required(login_url="login")
 def update_groupe(request, id):
 
     groupe = get_object_or_404(Groupe, id=id, admin=request.user)
@@ -101,6 +104,7 @@ def update_groupe(request, id):
         'form': form
     })
 # Fonction pour supprimer un groupe
+@login_required(login_url="login")
 def delete_groupe(request, id):
 
     groupe = get_object_or_404(Groupe, id=id, admin=request.user)
@@ -113,6 +117,7 @@ def delete_groupe(request, id):
     return redirect('liste_groupes')
 
 # Fonction pour voir detail d'un groupe
+@login_required(login_url="login")
 def detail_groupe(request, id):
 
     groupe = get_object_or_404(Groupe, id=id, admin=request.user)

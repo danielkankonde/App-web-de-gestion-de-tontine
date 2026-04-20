@@ -5,13 +5,7 @@
 <h1 class="h3 mb-4 text-gray-800">Créer un groupe</h1>
 
 <!-- Messages -->
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
-        </div>
-    {% endfor %}
-{% endif %}
+{% include "partials/messages.html" %}
 
 <div class="card shadow mb-4">
     <div class="card-body">

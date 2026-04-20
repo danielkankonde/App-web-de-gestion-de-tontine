@@ -9,13 +9,8 @@
             </a>
         </div>
     </div>
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+    <!-- Messages -->
+    {% include "partials/messages.html" %}
     <div class="card-body shadow mb-4">
         <div class="table-responsive">
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
