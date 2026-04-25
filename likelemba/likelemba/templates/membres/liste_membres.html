@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h3 class="m-0 font-weight-bold text-primary">Mes membres de tous les groupes</h3>
+    </div>
+    <!-- Messages -->
+    {% include "partials/messages.html" %}
+    
+    <!-- Section pour ajouter un membre à un groupe -->
+    <div class="card-body mt-2">
+        <h5 class="mb-3">Ajouter un membre à un groupe</h5>
+        {% for groupe in groupes %}
+            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn btn-primary btn-sm mr-2 mb-2">
+                <i class="fas fa-plus"></i> Ajouter à {{ groupe.nom }}
+            </a>
+        {% endfor %}
+    </div>
+    
+    <div class="card-body shadow mb-4">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Nom du membre</th>
+                        <th>Téléphone</th>
+                        <th>Groupe</th>
+                        <th>Ordre de réception</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membre in membres %}
+                    <tr>
+                        <td>{{ membre.nom_affiche }}</td>
+                        <td>{{ membre.telephone }}</td>
+                        <td>
+                            <a href="{% url 'detail_groupe' membre.groupe.id %}" class="text-primary">
+                                {{ membre.groupe.nom }}
+                            </a>
+                        </td>
+                        <td>{{ membre.ordre_reception }}</td>
+                        <td class="text-nowrap">
+                            <a href="{% url 'modifier_ordre_membre' membre.id %}" class="btn btn-warning btn-sm mb-1">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <a href="" class="btn btn-primary btn-sm mb-1">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <button class="btn btn-danger btn-sm mb-1"
+                                    data-toggle="modal"
+                                    data-target="#deleteModal{{ membre.id }}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <div class="modal fade" id="deleteModal{{ membre.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Confirmer</h5>
+                                    <button class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <div class="modal-body text-center">
+                                    <p>Supprimer ce membre du groupe <strong>{{ membre.groupe.nom }}</strong> ?</p>
+                                    <strong>{{ membre.nom_affiche }}</strong>
+                                </div>
+
+                                <div class="modal-footer justify-content-center">
+
+                                    <button class="btn btn-secondary" data-dismiss="modal">
+                                        Annuler
+                                    </button>
+
+                                    <form method="POST" action="{% url 'supprimer_membre' membre.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">
+                                            Supprimer
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            Aucun membre trouvé
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

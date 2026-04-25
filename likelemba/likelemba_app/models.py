@@ -51,18 +51,34 @@ class MembreGroupe(models.Model):
 
     utilisateur = models.ForeignKey(
         Utilisateur,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
 
     groupe = models.ForeignKey(
         Groupe,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
     )
+
+    nom = models.CharField(max_length=100, null=True, blank=True)
+    telephone = models.CharField(max_length=20, blank=True)
 
     ordre_reception = models.IntegerField()
 
+    @property
+    def nom_affiche(self):
+        if self.utilisateur:
+            return self.utilisateur.username
+        return self.nom or "Membre sans nom"
+
     def __str__(self):
-        return f'{self.utilisateur} - groupe : {self.groupe}'
+        return f'{self.nom_affiche} - groupe : {self.groupe}'
+    
+    class Meta:
+        unique_together = ('utilisateur', 'groupe')
 
 
 # =====================

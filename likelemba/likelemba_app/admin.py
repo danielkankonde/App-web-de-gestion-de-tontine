@@ -9,7 +9,7 @@ class GroupeAdmin(admin.ModelAdmin):
 admin.site.register(Groupe, GroupeAdmin)
 
 class MembreAdmin(admin.ModelAdmin):
-    list_display = ['utilisateur', 'groupe', 'ordre_reception']
+    list_display = ['nom_affiche', 'utilisateur', 'groupe', 'ordre_reception']
 
 admin.site.register(MembreGroupe, MembreAdmin)
 

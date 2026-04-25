@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import GroupeForm
+from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm
+
 
 # Create your views here.
 @login_required
@@ -124,4 +125,78 @@ def detail_groupe(request, id):
 
     return render(request, 'groupes/detail_groupe.html', {
         'groupe': groupe
+    })
+@login_required(login_url="login")
+def ajouter_membre(request, groupe_id):
+    groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
+
+    if request.method == 'POST':
+        form = MembreGroupeForm(request.POST, groupe=groupe)
+
+        if form.is_valid():
+            membre = form.save(commit=False)
+            membre.groupe = groupe
+
+            # 🔐 éviter doublon
+            if membre.utilisateur and MembreGroupe.objects.filter(utilisateur=membre.utilisateur, groupe=groupe).exists():
+                messages.error(request, "Ce membre est déjà dans le groupe")
+                return redirect('ajouter_membre', groupe_id=groupe.id)
+
+            membre.save()
+            messages.success(request, "Membre ajouté avec succès")
+            return redirect('liste_membres')
+    else:
+        form = MembreGroupeForm(groupe=groupe)
+
+    return render(request, 'membres/ajouter.html', {
+        'form': form,
+        'groupe': groupe
+    })
+
+@login_required(login_url="login")
+def liste_membres_view(request):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+    
+    groupes = Groupe.objects.filter(admin=request.user)
+    membres = MembreGroupe.objects.filter(groupe__in=groupes)
+
+    return render(request, 'membres/liste_membres.html', {
+        'membres': membres,
+        'groupes': groupes
+    })
+@login_required(login_url="login")
+def supprimer_membre(request, id):
+    membre = get_object_or_404(
+        MembreGroupe,
+        id=id,
+        groupe__admin=request.user  # 🔐 sécurité
+    )
+
+    if request.method == 'POST':
+        membre.delete()
+        messages.success(request, "Membre supprimé")
+        return redirect('liste_membres')
+
+@login_required(login_url="login")
+def modifier_ordre_membre(request, id):
+    membre = get_object_or_404(
+        MembreGroupe,
+        id=id,
+        groupe__admin=request.user  # 🔐 sécurité
+    )
+
+    if request.method == 'POST':
+        form = OrdreMembreForm(request.POST, instance=membre, groupe=membre.groupe)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Ordre modifié avec succès")
+            return redirect('liste_membres')
+    else:
+        form = OrdreMembreForm(instance=membre, groupe=membre.groupe)
+
+    return render(request, 'membres/modifier_ordre.html', {
+        'form': form,
+        'membre': membre
     })
