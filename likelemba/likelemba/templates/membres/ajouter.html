@@ -1,55 +1,58 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h3>Ajouter membre - {{ groupe.nom }}</h3>
+<h3>Ajouter un membre dans <strong class="text-success">{{ groupe.nom }}</strong></h3>
 
-<form method="POST">
-    {% csrf_token %}
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
 
-    {% if form.non_field_errors %}
-        <div class="alert alert-danger">
-            {{ form.non_field_errors }}
-        </div>
-    {% endif %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
-    <p class="text-bold text-italic text-danger">
-        Choisissez un utilisateur qui a déjà un compte, ou laissez ce champ vide et saisissez seulement le nom du membre.
-    </p>
+            <p style="color: red; font-weight: 500; font-style: italic;">
+                Choisissez un utilisateur qui a déjà un compte, ou laissez ce champ vide et saisissez seulement le nom du membre.
+            </p>
 
-    <div class="form-group">
-        <label>Membre</label>
-        {{ form.utilisateur }}
-        {% for error in form.utilisateur.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
-        {% endfor %}
+            <div class="form-group">
+                <label>Membre</label>
+                {{ form.utilisateur }}
+                {% for error in form.utilisateur.errors %}
+                    <small class="text-danger d-block">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label>Nom</label>
+                {{ form.nom }}
+                {% for error in form.nom.errors %}
+                    <small class="text-danger d-block">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label>Telephone</label>
+                {{ form.telephone }}
+                {% for error in form.telephone.errors %}
+                    <small class="text-danger d-block">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label>Ordre</label>
+                {{ form.ordre_reception }}
+                {% for error in form.ordre_reception.errors %}
+                    <small class="text-danger d-block">{{ error }}</small>
+                {% endfor %}
+            </div>
+
+            <button class="btn btn-success sm">Ajouter un membre</button>
+            <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-outline-primary">Retour au groupe</a>
+        </form>
     </div>
-
-    <div class="form-group">
-        <label>Nom</label>
-        {{ form.nom }}
-        {% for error in form.nom.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
-        {% endfor %}
-    </div>
-
-    <div class="form-group">
-        <label>Telephone</label>
-        {{ form.telephone }}
-        {% for error in form.telephone.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
-        {% endfor %}
-    </div>
-
-    <div class="form-group">
-        <label>Ordre</label>
-        {{ form.ordre_reception }}
-        {% for error in form.ordre_reception.errors %}
-            <small class="text-danger d-block">{{ error }}</small>
-        {% endfor %}
-    </div>
-
-    <button class="btn btn-success sm">Ajouter un membre</button>
-    <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-secondary">Retour au groupe</a>
-</form>
-
+</div>
 {% endblock %}

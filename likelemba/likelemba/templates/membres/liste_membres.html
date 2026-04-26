@@ -5,7 +5,7 @@
     <div class="card-header py-3 d-flex justify-content-between align-items-center">
         <div>
             <h3 class="m-0 font-weight-bold text-primary">Groupes de membres</h3>
-            <p class="mb-0 text-muted">Choisissez un groupe pour gérer ses membres séparément.</p>
+            <p style="color: red; font-weight: 500;">Choisissez un groupe pour gérer ses membres séparément.</p>
         </div>
     </div>
 
@@ -26,7 +26,7 @@
                                     <div class="text-muted small">{{ groupe.frequence }} • Début {{ groupe.date_debut }}</div>
                                 </div>
                                 <span class="badge badge-light px-3 py-2">
-                                    {{ groupe.total_membres }} membre{{ groupe.total_membres|pluralize }}
+                                    <strong style="color: rgb(13, 230, 13);">{{ groupe.total_membres }}</strong> membre{{ groupe.total_membres|pluralize }}
                                 </span>
                             </div>
 
