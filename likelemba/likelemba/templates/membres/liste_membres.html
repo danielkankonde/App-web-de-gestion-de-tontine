@@ -2,101 +2,56 @@
 
 {% block content %}
 <div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h3 class="m-0 font-weight-bold text-primary">Mes membres de tous les groupes</h3>
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="m-0 font-weight-bold text-primary">Groupes de membres</h3>
+            <p class="mb-0 text-muted">Choisissez un groupe pour gérer ses membres séparément.</p>
+        </div>
     </div>
-    <!-- Messages -->
+
     {% include "partials/messages.html" %}
-    
-    <!-- Section pour ajouter un membre à un groupe -->
-    <div class="card-body mt-2">
-        <h5 class="mb-3">Ajouter un membre à un groupe</h5>
-        {% for groupe in groupes %}
-            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn btn-primary btn-sm mr-2 mb-2">
-                <i class="fas fa-plus"></i> Ajouter à {{ groupe.nom }}
-            </a>
-        {% endfor %}
-    </div>
-    
-    <div class="card-body shadow mb-4">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>Nom du membre</th>
-                        <th>Téléphone</th>
-                        <th>Groupe</th>
-                        <th>Ordre de réception</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for membre in membres %}
-                    <tr>
-                        <td>{{ membre.nom_affiche }}</td>
-                        <td>{{ membre.telephone }}</td>
-                        <td>
-                            <a href="{% url 'detail_groupe' membre.groupe.id %}" class="text-primary">
-                                {{ membre.groupe.nom }}
-                            </a>
-                        </td>
-                        <td>{{ membre.ordre_reception }}</td>
-                        <td class="text-nowrap">
-                            <a href="{% url 'modifier_ordre_membre' membre.id %}" class="btn btn-warning btn-sm mb-1">
-                                <i class="fas fa-pen"></i>
-                            </a>
-                            <a href="" class="btn btn-primary btn-sm mb-1">
-                                <i class="fas fa-eye"></i>
-                            </a>
 
-                            <button class="btn btn-danger btn-sm mb-1"
-                                    data-toggle="modal"
-                                    data-target="#deleteModal{{ membre.id }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    <div class="modal fade" id="deleteModal{{ membre.id }}" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered modal-sm">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirmer</h5>
-                                    <button class="close" data-dismiss="modal">&times;</button>
+    <div class="card-body">
+        <div class="row">
+            {% for groupe in groupes %}
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Groupe
+                                    </div>
+                                    <h5 class="mb-1 font-weight-bold text-gray-800">{{ groupe.nom }}</h5>
+                                    <div class="text-muted small">{{ groupe.frequence }} • Début {{ groupe.date_debut }}</div>
                                 </div>
+                                <span class="badge badge-light px-3 py-2">
+                                    {{ groupe.total_membres }} membre{{ groupe.total_membres|pluralize }}
+                                </span>
+                            </div>
 
-                                <div class="modal-body text-center">
-                                    <p>Supprimer ce membre du groupe <strong>{{ membre.groupe.nom }}</strong> ?</p>
-                                    <strong>{{ membre.nom_affiche }}</strong>
-                                </div>
+                            <div class="mb-3 text-sm text-muted">
+                                Cotisation: {{ groupe.montant_cotisation }}
+                            </div>
 
-                                <div class="modal-footer justify-content-center">
-
-                                    <button class="btn btn-secondary" data-dismiss="modal">
-                                        Annuler
-                                    </button>
-
-                                    <form method="POST" action="{% url 'supprimer_membre' membre.id %}">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">
-                                            Supprimer
-                                        </button>
-                                    </form>
-
-                                </div>
-
+                            <div class="d-flex flex-wrap">
+                                <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-primary btn-sm mr-2 mb-2">
+                                    Voir les membres
+                                </a>
+                                <a href="{% url 'ajouter_membre' groupe.id %}" class="btn btn-outline-primary btn-sm mb-2">
+                                    Ajouter un membre
+                                </a>
                             </div>
                         </div>
                     </div>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="text-center">
-                            Aucun membre trouvé
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-light border text-center mb-0">
+                        Aucun groupe trouvé pour le moment.
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     </div>
 </div>

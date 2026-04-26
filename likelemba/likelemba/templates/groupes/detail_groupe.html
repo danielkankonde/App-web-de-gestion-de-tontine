@@ -13,6 +13,10 @@
         <p><strong>Date début :</strong> {{ groupe.date_debut }}</p>
         <p><strong>Statut :</strong> {{ groupe.statut }}</p>
 
+        <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-primary btn-sm">
+            Voir les membres du groupe
+        </a>
+
     </div>
 </div>
 

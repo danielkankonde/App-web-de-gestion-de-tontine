@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Count
 from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm
 
 
@@ -144,7 +145,7 @@ def ajouter_membre(request, groupe_id):
 
             membre.save()
             messages.success(request, "Membre ajouté avec succès")
-            return redirect('liste_membres')
+            return redirect('membres_groupe', groupe_id=groupe.id)
     else:
         form = MembreGroupeForm(groupe=groupe)
 
@@ -158,13 +159,27 @@ def liste_membres_view(request):
     if request.user.role != 'ADMIN':
         return redirect('dashboard_membre')
     
-    groupes = Groupe.objects.filter(admin=request.user)
-    membres = MembreGroupe.objects.filter(groupe__in=groupes)
+    groupes = Groupe.objects.filter(admin=request.user).annotate(
+        total_membres=Count('membregroupe')
+    )
 
     return render(request, 'membres/liste_membres.html', {
-        'membres': membres,
         'groupes': groupes
     })
+
+@login_required(login_url="login")
+def membres_groupe_view(request, groupe_id):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
+    membres = MembreGroupe.objects.filter(groupe=groupe).order_by('ordre_reception', 'id')
+
+    return render(request, 'membres/membres_groupe.html', {
+        'groupe': groupe,
+        'membres': membres
+    })
+
 @login_required(login_url="login")
 def supprimer_membre(request, id):
     membre = get_object_or_404(
@@ -174,9 +189,10 @@ def supprimer_membre(request, id):
     )
 
     if request.method == 'POST':
+        groupe_id = membre.groupe.id
         membre.delete()
         messages.success(request, "Membre supprimé")
-        return redirect('liste_membres')
+        return redirect('membres_groupe', groupe_id=groupe_id)
 
 @login_required(login_url="login")
 def modifier_ordre_membre(request, id):
@@ -192,7 +208,7 @@ def modifier_ordre_membre(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, "Ordre modifié avec succès")
-            return redirect('liste_membres')
+            return redirect('membres_groupe', groupe_id=membre.groupe.id)
     else:
         form = OrdreMembreForm(instance=membre, groupe=membre.groupe)
 

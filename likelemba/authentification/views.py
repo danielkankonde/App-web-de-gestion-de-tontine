@@ -28,11 +28,8 @@ def login_view(request):
                 return redirect('dashboard_admin')
             else:
                 return redirect('dashboard_membre')
-
         else:
-            return render(request, 'login.html', {
-                'error': 'Identifiants invalides'
-            })
+            messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
 
     return render(request, 'login.html')
 
