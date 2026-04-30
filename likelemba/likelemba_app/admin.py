@@ -18,6 +18,6 @@ class PaiementAdmin(admin.ModelAdmin):
 admin.site.register(Paiement, PaiementAdmin)
 
 class TourAdmin(admin.ModelAdmin):
-    list_display = ['groupe', 'numero_tour', 'beneficiaire', 'date_tour', 'completed']
+    list_display = ['groupe', 'membre', 'date_tour', 'statut']
 
 admin.site.register(Tour, TourAdmin)

@@ -16,6 +16,12 @@
         <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-primary btn-sm">
             Voir les membres du groupe
         </a>
+        <a href="{% url 'liste_tours' groupe.id %}" class="btn btn-info btn-sm">
+            Voir les tours
+        </a>
+        <a href="{% url 'lancer_tours' groupe.id %}" class="btn btn-success btn-sm">
+        <i class="fas fa-play"></i> Générer les tours
+    </a>
 
     </div>
 </div>

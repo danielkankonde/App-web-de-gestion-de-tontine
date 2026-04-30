@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count
 from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm
+from .models import Groupe, Tour
 
 
 # Create your views here.
@@ -215,4 +216,60 @@ def modifier_ordre_membre(request, id):
     return render(request, 'membres/modifier_ordre.html', {
         'form': form,
         'membre': membre
+    })
+
+from datetime import timedelta
+
+@login_required(login_url="login")
+def liste_tours_groupes_view(request):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    groupes = Groupe.objects.filter(admin=request.user).annotate(
+        total_tours=Count('tour')
+    )
+
+    return render(request, 'tours/liste_groupes_tours.html', {
+        'groupes': groupes
+    })
+
+def generer_tours(groupe):
+    membres = MembreGroupe.objects.filter(groupe=groupe).order_by('ordre_reception')
+
+    date = groupe.date_debut
+
+    for membre in membres:
+        Tour.objects.create(
+            groupe=groupe,
+            membre=membre,
+            date_tour=date
+        )
+
+        # avancer selon fréquence
+        if groupe.frequence == 'MENSUEL':
+            date = date + timedelta(days=30)
+        else:
+            date = date + timedelta(days=7)
+
+@login_required(login_url="login")
+def lancer_tours(request, groupe_id):
+    groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
+
+    if Tour.objects.filter(groupe=groupe).exists():
+        messages.warning(request, "Les tours existent déjà")
+    else:
+        generer_tours(groupe)
+        messages.success(request, "Tours générés avec succès")
+
+    return redirect('liste_tours', groupe_id=groupe.id)
+
+@login_required(login_url="login")
+def liste_tours_view(request, groupe_id):
+    groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
+
+    tours = Tour.objects.filter(groupe=groupe).order_by('date_tour')
+
+    return render(request, 'tours/liste_tours.html', {
+        'groupe': groupe,
+        'tours': tours
     })

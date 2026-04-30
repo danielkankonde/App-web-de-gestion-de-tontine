@@ -115,21 +115,20 @@ class Paiement(models.Model):
 # =====================
 class Tour(models.Model):
 
-    groupe = models.ForeignKey(
-        Groupe,
-        on_delete=models.CASCADE
-    )
+    groupe = models.ForeignKey(Groupe, on_delete=models.CASCADE)
 
-    numero_tour = models.IntegerField()
-
-    beneficiaire = models.ForeignKey(
-        MembreGroupe,
-        on_delete=models.CASCADE
-    )
+    membre = models.ForeignKey(MembreGroupe, on_delete=models.CASCADE)
 
     date_tour = models.DateField()
 
-    completed = models.BooleanField(default=False)
+    statut = models.CharField(
+        max_length=20,
+        choices=[
+            ('EN_ATTENTE', 'En attente'),
+            ('PAYE', 'Payé')
+        ],
+        default='EN_ATTENTE'
+    )
 
     def __str__(self):
-        return self.beneficiaire
+        return f"{self.membre} - {self.date_tour}"

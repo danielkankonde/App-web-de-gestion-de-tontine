@@ -18,4 +18,9 @@ urlpatterns = [
     path('groupes/<int:groupe_id>/membres/add/', ajouter_membre, name='ajouter_membre'),
     path('membres/<int:id>/delete/', supprimer_membre, name='supprimer_membre'),
     path('membres/<int:id>/ordre/', modifier_ordre_membre, name='modifier_ordre_membre'),
+
+    path('tours/', liste_tours_groupes_view, name='liste_groupes_tours'),
+    path('groupes/<int:groupe_id>/tours/', liste_tours_view, name='liste_tours'),
+    path('groupes/<int:groupe_id>/tours/generer/', lancer_tours, name='lancer_tours'),
+
 ]
