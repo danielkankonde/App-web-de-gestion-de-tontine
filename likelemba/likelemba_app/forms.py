@@ -1,6 +1,8 @@
 from django import forms
-from .models import Groupe
-from .models import MembreGroupe, Utilisateur
+from django.utils import timezone
+
+from .models import Groupe, MembreGroupe, Paiement, Utilisateur
+
 
 class GroupeForm(forms.ModelForm):
 
@@ -25,7 +27,8 @@ class GroupeForm(forms.ModelForm):
                 'type': 'date'
             }),
         }
-        
+
+
 class MembreGroupeForm(forms.ModelForm):
     class Meta:
         model = MembreGroupe
@@ -41,11 +44,11 @@ class MembreGroupeForm(forms.ModelForm):
             }),
             'telephone': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Téléphone'
+                'placeholder': 'Telephone'
             }),
             'ordre_reception': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ordre de réception'
+                'placeholder': 'Ordre de reception'
             }),
         }
 
@@ -54,7 +57,7 @@ class MembreGroupeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['utilisateur'].required = False
         self.fields['nom'].required = False
-        self.fields['utilisateur'].empty_label = "Sélectionnez un membre avec compte"
+        self.fields['utilisateur'].empty_label = "Selectionnez un membre avec compte"
         self.fields['utilisateur'].queryset = Utilisateur.objects.filter(
             role='MEMBRE'
         ).exclude(
@@ -81,9 +84,10 @@ class MembreGroupeForm(forms.ModelForm):
             groupe=self.groupe,
             ordre_reception=ordre
         ).exists():
-            raise forms.ValidationError("Cet ordre est déjà utilisé")
+            raise forms.ValidationError("Cet ordre est deja utilise")
 
         return ordre
+
 
 class OrdreMembreForm(forms.ModelForm):
     class Meta:
@@ -93,7 +97,7 @@ class OrdreMembreForm(forms.ModelForm):
         widgets = {
             'ordre_reception': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ordre de réception'
+                'placeholder': 'Ordre de reception'
             }),
         }
 
@@ -104,11 +108,63 @@ class OrdreMembreForm(forms.ModelForm):
     def clean_ordre_reception(self):
         ordre = self.cleaned_data['ordre_reception']
 
-        # 🔐 empêcher doublon
         if MembreGroupe.objects.filter(
             groupe=self.groupe,
             ordre_reception=ordre
         ).exclude(id=self.instance.id).exists():
-            raise forms.ValidationError("Cet ordre est déjà utilisé")
+            raise forms.ValidationError("Cet ordre est deja utilise")
 
         return ordre
+
+
+class PaiementForm(forms.ModelForm):
+    class Meta:
+        model = Paiement
+        fields = ['membre', 'montant', 'date_paiement', 'statut']
+
+        widgets = {
+            'membre': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'montant': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Montant paye',
+                'step': '0.01'
+            }),
+            'date_paiement': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'statut': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.groupe = kwargs.pop('groupe')
+        super().__init__(*args, **kwargs)
+        self.fields['membre'].queryset = MembreGroupe.objects.filter(
+            groupe=self.groupe
+        ).order_by('ordre_reception', 'id')
+        self.fields['membre'].empty_label = "Selectionnez un membre"
+
+        if not self.is_bound:
+            self.fields['montant'].initial = self.groupe.montant_cotisation
+            self.fields['date_paiement'].initial = timezone.localdate()
+            self.fields['statut'].initial = 'PAYE'
+
+    def clean_montant(self):
+        montant = self.cleaned_data['montant']
+
+        if montant <= 0:
+            raise forms.ValidationError("Le montant doit etre superieur a zero.")
+
+        return montant
+
+    def clean_membre(self):
+        membre = self.cleaned_data['membre']
+
+        if membre.groupe_id != self.groupe.id:
+            raise forms.ValidationError("Ce membre n'appartient pas a ce groupe.")
+
+        return membre

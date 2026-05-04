@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="m-0 font-weight-bold text-primary">Paiements du groupe {{ groupe.nom }}</h3>
+            <p class="mb-0 text-muted">Historique des cotisations enregistrées pour ce groupe.</p>
+        </div>
+        <div class="d-flex flex-wrap justify-content-end">
+            <a href="{% url 'liste_groupes_paiements' %}" class="btn btn-light btn-sm mr-2 mb-2">
+                Tous les groupes
+            </a>
+            <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-warning btn-sm mb-2">
+                Enregistrer un paiement
+            </a>
+        </div>
+    </div>
+
+    {% include "partials/messages.html" %}
+
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Nombre de paiements</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_paiements }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total encaissé</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_encaisse }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Montant attendu par tour</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_attendu }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Membre</th>
+                        <th>Montant</th>
+                        <th>Date de paiement</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paiement in paiements %}
+                    <tr>
+                        <td>{{ paiement.membre.nom_affiche }}</td>
+                        <td>{{ paiement.montant }}</td>
+                        <td>{{ paiement.date_paiement }}</td>
+                        <td>
+                            {% if paiement.statut == "PAYE" %}
+                                <span class="badge badge-success">Paye</span>
+                            {% else %}
+                                <span class="badge badge-warning">Non paye</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            Aucun paiement enregistré pour ce groupe.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

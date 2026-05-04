@@ -19,6 +19,10 @@ urlpatterns = [
     path('membres/<int:id>/delete/', supprimer_membre, name='supprimer_membre'),
     path('membres/<int:id>/ordre/', modifier_ordre_membre, name='modifier_ordre_membre'),
 
+    path('paiements/', liste_paiements_groupes_view, name='liste_groupes_paiements'),
+    path('groupes/<int:groupe_id>/paiements/', paiements_groupe_view, name='paiements_groupe'),
+    path('groupes/<int:groupe_id>/paiements/add/', ajouter_paiement, name='ajouter_paiement'),
+
     path('tours/', liste_tours_groupes_view, name='liste_groupes_tours'),
     path('groupes/<int:groupe_id>/tours/', liste_tours_view, name='liste_tours'),
     path('groupes/<int:groupe_id>/tours/generer/', lancer_tours, name='lancer_tours'),

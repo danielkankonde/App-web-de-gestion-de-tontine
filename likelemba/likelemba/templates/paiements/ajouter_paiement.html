@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h4 class="m-0 font-weight-bold text-primary">Enregistrer un paiement - {{ groupe.nom }}</h4>
+    </div>
+
+    <div class="card-body">
+        {% include "partials/messages.html" %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Membre</label>
+                {{ form.membre }}
+                <small class="text-danger">{{ form.membre.errors }}</small>
+            </div>
+
+            <div class="form-group">
+                <label>Montant</label>
+                {{ form.montant }}
+                <small class="text-danger">{{ form.montant.errors }}</small>
+            </div>
+
+            <div class="form-group">
+                <label>Date du paiement</label>
+                {{ form.date_paiement }}
+                <small class="text-danger">{{ form.date_paiement.errors }}</small>
+            </div>
+
+            <div class="form-group">
+                <label>Statut</label>
+                {{ form.statut }}
+                <small class="text-danger">{{ form.statut.errors }}</small>
+            </div>
+
+            <button class="btn btn-warning">Enregistrer le paiement</button>
+            <a href="{% url 'paiements_groupe' groupe.id %}" class="btn btn-secondary">Retour au groupe</a>
+        </form>
+    </div>
+</div>
+{% endblock content %}

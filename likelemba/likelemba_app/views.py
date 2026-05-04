@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count
-from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm
-from .models import Groupe, Tour
-
+from django.db.models import Count, Sum
+from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm, PaiementForm
+from .models import Groupe, Paiement, Tour
+from datetime import timedelta
 
 # Create your views here.
 @login_required
@@ -74,7 +74,7 @@ def create_groupe(request):
 
             groupe.save()
 
-            messages.success(request, "Groupe créé avec succès ✅")
+            messages.success(request, "Groupe créé avec succès !")
 
             return redirect('liste_groupes')
 
@@ -98,10 +98,10 @@ def update_groupe(request, id):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Groupe modifié avec succès ✅")
+            messages.success(request, "Groupe modifié avec succès !")
             return redirect('liste_groupes')
         else:
-            messages.error(request, "Erreur lors de la modification ❌")
+            messages.error(request, "Erreur lors de la modification !")
 
     return render(request, 'groupes/update_groupe.html', {
         'form': form
@@ -114,7 +114,7 @@ def delete_groupe(request, id):
 
     if request.method == 'POST':
         groupe.delete()
-        messages.success(request, "Groupe supprimé avec succès 🗑")
+        messages.success(request, "Groupe supprimé avec succès !")
         return redirect('liste_groupes')
 
     return redirect('liste_groupes')
@@ -128,6 +128,7 @@ def detail_groupe(request, id):
     return render(request, 'groupes/detail_groupe.html', {
         'groupe': groupe
     })
+# Ajouter un membre dans un groupe
 @login_required(login_url="login")
 def ajouter_membre(request, groupe_id):
     groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
@@ -137,9 +138,10 @@ def ajouter_membre(request, groupe_id):
 
         if form.is_valid():
             membre = form.save(commit=False)
+            # Pour éviter que le membre soit crée sans groupe
             membre.groupe = groupe
 
-            # 🔐 éviter doublon
+            # éviter doublon
             if membre.utilisateur and MembreGroupe.objects.filter(utilisateur=membre.utilisateur, groupe=groupe).exists():
                 messages.error(request, "Ce membre est déjà dans le groupe")
                 return redirect('ajouter_membre', groupe_id=groupe.id)
@@ -218,7 +220,63 @@ def modifier_ordre_membre(request, id):
         'membre': membre
     })
 
-from datetime import timedelta
+@login_required(login_url="login")
+def liste_paiements_groupes_view(request):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    groupes = Groupe.objects.filter(admin=request.user).annotate(
+        total_paiements=Count('membregroupe__paiement')
+    )
+
+    return render(request, 'paiements/liste_groupes_paiements.html', {
+        'groupes': groupes
+    })
+
+@login_required(login_url="login")
+def paiements_groupe_view(request, groupe_id):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
+    paiements = Paiement.objects.filter(
+        membre__groupe=groupe
+    ).select_related('membre', 'membre__utilisateur').order_by('-date_paiement', '-id')
+
+    resume = paiements.aggregate(total_encaisse=Sum('montant'))
+    total_encaisse = resume['total_encaisse'] or 0
+    total_paiements = paiements.count()
+    total_attendu = groupe.montant_cotisation * MembreGroupe.objects.filter(groupe=groupe).count()
+
+    return render(request, 'paiements/paiements_groupe.html', {
+        'groupe': groupe,
+        'paiements': paiements,
+        'total_encaisse': total_encaisse,
+        'total_paiements': total_paiements,
+        'total_attendu': total_attendu,
+    })
+
+@login_required(login_url="login")
+def ajouter_paiement(request, groupe_id):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
+
+    if request.method == 'POST':
+        form = PaiementForm(request.POST, groupe=groupe)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Paiement enregistre avec succes")
+            return redirect('paiements_groupe', groupe_id=groupe.id)
+    else:
+        form = PaiementForm(groupe=groupe)
+
+    return render(request, 'paiements/ajouter_paiement.html', {
+        'form': form,
+        'groupe': groupe
+    })
 
 @login_required(login_url="login")
 def liste_tours_groupes_view(request):
