@@ -13,18 +13,18 @@
         <div class="row">
             {% for groupe in groupes %}
                 <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card border-left-primary shadow h-100 py-2">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div>
-                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Cotisations
                                     </div>
                                     <h5 class="mb-1 font-weight-bold text-gray-800">{{ groupe.nom }}</h5>
                                     <div class="text-muted small">{{ groupe.frequence }} • Début {{ groupe.date_debut }}</div>
                                 </div>
                                 <span class="badge badge-light px-3 py-2">
-                                    {{ groupe.total_paiements }} paiement{{ groupe.total_paiements|pluralize }}
+                                    <strong class="text-primary">{{ groupe.total_paiements }}</strong> paiement{{ groupe.total_paiements|pluralize }}
                                 </span>
                             </div>
 
@@ -33,11 +33,11 @@
                             </div>
 
                             <div class="d-flex flex-wrap">
-                                <a href="{% url 'paiements_groupe' groupe.id %}" class="btn btn-warning btn-sm mr-2 mb-2">
+                                <a href="{% url 'paiements_groupe' groupe.id %}" class="btn btn-primary btn-sm mr-2 mb-2">
                                     Voir les paiements
                                 </a>
-                                <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-outline-warning btn-sm mb-2">
-                                    Enregistrer un paiement
+                                <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-outline-primary btn-sm mb-2">
+                                    ajouter un paiement
                                 </a>
                             </div>
                         </div>
