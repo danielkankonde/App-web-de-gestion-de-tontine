@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1 class="h3 mb-4 text-gray-800">
+    Dashboard Financier
+</h1>
+
+<div class="row">
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <h6>Total attendu</h6>
+                <h4>{{ total_attendu }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <h6>Total collecté</h6>
+                <h4>{{ total_collecte }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <h6>Montant restant</h6>
+                <h4>{{ montant_restant }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <h6>Taux paiement</h6>
+                <h4>{{ taux_paiement }}%</h4>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5>Membres</h5>
+                <h2>{{ nombre_membres }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5>Tours</h5>
+                <h2>{{ nombre_tours }}</h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

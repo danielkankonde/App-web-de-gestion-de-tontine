@@ -80,36 +80,6 @@ class MembreGroupe(models.Model):
     class Meta:
         unique_together = ('utilisateur', 'groupe')
 
-
-# =====================
-# PAIEMENT
-# =====================
-class Paiement(models.Model):
-
-    membre = models.ForeignKey(
-        MembreGroupe,
-        on_delete=models.CASCADE
-    )
-
-    montant = models.DecimalField(
-        max_digits=10,
-        decimal_places=2
-    )
-
-    date_paiement = models.DateField()
-
-    statut = models.CharField(
-        max_length=20,
-        choices=[
-            ('PAYE', 'Payé'),
-            ('NON_PAYE', 'Non payé')
-        ]
-    )
-
-    def __str__(self):
-        return f'{self.membre} - Paiement : {self.montant}'
-
-
 # =====================
 # TOUR
 # =====================
@@ -132,3 +102,33 @@ class Tour(models.Model):
 
     def __str__(self):
         return f"{self.membre} - {self.date_tour}"
+
+# =====================
+# PAIEMENT
+# =====================
+class Paiement(models.Model):
+
+    membre = models.ForeignKey(
+        MembreGroupe,
+        on_delete=models.CASCADE
+    )
+
+    tour = models.ForeignKey(
+        Tour,
+        on_delete=models.CASCADE
+    )
+
+    montant = models.DecimalField(
+        max_digits=10,
+        decimal_places=2
+    )
+
+    date_paiement = models.DateField()
+
+    statut = models.CharField(
+        max_length=20,
+        choices=[
+            ('PAYE', 'Payé'),
+            ('NON_PAYE', 'Non payé')
+        ]
+    )

@@ -12,6 +12,7 @@ urlpatterns = [
     path('groupes/<int:id>/update/', update_groupe, name='update_groupe'),
     path('groupes/<int:id>/delete/', delete_groupe, name='delete_groupe'),
     path('groupes/<int:id>/', detail_groupe, name='detail_groupe'),
+    path('groupes/<int:groupe_id>/dashboard/', dashboard_financier_view,name='dashboard_financier'),
 
     path('membres/', liste_membres_view, name='liste_membres'),
     path('groupes/<int:groupe_id>/membres/', membres_groupe_view, name='membres_groupe'),

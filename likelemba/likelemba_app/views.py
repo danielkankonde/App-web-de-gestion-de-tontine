@@ -119,6 +119,63 @@ def delete_groupe(request, id):
 
     return redirect('liste_groupes')
 
+
+@login_required(login_url='login')
+def dashboard_financier_view(request, groupe_id):
+
+    groupe = get_object_or_404(
+        Groupe,
+        id=groupe_id,
+        admin=request.user
+    )
+
+    nombre_membres = MembreGroupe.objects.filter(
+        groupe=groupe
+    ).count()
+
+    nombre_tours = Tour.objects.filter(
+        groupe=groupe
+    ).count()
+
+    total_collecte = Paiement.objects.filter(
+        tour__groupe=groupe
+    ).aggregate(
+        total=Sum('montant')
+    )['total'] or 0
+
+    total_attendu = (
+        groupe.montant_cotisation *
+        nombre_membres *
+        nombre_tours
+    )
+
+    montant_restant = total_attendu - total_collecte
+
+    taux_paiement = 0
+
+    if total_attendu > 0:
+        taux_paiement = round(
+            (total_collecte / total_attendu) * 100,
+            2
+        )
+
+    context = {
+        'groupe': groupe,
+        'nombre_membres': nombre_membres,
+        'nombre_tours': nombre_tours,
+        'total_collecte': total_collecte,
+        'total_attendu': total_attendu,
+        'montant_restant': montant_restant,
+        'taux_paiement': taux_paiement,
+    }
+
+    return render(
+        request,
+        'dashboard/dashboard_financier.html',
+        context
+    )
+
+
 # Fonction pour voir detail d'un groupe
 @login_required(login_url="login")
 def detail_groupe(request, id):
@@ -267,9 +324,39 @@ def ajouter_paiement(request, groupe_id):
         form = PaiementForm(request.POST, groupe=groupe)
 
         if form.is_valid():
-            form.save()
-            messages.success(request, "Paiement enregistre avec succes")
-            return redirect('paiements_groupe', groupe_id=groupe.id)
+
+            paiement = form.save(commit=False)
+
+            tour = Tour.objects.filter(
+                membre=paiement.membre,
+                statut='EN_ATTENTE'
+            ).first()
+
+            if not tour:
+                messages.error(
+                    request,
+                    "Aucun tour en attente trouvé."
+                )
+                return redirect(
+                    'ajouter_paiement',
+                    groupe_id=groupe.id
+                )
+
+            paiement.tour = tour
+            paiement.save()
+
+            tour.statut = 'PAYE'
+            tour.save()
+
+            messages.success(
+                request,
+                "Paiement enregistré avec succès."
+            )
+
+            return redirect(
+                'paiements_groupe',
+                groupe_id=groupe.id
+            )
     else:
         form = PaiementForm(groupe=groupe)
 
