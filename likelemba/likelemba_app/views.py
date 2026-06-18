@@ -11,13 +11,16 @@ from datetime import timedelta
 @login_required
 def dashboard(request):
 
-    context = {
-        'total_utilisateurs': Utilisateur.objects.count(),
-        'total_groupes': Groupe.objects.count(),
-        'total_paiements': Paiement.objects.count(),
-        'total_tours': Tour.objects.count(),
-    }
-    return render(request, 'pages/dashboard.html', context)
+    if request.user.role == 'ADMIN':
+    
+        context = {
+            'total_utilisateurs': Utilisateur.objects.count(),
+            'total_groupes': Groupe.objects.count(),
+            'total_paiements': Paiement.objects.count(),
+            'total_tours': Tour.objects.count(),
+        }
+        return render(request, 'pages/dashboard.html', context)
+    return render(request, 'pages/dashboard_admin.html', context)
 
 @login_required(login_url="login")
 def dashboard_admin(request):
@@ -418,3 +421,19 @@ def liste_tours_view(request, groupe_id):
         'groupe': groupe,
         'tours': tours
     })
+
+
+
+@login_required
+def groupes_membre_view(request):
+
+    if request.user.role == 'ADMIN':
+        return redirect('dashboard_admin')
+
+    # Récupérer tous les groupes auxquels l'utilisateur participe
+    groupes = MembreGroupe.objects.filter(utilisateur=request.user).select_related('groupe')
+    
+    context = {
+        'groupes': groupes
+    }
+    return render(request, 'groupes/liste_groupes_membre.html', context)

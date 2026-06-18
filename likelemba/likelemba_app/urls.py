@@ -28,4 +28,5 @@ urlpatterns = [
     path('groupes/<int:groupe_id>/tours/', liste_tours_view, name='liste_tours'),
     path('groupes/<int:groupe_id>/tours/generer/', lancer_tours, name='lancer_tours'),
 
+    path('groupes/membre/', groupes_membre_view, name='liste_groupes_membre'),
 ]

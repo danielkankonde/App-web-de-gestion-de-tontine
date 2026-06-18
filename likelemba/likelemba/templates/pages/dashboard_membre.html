@@ -1,34 +1,150 @@
-{% extends 'base.html' %}
+{% extends 'base_membre.html' %}
 
 {% block content %}
 
-<h1 class="h3 mb-4 text-gray-800"><i class="fas fa-hand-holding-usd"></i>Dashboard Membre</h1>
+<div class="container-fluid">
 
-<div class="row">
+    <h1 class="h3 mb-4 text-gray-800">
+        <i class="fas fa-user"></i> Mon Espace
+    </h1>
 
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <h5>Mes Groupes</h5>
-                <p>Voir mes groupes</p>
+    <div class="row">
+
+        <!-- Mes Groupes -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users"></i> Mes Groupes
+                </div>
+
+                <div class="card-body">
+                    <p>Consultez tous les groupes auxquels vous participez.</p>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <a href="{% url 'liste_groupes_membre' %}" class="btn btn-primary btn-block">
+                        Voir mes groupes
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <h5>Paiements</h5>
-                <p>Mes cotisations</p>
+        <!-- Paiements -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-money-bill-wave"></i> Mes Paiements
+                </div>
+
+                <div class="card-body">
+                    <p>Consultez vos cotisations et paiements effectués.</p>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <a href="#" class="btn btn-success btn-block">
+                        Voir les paiements
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <h5>Tour</h5>
-                <p>Voir mon tour</p>
+
+        <!-- Mon Tour -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-calendar-check"></i> Mon Tour
+                </div>
+
+                <div class="card-body">
+                    <p>Consultez la date prévue pour recevoir votre tour.</p>
+                </div>
+
+                <div class="card-footer bg-white">
+                    <a href="#" class="btn btn-info btn-block">
+                        Voir mon tour
+                    </a>
+                </div>
             </div>
+        </div>
+
+    </div>
+
+    <!-- Deuxième ligne -->
+
+    <div class="row">
+
+        <!-- Effectuer Paiement -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning">
+                    <i class="fas fa-credit-card"></i> Effectuer un Paiement
+                </div>
+
+                <div class="card-body">
+                    Enregistrez une nouvelle cotisation pour votre groupe.
+                </div>
+
+                <div class="card-footer">
+                    <a href="#" class="btn btn-warning btn-block">
+                        Payer maintenant
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historique -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-history"></i> Mon Historique
+                </div>
+
+                <div class="card-body">
+                    Consultez l'historique complet de vos opérations.
+                </div>
+
+                <div class="card-footer">
+                    <a href="#" class="btn btn-secondary btn-block">
+                        Voir l'historique
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Activités récentes -->
+
+    <div class="card shadow mb-4">
+        <div class="card-header">
+            <h6 class="m-0 font-weight-bold text-primary">
+                Activités Récentes
+            </h6>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>12/06/2026</td>
+                        <td>Cotisation</td>
+                        <td>Paiement enregistré</td>
+                    </tr>
+
+                    <tr>
+                        <td>10/06/2026</td>
+                        <td>Tour</td>
+                        <td>Consultation du tour</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

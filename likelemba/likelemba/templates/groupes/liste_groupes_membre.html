@@ -1,0 +1,276 @@
+{% extends 'base_membre.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- En-tête avec statistiques -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-users-cog text-primary me-2"></i>Mes Groupes
+            </h1>
+            <p class="text-muted small mt-1">Gérez vos affiliations et cotisations</p>
+        </div>
+        {% if groupes %}
+        <div class="d-flex gap-2">
+            <span class="badge bg-primary bg-gradient text-white p-2">
+                <i class="fas fa-layer-group me-1"></i>{{ groupes|length }} groupe(s)
+            </span>
+            <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#filterModal">
+                <i class="fas fa-filter"></i> Filtrer
+            </button>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if groupes %}
+    <!-- Grille des groupes -->
+    <div class="row g-4">
+        {% for membre in groupes %}
+        <div class="col-lg-6 col-xl-4">
+            <div class="card shadow-sm border-0 h-100 hover-scale transition-all">
+                <!-- En-tête avec gradient -->
+                <div class="card-header bg-gradient-primary text-white border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="m-0 fw-bold">
+                            <i class="fas fa-circle text-warning me-2" style="font-size: 0.5rem;"></i>
+                            {{ membre.groupe.nom }}
+                        </h6>
+                        <span class="badge bg-light text-primary rounded-pill px-3 py-1">
+                            <i class="fas fa-users me-1"></i> Actif
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Corps de la carte -->
+                <div class="card-body p-4">
+                    <!-- Informations principales -->
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="bg-light rounded-3 p-3 text-center">
+                                <small class="text-muted d-block">Cotisation</small>
+                                <strong class="text-primary fs-5">{{ membre.groupe.montant_cotisation|floatformat:0 }}</strong>
+                                <small class="text-muted d-block">FCFA</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-light rounded-3 p-3 text-center">
+                                <small class="text-muted d-block">Fréquence</small>
+                                <span class="badge bg-info text-white">{{ membre.groupe.get_frequence_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Détails supplémentaires -->
+                    <div class="mt-3 pt-3 border-top">
+                        <div class="d-flex justify-content-between align-items-center small">
+                            <span class="text-muted">
+                                <i class="far fa-calendar-alt me-1"></i> Début :
+                            </span>
+                            <span class="fw-semibold">{{ membre.groupe.date_debut|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center small mt-1">
+                            <span class="text-muted">
+                                <i class="fas fa-clock me-1"></i> Statut :
+                            </span>
+                            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">
+                                <i class="fas fa-check-circle me-1"></i> {{ membre.groupe.statut }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-3 pt-2 border-top">
+                        <div class="btn-group w-100" role="group">
+                            <button class="btn btn-outline-primary btn-sm flex-fill">
+                                <i class="fas fa-info-circle"></i> Détails
+                            </button>
+                            <button class="btn btn-outline-success btn-sm flex-fill">
+                                <i class="fas fa-hand-holding-usd"></i> Cotiser
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm flex-fill">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pied de carte avec progression -->
+                <div class="card-footer bg-transparent border-0 pt-0 px-4 pb-3">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span class="text-muted">Progression</span>
+                        <span class="fw-semibold">75%</span>
+                    </div>
+                    <div class="progress" style="height: 4px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 75%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="mt-4 d-flex justify-content-center">
+        <nav aria-label="Navigation des groupes">
+            <ul class="pagination pagination-sm">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Précédent</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    {% else %}
+    <!-- Message vide amélioré -->
+    <div class="text-center py-5">
+        <div class="card shadow-sm border-0 mx-auto" style="max-width: 500px;">
+            <div class="card-body p-5">
+                <div class="empty-state mb-4">
+                    <i class="fas fa-users-slash fa-4x text-muted opacity-50"></i>
+                </div>
+                <h5 class="text-muted mb-3">Aucun groupe trouvé</h5>
+                <p class="text-muted small mb-4">
+                    Vous n'êtes actuellement membre d'aucun groupe.<br>
+                    Rejoignez un groupe pour commencer à cotiser.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Explorer les groupes
+                    </button>
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-plus me-1"></i> Créer un groupe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal de filtrage -->
+<div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h6 class="modal-title">
+                    <i class="fas fa-filter me-2"></i>Filtrer les groupes
+                </h6>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="small">Statut</label>
+                    <select class="form-select form-select-sm">
+                        <option>Tous</option>
+                        <option>Actif</option>
+                        <option>Inactif</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="small">Fréquence</label>
+                    <select class="form-select form-select-sm">
+                        <option>Tous</option>
+                        <option>Mensuel</option>
+                        <option>Hebdomadaire</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary btn-sm">Appliquer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles personnalisés -->
+<style>
+    /* Améliorations de transitions et animations */
+    .hover-scale {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hover-scale:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08) !important;
+    }
+    
+    /* Badges personnalisés */
+    .bg-opacity-10 {
+        --bg-opacity: 0.1;
+    }
+    
+    /* Gradient personnalisé */
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    /* Espacement des gaps */
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 1rem; }
+    .gap-4 { gap: 1.5rem; }
+    
+    /* Animation de transition */
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+    
+    /* État vide personnalisé */
+    .empty-state i {
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    /* Amélioration des badges de statut */
+    .badge.bg-success.bg-opacity-10 {
+        background-color: rgba(28, 200, 138, 0.1) !important;
+    }
+    
+    /* Style des boutons groupes */
+    .btn-group .btn {
+        border-radius: 0;
+    }
+    .btn-group .btn:first-child {
+        border-radius: 0.25rem 0 0 0.25rem;
+    }
+    .btn-group .btn:last-child {
+        border-radius: 0 0.25rem 0.25rem 0;
+    }
+    
+    /* Amélioration responsive */
+    @media (max-width: 768px) {
+        .col-6 { flex: 0 0 50%; max-width: 50%; }
+    }
+    
+    /* Style des select pour compatibilité */
+    .form-select-sm {
+        display: block;
+        width: 100%;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        border: 1px solid #d1d3e2;
+        border-radius: 0.25rem;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 8px 10px;
+        appearance: none;
+    }
+</style>
+
+{% endblock %}
