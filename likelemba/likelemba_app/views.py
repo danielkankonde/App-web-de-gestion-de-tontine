@@ -19,8 +19,8 @@ def dashboard(request):
             'total_paiements': Paiement.objects.count(),
             'total_tours': Tour.objects.count(),
         }
-        return render(request, 'pages/dashboard.html', context)
-    return render(request, 'pages/dashboard_admin.html', context)
+        return render(request, 'pages/dashboard_admin.html', context)
+    return render(request, 'pages/dashboard_membre.html')
 
 @login_required(login_url="login")
 def dashboard_admin(request):
