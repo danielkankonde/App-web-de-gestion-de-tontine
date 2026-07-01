@@ -1,124 +1,1030 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 
 <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Likelemba - Inscription</title>
 
-    <title>Inscription</title>
-
-    <!-- Fonts -->
+    <!-- Fonts & Icons -->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,600,700,800,900" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <!-- CSS -->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
 
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-dark: #5a67d8;
+            --shadow-premium: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow-card: 0 25px 80px rgba(102, 126, 234, 0.25);
+            --radius-premium: 24px;
+            --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* ===== RESET & BASE ===== */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto; /* Permet le scroll sur le body */
+        }
+
+        /* ===== ANIMATED BACKGROUND ===== */
+        body::before {
+            content: '';
+            position: fixed; /* Fixe pour ne pas bouger avec le scroll */
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05) 0%, transparent 60%),
+                        radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            animation: rotateBg 30s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* ===== PARTICLES ===== */
+        .particle {
+            position: fixed; /* Fixe pour ne pas bouger avec le scroll */
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            pointer-events: none;
+            animation: floatParticle 20s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        .particle:nth-child(1) { width: 300px; height: 300px; top: -10%; right: -5%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 200px; height: 200px; bottom: -5%; left: -5%; animation-delay: -7s; }
+        .particle:nth-child(3) { width: 150px; height: 150px; top: 30%; right: 10%; animation-delay: -14s; }
+
+        @keyframes floatParticle {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            33% { transform: translate(30px, -30px) scale(1.2); opacity: 0.6; }
+            66% { transform: translate(-20px, 20px) scale(0.8); opacity: 0.4; }
+        }
+
+        /* ===== CARD PRINCIPALE ===== */
+        .register-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            position: relative;
+            z-index: 2;
+            margin: 20px auto;
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-premium);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            transition: var(--transition-smooth);
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeUp 0.8s ease forwards;
+            max-height: 90vh; /* Limite la hauteur */
+            overflow-y: auto; /* Permet le scroll à l'intérieur de la carte */
+        }
+
+        /* Scrollbar personnalisée */
+        .register-card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .register-card::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .register-card::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .register-card::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== PANEL GAUCHE - BRANDING ===== */
+        .register-branding {
+            flex: 1 1 45%;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+            padding: 45px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            min-height: 450px;
+        }
+
+        .register-branding::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            animation: shineBrand 8s ease-in-out infinite;
+        }
+
+        @keyframes shineBrand {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            50% { transform: translate(-20px, -20px) scale(1.2); opacity: 1; }
+        }
+
+        .brand-icon {
+            font-size: 3.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            animation: pulseIcon 3s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 0 10px 0;
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-title span {
+            background: linear-gradient(135deg, #fcd34d, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 300;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            max-width: 400px;
+        }
+
+        .brand-features {
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+        }
+
+        .brand-feature:hover {
+            transform: translateX(5px);
+            color: #fff;
+        }
+
+        .brand-feature i {
+            width: 30px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        /* ===== PANEL DROIT - FORMULAIRE ===== */
+        .register-form {
+            flex: 1 1 55%;
+            padding: 40px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #ffffff;
+        }
+
+        .form-header {
+            margin-bottom: 25px;
+        }
+
+        .form-header h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* ===== CHAMPS ===== */
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            color: #9ca3af;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            width: 100%;
+            padding: 11px 14px 11px 42px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition-smooth);
+            background: #fafbfc;
+            color: #1a1a2e;
+            appearance: none;
+        }
+
+        .input-wrapper select {
+            padding-right: 40px;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239ca3af' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+        }
+
+        .input-wrapper select option {
+            padding: 10px;
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-wrapper input:focus + .input-icon,
+        .input-wrapper input:focus ~ .input-icon,
+        .input-wrapper select:focus + .input-icon {
+            color: #667eea;
+        }
+
+        .input-wrapper input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        /* Toggle password */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            transition: var(--transition-smooth);
+            font-size: 0.95rem;
+            z-index: 2;
+        }
+
+        .toggle-password:hover {
+            color: #667eea;
+        }
+
+        /* ===== FILE UPLOAD ===== */
+        .file-upload-wrapper {
+            position: relative;
+        }
+
+        .file-upload-wrapper .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            padding: 11px 14px 11px 42px;
+            border: 2px dashed #e5e7eb;
+            border-radius: 12px;
+            background: #fafbfc;
+            width: 100%;
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            color: #6b7280;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+
+        .file-upload-wrapper input[type="file"]:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .file-upload-wrapper input[type="file"]::file-selector-button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            margin-right: 12px;
+            transition: var(--transition-smooth);
+        }
+
+        .file-upload-wrapper input[type="file"]::file-selector-button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* ===== ROW ===== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+        }
+
+        /* ===== BOUTON ===== */
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-register:active {
+            transform: scale(0.98);
+        }
+
+        .btn-register .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-register.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-register.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== SEPARATEUR ===== */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #9ca3af;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        .divider::before { margin-right: 14px; }
+        .divider::after { margin-left: 14px; }
+
+        /* ===== LIENS ===== */
+        .login-link {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        .login-link a:hover {
+            color: #5a67d8;
+            text-decoration: underline;
+        }
+
+        .forgot-link {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        .forgot-link a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .forgot-link a:hover {
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        /* ===== MESSAGES ===== */
+        .alert {
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .alert i {
+            font-size: 1.1rem;
+        }
+
+        .alert .close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: inherit;
+            opacity: 0.6;
+            cursor: pointer;
+            padding: 0 4px;
+        }
+
+        .alert .close:hover {
+            opacity: 1;
+        }
+
+        /* ===== VALIDATION ===== */
+        .input-wrapper.error input,
+        .input-wrapper.error select {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .input-wrapper.error .input-icon {
+            color: #dc2626;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.75rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .input-wrapper.error + .error-message {
+            display: block;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .register-branding {
+                flex: 1 1 100%;
+                min-height: 200px;
+                padding: 35px 30px;
+            }
+
+            .register-form {
+                flex: 1 1 100%;
+                padding: 30px 25px;
+            }
+
+            .brand-title { font-size: 2rem; }
+            .brand-features { margin-top: 20px; }
+            .brand-feature { font-size: 0.8rem; }
+            .register-card { max-height: 95vh; }
+        }
+
+        @media (max-width: 576px) {
+            body { padding: 10px; }
+            
+            .register-card { border-radius: 16px; max-height: 98vh; }
+            
+            .register-branding {
+                padding: 25px 20px;
+                min-height: 160px;
+            }
+
+            .register-form {
+                padding: 20px 16px;
+            }
+
+            .brand-title { font-size: 1.6rem; }
+            .brand-subtitle { font-size: 0.85rem; }
+            .brand-features { display: none; }
+            .brand-icon { font-size: 2.8rem; }
+
+            .form-header h2 { font-size: 1.3rem; }
+
+            .input-wrapper input,
+            .input-wrapper select {
+                padding: 10px 12px 10px 38px;
+                font-size: 0.85rem;
+            }
+
+            .file-upload-wrapper input[type="file"] {
+                padding: 10px 12px 10px 38px;
+                font-size: 0.8rem;
+            }
+
+            .file-upload-wrapper input[type="file"]::file-selector-button {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .btn-register {
+                padding: 12px;
+                font-size: 0.9rem;
+            }
+
+            .photo-preview {
+                width: 50px;
+                height: 50px;
+            }
+        }
+
+        /* ===== ANIMATION ENTREE ===== */
+        .register-branding > * {
+            opacity: 0;
+            animation: fadeIn 0.8s ease 0.3s forwards;
+        }
+
+        .register-branding > *:nth-child(2) { animation-delay: 0.4s; }
+        .register-branding > *:nth-child(3) { animation-delay: 0.5s; }
+        .register-branding > *:nth-child(4) { animation-delay: 0.6s; }
+
+        .register-form > * {
+            opacity: 0;
+            animation: fadeIn 0.6s ease 0.5s forwards;
+        }
+
+        .register-form > *:nth-child(2) { animation-delay: 0.6s; }
+        .register-form > *:nth-child(3) { animation-delay: 0.7s; }
+        .register-form > *:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* ===== PREVIEW PHOTO ===== */
+        .photo-preview {
+            display: none;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: 8px;
+            border: 3px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .photo-preview.show {
+            display: inline-block;
+            animation: fadeIn 0.3s ease;
+        }
+    </style>
 </head>
 
-<body class="bg-gradient-primary">
+<body>
 
-<div class="container">
+    <!-- ===== PARTICLES ===== -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
 
-    <div class="card o-hidden border-0 shadow-lg my-5">
-        <div class="card-body p-0">
+    <div class="register-wrapper">
+        <div class="register-card">
 
-            <div class="row">
-                <div class="col-lg-5 d-none d-lg-block bg-register-image"></div>
-
-                <div class="col-lg-7">
-                    <div class="p-5">
-
-                        <div class="text-center">
-                            <h1 class="h4 text-gray-900 mb-4">Créer un compte</h1>
-                        </div>
-                        {% if error %}
-                            <div class="alert alert-danger text-center">
-                                {{ error }}
-                            </div>
-                        {% endif %}
-
-                        <!-- 🔥 FORM DJANGO -->
-                        <form method="POST" enctype="multipart/form-data" class="user">
-                            {% csrf_token %}
-
-                            <div class="form-group row">
-                                <div class="col-sm-6 mb-3">
-                                    <input type="text" name="username"
-                                        class="form-control form-control-user"
-                                        placeholder="Nom d'utilisateur" required>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <input type="text" name="telephone"
-                                        class="form-control form-control-user"
-                                        placeholder="Téléphone">
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="email" name="email"
-                                       class="form-control form-control-user"
-                                       placeholder="Adresse email" required>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-sm-6 mb-3">
-                                    <input type="password" name="password"
-                                        class="form-control form-control-user"
-                                        placeholder="Mot de passe" required>
-                                </div>
-
-                                <div class="col-sm-6">
-                                    <input type="password" name="confirm_password"
-                                        class="form-control form-control-user"
-                                        placeholder="Confirmer mot de passe" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <select name="role" class="form-control">
-                                    <option value="MEMBRE">Membre</option>
-                                    <option value="ADMIN">Admin (Maman Likelemba)</option>
-                                </select>
-                            </div>
-
-                            <!-- 📸 Upload image -->
-                            <div class="form-group">
-                                <input type="file" name="photo"
-                                    class="form-control">
-                            </div>
-
-                            <button type="submit"
-                                    class="btn btn-primary btn-user btn-block">
-                                S'inscrire
-                            </button>
-
-                        </form>
-
-                        <hr>
-
-                        <div class="text-center">
-                            <a class="small" href="#">Mot de passe oublié ?</a>
-                        </div>
-
-                        <div class="text-center">
-                            <a class="small" href="{% url 'login' %}">
-                                Avez-vous un compte ? Connexion
-                            </a>
-                        </div>
-
+            <!-- ===== PANEL GAUCHE ===== -->
+            <div class="register-branding">
+                <div class="brand-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h1 class="brand-title">Like<span>lemba</span></h1>
+                <p class="brand-subtitle">
+                    Rejoignez la communauté Likelemba et gérez vos cotisations en toute simplicité.
+                </p>
+                <div class="brand-features">
+                    <div class="brand-feature">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <span>Épargnez ensemble facilement</span>
+                    </div>
+                    <div class="brand-feature">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Suivez vos cotisations en direct</span>
+                    </div>
+                    <div class="brand-feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Plateforme sécurisée et fiable</span>
                     </div>
                 </div>
+            </div>
+
+            <!-- ===== PANEL DROIT ===== -->
+            <div class="register-form">
+
+                <div class="form-header">
+                    <h2>Créer un compte</h2>
+                    <p>Rejoignez Likelemba en quelques clics</p>
+                </div>
+
+                <!-- ===== MESSAGES ===== -->
+                {% if error %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fermer">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
+
+                <!-- ===== FORMULAIRE ===== -->
+                <form method="POST" enctype="multipart/form-data" id="registerForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- Row: Username + Téléphone -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="username">Nom d'utilisateur</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" 
+                                       name="username" 
+                                       id="username"
+                                       placeholder="Entrez votre nom"
+                                       autocomplete="username"
+                                       required>
+                            </div>
+                            <div class="error-message">Veuillez saisir un nom d'utilisateur</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telephone">Téléphone</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="tel" 
+                                       name="telephone" 
+                                       id="telephone"
+                                       placeholder="Entrez votre téléphone"
+                                       autocomplete="tel">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="email">Adresse email</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" 
+                                   name="email" 
+                                   id="email"
+                                   placeholder="exemple@email.com"
+                                   autocomplete="email"
+                                   required>
+                        </div>
+                        <div class="error-message">Veuillez saisir une adresse email valide</div>
+                    </div>
+
+                    <!-- Row: Password + Confirm -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" 
+                                       name="password" 
+                                       id="password"
+                                       placeholder="Créez un mot de passe"
+                                       autocomplete="new-password"
+                                       required>
+                                <button type="button" class="toggle-password" data-target="password" aria-label="Afficher le mot de passe">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="error-message">Veuillez saisir un mot de passe</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirmer le mot de passe</label>
+                            <div class="input-wrapper">
+                                <i class="fas fa-check-circle input-icon"></i>
+                                <input type="password" 
+                                       name="confirm_password" 
+                                       id="confirm_password"
+                                       placeholder="Confirmez votre mot de passe"
+                                       autocomplete="new-password"
+                                       required>
+                                <button type="button" class="toggle-password" data-target="confirm_password" aria-label="Afficher le mot de passe">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="error-message">Les mots de passe ne correspondent pas</div>
+                        </div>
+                    </div>
+
+                    <!-- Rôle -->
+                    <div class="form-group">
+                        <label for="role">Rôle</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user-tag input-icon"></i>
+                            <select name="role" id="role">
+                                <option value="MEMBRE">Membre</option>
+                                <option value="ADMIN">Admin (Maman Likelemba)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Photo -->
+                    <div class="form-group">
+                        <label for="photo">Photo de profil</label>
+                        <div class="file-upload-wrapper">
+                            <i class="fas fa-camera input-icon"></i>
+                            <input type="file" 
+                                   name="photo" 
+                                   id="photo"
+                                   accept="image/*">
+                        </div>
+                        <img id="photoPreview" class="photo-preview" alt="Aperçu de la photo">
+                    </div>
+
+                    <!-- Bouton -->
+                    <button type="submit" class="btn-register" id="registerBtn">
+                        <span class="btn-text">
+                            <i class="fas fa-user-plus"></i> S'inscrire
+                        </span>
+                        <span class="spinner"></span>
+                    </button>
+                </form>
+
+                <!-- ===== SEPARATEUR ===== -->
+                <div class="divider">DÉJÀ UN COMPTE ?</div>
+
+                <!-- ===== LIENS ===== -->
+                <p class="login-link">
+                    <a href="{% url 'login' %}">
+                        <i class="fas fa-arrow-right-to-bracket"></i> Connectez-vous ici
+                    </a>
+                </p>
             </div>
 
         </div>
     </div>
 
-</div>
+    <!-- ===== SCRIPTS ===== -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
-<!-- JS -->
-{% include 'components/scripts.html' %}
+    <script>
+        (function() {
+            'use strict';
+
+            // ===== TOGGLE PASSWORD =====
+            document.querySelectorAll('.toggle-password').forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetId = this.dataset.target;
+                    const input = document.getElementById(targetId);
+                    if (input) {
+                        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                        input.setAttribute('type', type);
+                        this.querySelector('i').classList.toggle('fa-eye');
+                        this.querySelector('i').classList.toggle('fa-eye-slash');
+                    }
+                });
+            });
+
+            // ===== PHOTO PREVIEW =====
+            const photoInput = document.getElementById('photo');
+            const photoPreview = document.getElementById('photoPreview');
+
+            if (photoInput && photoPreview) {
+                photoInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            photoPreview.src = e.target.result;
+                            photoPreview.classList.add('show');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        photoPreview.classList.remove('show');
+                        photoPreview.src = '';
+                    }
+                });
+            }
+
+            // ===== VALIDATION FORMULAIRE =====
+            const form = document.getElementById('registerForm');
+            const username = document.getElementById('username');
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+            const registerBtn = document.getElementById('registerBtn');
+
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    let isValid = true;
+
+                    // Username
+                    if (!username.value.trim()) {
+                        username.closest('.input-wrapper').classList.add('error');
+                        isValid = false;
+                    } else {
+                        username.closest('.input-wrapper').classList.remove('error');
+                    }
+
+                    // Email
+                    if (!validateEmail(email.value.trim())) {
+                        email.closest('.input-wrapper').classList.add('error');
+                        isValid = false;
+                    } else {
+                        email.closest('.input-wrapper').classList.remove('error');
+                    }
+
+                    // Password
+                    if (password.value.length < 6) {
+                        password.closest('.input-wrapper').classList.add('error');
+                        isValid = false;
+                    } else {
+                        password.closest('.input-wrapper').classList.remove('error');
+                    }
+
+                    // Confirm Password
+                    if (confirmPassword.value !== password.value) {
+                        confirmPassword.closest('.input-wrapper').classList.add('error');
+                        isValid = false;
+                    } else {
+                        confirmPassword.closest('.input-wrapper').classList.remove('error');
+                    }
+
+                    if (!isValid) {
+                        e.preventDefault();
+                        const firstError = document.querySelector('.input-wrapper.error');
+                        if (firstError) {
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            firstError.querySelector('input, select').focus();
+                        }
+                        return;
+                    }
+
+                    // ===== LOADING STATE =====
+                    registerBtn.classList.add('loading');
+                    registerBtn.disabled = true;
+                });
+            }
+
+            // ===== SUPPRESSION ERREUR AU CHANGEMENT =====
+            document.querySelectorAll('.input-wrapper input, .input-wrapper select').forEach(input => {
+                input.addEventListener('input', function() {
+                    this.closest('.input-wrapper').classList.remove('error');
+                });
+                input.addEventListener('change', function() {
+                    this.closest('.input-wrapper').classList.remove('error');
+                });
+            });
+
+            // ===== AUTO-DISMISS ALERTS =====
+            document.querySelectorAll('.alert').forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            });
+
+        })();
+    </script>
+
 </body>
 </html>
