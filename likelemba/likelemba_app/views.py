@@ -422,7 +422,7 @@ def liste_tours_view(request, groupe_id):
         'tours': tours
     })
 
-
+# Vues pour les utilisateurs membres
 
 @login_required
 def groupes_membre_view(request):
@@ -437,3 +437,23 @@ def groupes_membre_view(request):
         'groupes': groupes
     }
     return render(request, 'groupes/liste_groupes_membre.html', context)
+
+# Vues pour voir les paiements des membres 
+@login_required(login_url='login')
+def paiements_membre_view(request):
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    paiements = Paiement.objects.filter(
+        membre__utilisateur=request.user
+    ).select_related('membre', 'membre__groupe').order_by('-date_paiement', '-id')
+
+    total_encaisse = paiements.aggregate(total=Sum('montant'))['total'] or 0
+    nombre_paiements = paiements.count()
+
+    context = {
+        'paiements': paiements,
+        'total_encaisse': total_encaisse,
+        'nombre_paiements': nombre_paiements,
+    }
+    return render(request, 'paiements/liste_paiements_membre.html', context)

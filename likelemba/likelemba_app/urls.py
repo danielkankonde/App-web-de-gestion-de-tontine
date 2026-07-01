@@ -27,6 +27,7 @@ urlpatterns = [
     path('tours/', liste_tours_groupes_view, name='liste_groupes_tours'),
     path('groupes/<int:groupe_id>/tours/', liste_tours_view, name='liste_tours'),
     path('groupes/<int:groupe_id>/tours/generer/', lancer_tours, name='lancer_tours'),
-
+    # Urls pour membres
     path('groupes/membre/', groupes_membre_view, name='liste_groupes_membre'),
+    path('paiements/membre/', paiements_membre_view, name='liste_paiements_membre'),
 ]

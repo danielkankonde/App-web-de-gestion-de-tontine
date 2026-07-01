@@ -5,7 +5,7 @@
 <div class="container-fluid">
 
     <h1 class="h3 mb-4 text-gray-800">
-        <i class="fas fa-user"></i> Mon Espace
+        <i class="fas fa-user"></i> <strong>Bonjour ! {{ request.user.username }}</strong> 
     </h1>
 
     <div class="row">
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="card-footer bg-white">
-                    <a href="#" class="btn btn-success btn-block">
+                    <a href="{% url 'liste_paiements_membre' %}" class="btn btn-success btn-block">
                         Voir les paiements
                     </a>
                 </div>
