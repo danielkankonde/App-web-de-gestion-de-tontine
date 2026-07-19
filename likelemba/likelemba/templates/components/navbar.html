@@ -1,39 +1,88 @@
 {% load static %}
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-0 static-top shadow-sm">
 
-    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-        <i class="fa fa-bars"></i>
+    <!-- ===== TOGGLE MOBILE ===== -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3" style="color: #64748b; font-size: 1.2rem; padding: 4px 8px;">
+        <i class="fas fa-bars"></i>
     </button>
 
-    <form class="d-none d-sm-inline-block form-inline mr-auto">
-        <input type="text" class="form-control bg-light small" placeholder="Search...">
+    <!-- ===== LOGO MOBILE ===== -->
+    <a class="navbar-brand d-md-none" href="#" style="font-weight: 700; color: #1e293b; font-size: 1rem;">
+        <i class="fas fa-hand-holding-usd" style="color: #4f46e5;"></i> Likelemba
+    </a>
+
+    <!-- ===== SEARCH BAR ===== -->
+    <form class="d-none d-sm-inline-block form-inline mr-auto my-2 my-md-0">
+        <div class="search-wrapper">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="form-control" placeholder="Rechercher...">
+        </div>
     </form>
 
-    <ul class="navbar-nav ml-auto">
+    <!-- ===== NAVBAR RIGHT ===== -->
+    <ul class="navbar-nav ml-auto align-items-center" style="flex-direction: row; gap: 2px;">
 
-        <li class="nav-item dropdown no-arrow mx-1">
-            <a class="nav-link" href="#">
-                <i class="fas fa-bell fa-fw"></i>
+        <!-- Notifications -->
+        <li class="nav-item">
+            <a class="nav-link" href="#" role="button" style="position: relative;">
+                <i class="fas fa-bell fa-fw" style="font-size: 1.1rem;"></i>
+                <span class="badge-dot"></span>
             </a>
         </li>
 
-        <li class="nav-item dropdown no-arrow mx-1">
-            <a class="nav-link" href="#">
-                <i class="fas fa-envelope fa-fw"></i>
+        <!-- Messages -->
+        <li class="nav-item">
+            <a class="nav-link" href="#" role="button" style="position: relative;">
+                <i class="fas fa-envelope fa-fw" style="font-size: 1.1rem;"></i>
+                <span class="badge-dot blue"></span>
             </a>
         </li>
 
         <div class="topbar-divider d-none d-sm-block"></div>
 
-        <li class="nav-item dropdown no-arrow">
-            <a class="nav-link dropdown-toggle" href="#">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ request.user.username }}</span>
+        <!-- ===== USER PROFILE ===== -->
+        <li class="nav-item">
+            <a class="nav-link dropdown-toggle user-profile" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {% if request.user.photo %}
-                    <img class="img-profile rounded-circle" src="{{ request.user.photo.url }}" width="40px">
+                    <img src="{{ request.user.photo.url }}" alt="Photo de profil">
                 {% else %}
-                    <img src="{% static 'img/undraw_profile_2.svg' %}" alt="" width="40px">      
+                    <img src="{% static 'img/undraw_profile_2.svg' %}" alt="Photo de profil">
                 {% endif %}
+                <div class="user-info d-none d-lg-block">
+                    <span class="user-name">{{ request.user.username }}</span>
+                    <span class="user-role">
+                        <i class="fas fa-circle" style="color: #22c55e;"></i>
+                        {{ request.user.get_role_display }}
+                    </span>
+                </div>
+                <i class="fas fa-chevron-down chevron"></i>
             </a>
+
+            <!-- ===== DROPDOWN MENU ===== -->
+            <div class="dropdown-menu dropdown-menu-right shadow-lg border-0" 
+                 aria-labelledby="userDropdown" 
+                 style="border-radius: 12px; padding: 6px; min-width: 200px; margin-top: 8px;">
+                
+                <a class="dropdown-item" href="#" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
+                    <i class="fas fa-user fa-sm fa-fw me-2 text-primary"></i>
+                    Mon Profil
+                </a>
+                <a class="dropdown-item" href="#" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
+                    <i class="fas fa-cogs fa-sm fa-fw me-2 text-warning"></i>
+                    Paramètres
+                </a>
+                <a class="dropdown-item" href="#" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
+                    <i class="fas fa-life-ring fa-sm fa-fw me-2 text-info"></i>
+                    Aide
+                </a>
+                <div class="dropdown-divider" style="margin: 4px 8px;"></div>
+                <a class="dropdown-item text-danger" href="#" 
+                    data-toggle="modal" data-target="#logoutModal"
+                    style="border-radius: 8px; padding: 8px 14px; font-weight: 600; font-size: 0.85rem;">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw me-2"></i>
+                    Déconnexion
+                </a>
+            </div>
         </li>
 
     </ul>

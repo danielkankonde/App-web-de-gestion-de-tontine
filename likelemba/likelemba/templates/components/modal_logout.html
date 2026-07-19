@@ -1,20 +1,32 @@
-<div class="modal fade" id="logoutModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
+<div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content modern">
             <div class="modal-header">
-                <h5>Ready to Leave?</h5>
+                <div class="modal-title h5 fw-bold" style="color: #1e293b; font-size: 1.1rem;">
+                    <i class="fas fa-sign-out-alt text-danger me-2"></i>Déconnexion
+                </div>
+                <button type="button" class="btn-close-modern" data-dismiss="modal" aria-label="Fermer">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-
-            <div class="modal-body">
-                Logout confirmation
+            <div class="modal-body text-center py-4">
+                <div style="width: 56px; height: 56px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;">
+                    <i class="fas fa-question-circle text-danger" style="font-size: 1.6rem;"></i>
+                </div>
+                <h6 style="color: #1e293b; font-weight: 600; font-size: 0.95rem;">Voulez-vous vraiment quitter ?</h6>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin: 4px 0 0;">Vous serez déconnecté de votre session</p>
             </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="#">Logout</a>
+            <div class="modal-footer justify-content-center gap-2">
+                <button class="btn btn-light" data-dismiss="modal" style="padding: 8px 28px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; border: 1px solid #e2e8f0;">
+                    Annuler
+                </button>
+                <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" style="padding: 8px 28px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; background: #ef4444; border: none;">
+                        <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                    </button>
+                </form>
             </div>
-
         </div>
     </div>
 </div>

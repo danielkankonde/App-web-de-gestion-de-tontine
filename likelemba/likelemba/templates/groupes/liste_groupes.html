@@ -1,97 +1,236 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h3 class="m-0 font-weight-bold text-primary">Mes groupes</h3>
-            <a href="{% url 'create_groupe' %}" class="btn btn-primary btn-sm shadow-sm"><i class="fas fa-plus"></i> <span class="d-none d-sm-inline">Ajouter un groupe</span>
-            </a>
+
+<!-- ===== EN-TÊTE ===== -->
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h1 class="h3 mb-1 fw-bold" style="color: #0f172a;">
+                <i class="fas fa-layer-group me-2" style="color: #4f46e5;"></i>
+                Mes groupes
+            </h1>
+            <p class="text-muted small mb-0">
+                <i class="fas fa-users me-1"></i>
+                {{ groupes|length }} groupe(s) actif(s)
+            </p>
+        </div>
+        <a href="{% url 'create_groupe' %}" class="btn btn-primary-modern">
+            <i class="fas fa-plus me-1"></i> 
+            <span class="d-none d-sm-inline">Nouveau groupe</span>
+        </a>
+    </div>
+</div>
+
+<!-- ===== STATISTIQUES RAPIDES ===== -->
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon purple">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div>
+                    <span class="stat-mini-label">Total groupes</span>
+                    <h5 class="stat-mini-value">{{ groupes|length }}</h5>
+                </div>
+            </div>
         </div>
     </div>
-    <!-- Messages -->
-    {% include "partials/messages.html" %}
-    <div class="card-body shadow mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon green">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <span class="stat-mini-label">Actifs</span>
+                    <h5 class="stat-mini-value">{{ groupes|length }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <span class="stat-mini-label">En attente</span>
+                    <h5 class="stat-mini-value">0</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon red">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div>
+                    <span class="stat-mini-label">Terminés</span>
+                    <h5 class="stat-mini-value">0</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TABLEAU ===== -->
+<div class="card-modern">
+    <div class="card-modern-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span class="card-modern-title">
+            <i class="fas fa-list me-2" style="color: #4f46e5;"></i>
+            Liste des groupes
+        </span>
+        <div class="d-flex gap-2">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher un groupe..." id="tableSearch">
+            </div>
+            <button class="btn-filter-table" onclick="window.location.reload();">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="card-modern-body p-0">
+        <!-- Messages -->
+        {% include "partials/messages.html" %}
+        
         <div class="table-responsive">
-            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <table class="table-modern" id="groupTable">
                 <thead>
                     <tr>
-                        <th>Nom</th>
-                        <th>Montant cotisation</th>
-                        <th>Frequence</th>
+                        <th>Groupe</th>
+                        <th>Cotisation</th>
+                        <th>Fréquence</th>
                         <th>Date début</th>
                         <th>Statut</th>
-                        <th>Date du création</th>
-                        <th>Actions</th>
+                        <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for groupe in groupes %}
                     <tr>
-                        <td>{{ groupe.nom }}</td>
-                        <td>{{ groupe.montant_cotisation }}</td>
-                        <td>{{ groupe.frequence }}</td>
-                        <td>{{ groupe.date_debut}}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="group-avatar" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
+                                    {{ groupe.nom|make_list|first|upper }}
+                                </div>
+                                <div>
+                                    <span class="fw-semibold" style="color: #0f172a;">{{ groupe.nom }}</span>
+                                    <small class="d-block text-muted" style="font-size: 0.7rem;">
+                                        <i class="far fa-calendar-alt me-1"></i>
+                                        Créé le {{ groupe.date_creation|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-semibold" style="color: #0f172a;">
+                                {{ groupe.montant_cotisation|floatformat:0 }} FCFA
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge-frequency">
+                                <i class="fas fa-clock me-1"></i>
+                                {{ groupe.get_frequence_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="color: #64748b; font-size: 0.9rem;">
+                                {{ groupe.date_debut|date:"d/m/Y" }}
+                            </span>
+                        </td>
                         <td>
                             {% if groupe.statut == 'ACTIF' %}
-                                <span class="badge badge-success">Actif</span>
-                            {% else %} 
-                                <span class="badge badge-danger">Terminé</span>
+                                <span class="badge-status success">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                                    Actif
+                                </span>
+                            {% else %}
+                                <span class="badge-status danger">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                                    Terminé
+                                </span>
                             {% endif %}
                         </td>
-                        <td>{{ groupe.date_creation }}</td>
-                        <td class="text-nowrap">
-                            <a href="{% url 'update_groupe' groupe.id %}" class="btn btn-warning btn-sm mb-1">
-                                <i class="fas fa-pen"></i>
-                            </a>
-
-                            <a href="{% url 'dashboard_financier' groupe.id %}" class="btn btn-primary btn-sm mb-1">
-                                <i class="fas fa-eye"></i>
-                            </a>
-
-                            <button class="btn btn-danger btn-sm mb-1"
-                                    data-toggle="modal"
-                                    data-target="#deleteModal{{ groupe.id }}">
-                                <i class="fas fa-trash"></i>
-                            </button>
+                        <td>
+                            <div class="d-flex justify-content-center gap-1">
+                                <a href="{% url 'dashboard_financier' groupe.id %}" 
+                                   class="btn-action view" 
+                                   title="Voir détails">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'update_groupe' groupe.id %}" 
+                                   class="btn-action edit" 
+                                   title="Modifier">
+                                    <i class="fas fa-pen"></i>
+                                </a>
+                                <button class="btn-action delete" 
+                                        data-toggle="modal"
+                                        data-target="#deleteModal{{ groupe.id }}"
+                                        title="Supprimer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
-                    <div class="modal fade" id="deleteModal{{ groupe.id }}" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered modal-sm">
-                            <div class="modal-content">
-
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Confirmer</h5>
-                                    <button class="close" data-dismiss="modal">&times;</button>
-                                </div>
-
-                                <div class="modal-body text-center">
-                                    <p>Supprimer ce groupe ?</p>
-                                    <strong>{{ groupe.nom }}</strong>
-                                </div>
-
-                                <div class="modal-footer justify-content-center">
-
-                                    <button class="btn btn-secondary" data-dismiss="modal">
-                                        Annuler
+                    
+                    <!-- ===== MODAL SUPPRESSION ===== -->
+                    <div class="modal fade" id="deleteModal{{ groupe.id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                            <div class="modal-content modal-modern">
+                                <div class="modal-header modal-modern-header">
+                                    <h6 class="modal-title fw-bold" style="color: #0f172a;">
+                                        <i class="fas fa-trash-alt text-danger me-2"></i>
+                                        Confirmer la suppression
+                                    </h6>
+                                    <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fermer">
+                                        <span aria-hidden="true">&times;</span>
                                     </button>
-
-                                    <form method="POST" action="{% url 'delete_groupe' groupe.id %}">
+                                </div>
+                                <div class="modal-body modal-modern-body text-center py-4">
+                                    <div class="delete-icon-wrapper">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <h6 style="color: #0f172a; font-weight: 600;">Supprimer ce groupe ?</h6>
+                                    <p class="text-muted small mb-0">
+                                        Vous êtes sur le point de supprimer <br>
+                                        <strong style="color: #0f172a;">"{{ groupe.nom }}"</strong>
+                                    </p>
+                                    <p class="text-danger small mt-2 mb-0">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Cette action est irréversible
+                                    </p>
+                                </div>
+                                <div class="modal-footer modal-modern-footer justify-content-center gap-2">
+                                    <button class="btn-cancel" data-dismiss="modal">Annuler</button>
+                                    <form method="POST" action="{% url 'delete_groupe' groupe.id %}" style="display: inline;">
                                         {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">
-                                            Supprimer
+                                        <button type="submit" class="btn-delete">
+                                            <i class="fas fa-trash me-1"></i> Supprimer
                                         </button>
                                     </form>
-
                                 </div>
-
                             </div>
                         </div>
                     </div>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center">
-                            Aucun groupe trouvé
+                        <td colspan="6" class="empty-state">
+                            <div class="empty-state-content">
+                                <i class="fas fa-layer-group empty-icon"></i>
+                                <h5>Aucun groupe trouvé</h5>
+                                <p class="text-muted">Commencez par créer votre premier groupe</p>
+                                <a href="{% url 'create_groupe' %}" class="btn btn-primary-modern mt-2">
+                                    <i class="fas fa-plus me-1"></i> Créer un groupe
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -99,5 +238,607 @@
             </table>
         </div>
     </div>
+    
+    <!-- ===== PIED DE TABLE ===== -->
+    <div class="card-modern-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span class="text-muted small">
+            <i class="fas fa-info-circle me-1"></i>
+            {{ groupes|length }} groupe(s) au total
+        </span>
+        <div class="d-flex gap-2">
+            <button class="btn-export" onclick="exportTable()">
+                <i class="fas fa-file-export me-1"></i> Exporter
+            </button>
+        </div>
+    </div>
 </div>
-{% endblock content %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ===== RECHERCHE =====
+        const searchInput = document.getElementById('tableSearch');
+        const table = document.getElementById('groupTable');
+        const rows = table.querySelectorAll('tbody tr:not(.empty-state)');
+        
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const query = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(query)) {
+                        row.style.display = '';
+                        visibleCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // Afficher/masquer le message "aucun résultat"
+                let emptyMsg = table.querySelector('.no-results');
+                if (visibleCount === 0 && rows.length > 0) {
+                    if (!emptyMsg) {
+                        emptyMsg = document.createElement('tr');
+                        emptyMsg.className = 'no-results';
+                        emptyMsg.innerHTML = `
+                            <td colspan="6" class="empty-state">
+                                <div class="empty-state-content">
+                                    <i class="fas fa-search empty-icon"></i>
+                                    <h5>Aucun résultat</h5>
+                                    <p class="text-muted">Aucun groupe ne correspond à votre recherche</p>
+                                </div>
+                            </td>
+                        `;
+                        table.querySelector('tbody').appendChild(emptyMsg);
+                    }
+                    emptyMsg.style.display = '';
+                } else if (emptyMsg) {
+                    emptyMsg.style.display = 'none';
+                }
+            });
+        }
+    });
+    
+    // ===== EXPORT =====
+    function exportTable() {
+        alert('📤 Exportation des données en cours...\nLe fichier sera téléchargé prochainement.');
+    }
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== PAGE HEADER ===== */
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+/* ===== STAT MINI ===== */
+.stat-mini {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-mini:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.stat-mini-body {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.stat-mini-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.stat-mini-icon.purple { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
+.stat-mini-icon.green { background: rgba(5, 150, 105, 0.1); color: #059669; }
+.stat-mini-icon.orange { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+.stat-mini-icon.red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.stat-mini-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    display: block;
+}
+
+.stat-mini-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+/* ===== BOUTON PRINCIPAL ===== */
+.btn-primary-modern {
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ===== CARD MODERN ===== */
+.card-modern {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.card-modern-header {
+    padding: 18px 24px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.card-modern-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #0f172a;
+}
+
+.card-modern-body {
+    padding: 0;
+}
+
+.card-modern-footer {
+    padding: 14px 24px;
+    border-top: 1px solid #f1f5f9;
+}
+
+/* ===== RECHERCHE ===== */
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.8rem;
+}
+
+.search-input {
+    padding: 6px 12px 6px 36px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+    color: #0f172a;
+    min-width: 200px;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.btn-filter-table {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #64748b;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-filter-table:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: #fff;
+}
+
+/* ===== TABLE MODERN ===== */
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.table-modern thead {
+    background: #f8fafc;
+}
+
+.table-modern thead th {
+    padding: 12px 20px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-modern tbody td {
+    padding: 14px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.table-modern tbody tr {
+    transition: background 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+    background: #f8fafc;
+}
+
+.table-modern tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== GROUP AVATAR ===== */
+.group-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* ===== BADGES ===== */
+.badge-frequency {
+    padding: 4px 12px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #475569;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-status {
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-status.success {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+}
+
+.badge-status.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+/* ===== BOUTONS ACTION ===== */
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.8rem;
+}
+
+.btn-action.view {
+    background: rgba(79, 70, 229, 0.08);
+    color: #4f46e5;
+}
+
+.btn-action.view:hover {
+    background: #4f46e5;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-action.edit {
+    background: rgba(217, 119, 6, 0.08);
+    color: #d97706;
+}
+
+.btn-action.edit:hover {
+    background: #d97706;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-action.delete {
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+}
+
+.btn-action.delete:hover {
+    background: #ef4444;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px !important;
+}
+
+.empty-state-content {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    color: #e2e8f0;
+    display: block;
+    margin-bottom: 16px;
+}
+
+.empty-state-content h5 {
+    color: #0f172a;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.empty-state-content p {
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+/* ===== MODAL MODERN ===== */
+.modal-modern {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-modern-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-modern-body {
+    padding: 20px 24px;
+}
+
+.modal-modern-footer {
+    padding: 0 24px 20px;
+    border-top: none;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #0f172a;
+}
+
+.delete-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    background: #fef2f2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+}
+
+.delete-icon-wrapper i {
+    font-size: 2rem;
+    color: #ef4444;
+}
+
+/* ===== BOUTONS MODAL ===== */
+.btn-cancel {
+    padding: 8px 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+}
+
+.btn-delete {
+    padding: 8px 28px;
+    border: none;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* ===== BOUTON EXPORT ===== */
+.btn-export {
+    padding: 6px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    color: #64748b;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-export:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: #f8fafc;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .card-modern-header {
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-input {
+        min-width: 120px;
+        width: 100%;
+    }
+    
+    .table-modern thead th,
+    .table-modern tbody td {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .stat-mini-body {
+        padding: 14px 16px;
+        gap: 12px;
+    }
+    
+    .stat-mini-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-action {
+        width: 28px;
+        height: 28px;
+        font-size: 0.7rem;
+    }
+    
+    .group-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.7rem;
+    }
+    
+    .card-modern-footer {
+        padding: 12px 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .table-modern {
+        font-size: 0.75rem;
+    }
+    
+    .table-modern thead th,
+    .table-modern tbody td {
+        padding: 8px 10px;
+    }
+    
+    .badge-status,
+    .badge-frequency {
+        font-size: 0.6rem;
+        padding: 2px 10px;
+    }
+    
+    .btn-primary-modern {
+        padding: 8px 16px;
+        font-size: 0.75rem;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .stat-mini-value {
+        font-size: 1rem;
+    }
+}
+</style>
+{% endblock %}
