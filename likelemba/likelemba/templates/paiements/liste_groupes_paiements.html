@@ -1,56 +1,1053 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h3 class="m-0 font-weight-bold text-primary">Gestion des cotisations par groupe</h3>
-        <p class="mb-0 text-muted">Choisissez un groupe pour consulter les paiements de ses membres.</p>
-    </div>
 
-    {% include "partials/messages.html" %}
-
-    <div class="card-body">
-        <div class="row">
-            {% for groupe in groupes %}
-                <div class="col-xl-4 col-md-6 mb-4">
-                    <div class="card border-left-primary shadow h-100 py-2">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                        Cotisations
-                                    </div>
-                                    <h5 class="mb-1 font-weight-bold text-gray-800">{{ groupe.nom }}</h5>
-                                    <div class="text-muted small">{{ groupe.frequence }} • Début {{ groupe.date_debut }}</div>
-                                </div>
-                                <span class="badge badge-light px-3 py-2">
-                                    <strong class="text-primary">{{ groupe.total_paiements }}</strong> paiement{{ groupe.total_paiements|pluralize }}
-                                </span>
-                            </div>
-
-                            <div class="mb-3 text-sm text-muted">
-                                Cotisation attendue: {{ groupe.montant_cotisation }}
-                            </div>
-
-                            <div class="d-flex flex-wrap">
-                                <a href="{% url 'paiements_groupe' groupe.id %}" class="btn btn-primary btn-sm mr-2 mb-2">
-                                    Voir les paiements
-                                </a>
-                                <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-outline-primary btn-sm mb-2">
-                                    ajouter un paiement
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="col-12">
-                    <div class="alert alert-light border text-center mb-0">
-                        Aucun groupe trouvé pour le moment.
-                    </div>
-                </div>
-            {% endfor %}
+<!-- ===== EN-TÊTE ===== -->
+<div class="page-header mb-3 mb-md-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+        <div class="w-100 w-sm-auto">
+            <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                <i class="fas fa-coins me-2" style="color: #d97706;"></i>
+                Gestion des cotisations
+            </h1>
+            <p class="text-muted small mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                Choisissez un groupe pour consulter les paiements de ses membres
+            </p>
+        </div>
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <button class="btn btn-outline-modern flex-1" onclick="window.location.reload();">
+                <i class="fas fa-sync-alt me-1"></i> 
+                <span class="d-none d-sm-inline">Actualiser</span>
+                <span class="d-sm-none">Rafraîchir</span>
+            </button>
+            <a href="{% url 'create_groupe' %}" class="btn btn-primary-modern flex-1">
+                <i class="fas fa-plus me-1"></i> 
+                <span class="d-none d-sm-inline">Nouveau groupe</span>
+                <span class="d-sm-none">Créer</span>
+            </a>
         </div>
     </div>
 </div>
-{% endblock content %}
+
+<!-- ===== STATISTIQUES RAPIDES ===== -->
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+    <div class="col-6 col-md-6">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon purple">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Total groupes</span>
+                    <h5 class="stat-mini-value">{{ groupes|length }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-6">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">En attente</span>
+                    <h5 class="stat-mini-value">
+                        {% with total=0 %}
+                            {% for groupe in groupes %}
+                                {% with total=total|add:groupe.total_attente %}{% endwith %}
+                            {% endfor %}
+                            {{ total }}
+                        {% endwith %}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MESSAGES ===== -->
+{% include "partials/messages.html" %}
+
+<!-- ===== GRILLE DES GROUPES ===== -->
+<div class="row g-3 g-md-4">
+    {% for groupe in groupes %}
+    <div class="col-12 col-sm-6 col-lg-4">
+        <div class="group-card" data-group-id="{{ groupe.id }}">
+            <div class="group-card-body">
+                <!-- En-tête de la carte -->
+                <div class="group-card-top">
+                    <div class="group-card-info">
+                        <div class="group-avatar" style="background: linear-gradient(135deg, {% cycle '#4f46e5' '#7c3aed' '#059669' '#d97706' '#2563eb' '#dc2626' %}, {% cycle '#7c3aed' '#6d28d9' '#047857' '#b45309' '#1d4ed8' '#b91c1c' %});">
+                            {{ groupe.nom|make_list|first|upper }}
+                        </div>
+                        <div class="min-width-0">
+                            <h5 class="group-card-title text-truncate">{{ groupe.nom }}</h5>
+                            <div class="group-card-meta">
+                                <span>
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    {{ groupe.date_debut|date:"d/m/Y" }}
+                                </span>
+                                <span class="bullet">•</span>
+                                <span>
+                                    <i class="fas fa-clock me-1"></i>
+                                    <span class="d-none d-sm-inline">{{ groupe.get_frequence_display }}</span>
+                                    <span class="d-sm-none">{{ groupe.get_frequence_display|slice:":3" }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="group-badge">
+                        <span class="badge-paiements {% if groupe.total_paiements > 0 %}has-paiements{% endif %}">
+                            <i class="fas fa-coins me-1"></i>
+                            <strong>{{ groupe.total_paiements }}</strong>
+                            <span class="badge-label d-none d-sm-inline">paiement{{ groupe.total_paiements|pluralize }}</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Détails -->
+                <div class="group-card-details">
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-users me-1" style="color: #4f46e5;"></i>
+                            Membres
+                        </span>
+                        <span class="detail-value">{{ groupe.total_membres }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-coins me-1" style="color: #d97706;"></i>
+                            Cotisation
+                        </span>
+                        <span class="detail-value">{{ groupe.montant_cotisation|floatformat:0 }} FCFA</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-percent me-1" style="color: #059669;"></i>
+                            Taux payé
+                        </span>
+                        <span class="detail-value">
+                            {% if groupe.total_membres > 0 %}
+                                {% widthratio groupe.total_paiements groupe.total_membres 100 %}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Progression -->
+                <div class="group-progress">
+                    <div class="progress-header">
+                        <span class="progress-label">Progression des paiements</span>
+                        <span class="progress-percent">
+                            {% if groupe.total_membres > 0 %}
+                                {% widthratio groupe.total_paiements groupe.total_membres 100 %}%
+                            {% else %}
+                                0%
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="progress-bar-modern">
+                        <div class="progress-bar-fill" style="width: {% if groupe.total_membres > 0 %}{% widthratio groupe.total_paiements groupe.total_membres 100 %}{% else %}0{% endif %}%;"></div>
+                    </div>
+                </div>
+                
+                <!-- Statut détaillé -->
+                <div class="group-status">
+                    <span class="status-item">
+                        <span class="status-dot green"></span>
+                        <span class="status-label">Payés:</span>
+                        <span class="status-value">{{ groupe.total_payes }}</span>
+                    </span>
+                    <span class="status-item">
+                        <span class="status-dot orange"></span>
+                        <span class="status-label">En attente:</span>
+                        <span class="status-value">{{ groupe.total_attente }}</span>
+                    </span>
+                </div>
+                
+                <!-- Actions -->
+                <div class="group-card-actions">
+                    <a href="{% url 'paiements_groupe' groupe.id %}" class="btn-action-primary">
+                        <i class="fas fa-eye"></i>
+                        <span class="btn-action-text">Voir</span>
+                    </a>
+                    <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn-action-secondary">
+                        <i class="fas fa-plus"></i>
+                        <span class="btn-action-text">Ajouter</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="empty-state-full">
+            <div class="empty-state-content">
+                <i class="fas fa-coins empty-icon"></i>
+                <h5>Aucun groupe trouvé</h5>
+                <p class="text-muted">Créez un groupe pour commencer à gérer les cotisations</p>
+                <a href="{% url 'create_groupe' %}" class="btn btn-primary-modern mt-2">
+                    <i class="fas fa-plus me-1"></i> Créer un groupe
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ===== ANIMATION DES CARTES =====
+        const cards = document.querySelectorAll('.group-card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 80);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.transitionDelay = (index * 0.05) + 's';
+            observer.observe(card);
+        });
+        
+        // ===== ANIMATION DES BARRES DE PROGRESSION =====
+        document.querySelectorAll('.progress-bar-fill').forEach((bar) => {
+            const targetWidth = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = targetWidth;
+            }, 600);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== HELPERS ===== */
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+.bullet {
+    color: #e2e8f0;
+    margin: 0 4px;
+}
+
+/* ===== BOUTONS ===== */
+.btn-primary-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-primary-modern {
+        padding: 10px 24px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-outline-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-outline-modern {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-outline-modern:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.04);
+    text-decoration: none;
+}
+
+/* ===== STAT MINI ===== */
+.stat-mini {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-mini:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.stat-mini-body {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-body {
+        padding: 14px 18px;
+        gap: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-body {
+        padding: 16px 20px;
+        gap: 16px;
+    }
+}
+
+.stat-mini-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}
+
+.stat-mini-icon.purple { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
+.stat-mini-icon.orange { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+
+.stat-mini-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.stat-mini-label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    display: block;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-label {
+        font-size: 0.65rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-label {
+        font-size: 0.7rem;
+    }
+}
+
+.stat-mini-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-value {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-value {
+        font-size: 1.2rem;
+    }
+}
+
+/* ===== GROUP CARD ===== */
+.group-card {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    overflow: hidden;
+}
+
+.group-card:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+}
+
+.group-card-body {
+    padding: 16px;
+}
+
+@media (min-width: 576px) {
+    .group-card-body {
+        padding: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-card-body {
+        padding: 20px;
+    }
+}
+
+/* ===== GROUP CARD TOP ===== */
+.group-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .group-card-top {
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-card-top {
+        margin-bottom: 16px;
+        padding-bottom: 14px;
+    }
+}
+
+.group-card-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+@media (min-width: 576px) {
+    .group-card-info {
+        gap: 12px;
+    }
+}
+
+.group-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .group-avatar {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}
+
+.group-card-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #0f172a;
+    margin: 0 0 2px;
+}
+
+@media (min-width: 576px) {
+    .group-card-title {
+        font-size: 0.95rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-card-title {
+        font-size: 1rem;
+    }
+}
+
+.group-card-meta {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 576px) {
+    .group-card-meta {
+        font-size: 0.7rem;
+    }
+}
+
+.group-card-meta .bullet {
+    color: #e2e8f0;
+}
+
+.group-badge {
+    flex-shrink: 0;
+    margin-left: 4px;
+}
+
+.badge-paiements {
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .badge-paiements {
+        padding: 4px 14px;
+        font-size: 0.75rem;
+    }
+}
+
+.badge-paiements.has-paiements {
+    background: rgba(79, 70, 229, 0.08);
+    color: #4f46e5;
+}
+
+.badge-paiements strong {
+    font-size: 0.9rem;
+}
+
+@media (min-width: 576px) {
+    .badge-paiements strong {
+        font-size: 1rem;
+    }
+}
+
+.badge-label {
+    font-weight: 400;
+    font-size: 0.6rem;
+}
+
+@media (min-width: 576px) {
+    .badge-label {
+        font-size: 0.65rem;
+    }
+}
+
+/* ===== GROUP CARD DETAILS ===== */
+.group-card-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 576px) {
+    .group-card-details {
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+}
+
+.detail-item {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 6px 8px;
+    text-align: center;
+}
+
+@media (min-width: 576px) {
+    .detail-item {
+        padding: 8px 10px;
+    }
+}
+
+@media (min-width: 768px) {
+    .detail-item {
+        padding: 8px 12px;
+    }
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.55rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+}
+
+@media (min-width: 576px) {
+    .detail-label {
+        font-size: 0.6rem;
+    }
+}
+
+.detail-value {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-top: 2px;
+}
+
+@media (min-width: 576px) {
+    .detail-value {
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .detail-value {
+        font-size: 0.85rem;
+    }
+}
+
+/* ===== PROGRESS BAR ===== */
+.group-progress {
+    margin-bottom: 10px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.progress-label {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+@media (min-width: 576px) {
+    .progress-label {
+        font-size: 0.7rem;
+    }
+}
+
+.progress-percent {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #4f46e5;
+}
+
+@media (min-width: 576px) {
+    .progress-percent {
+        font-size: 0.7rem;
+    }
+}
+
+.progress-bar-modern {
+    width: 100%;
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+}
+
+/* ===== GROUP STATUS ===== */
+.group-status {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 6px 10px;
+    background: #f8fafc;
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 576px) {
+    .group-status {
+        gap: 16px;
+        margin-bottom: 14px;
+        padding: 8px 12px;
+    }
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+}
+
+@media (min-width: 576px) {
+    .status-item {
+        font-size: 0.75rem;
+        gap: 6px;
+    }
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .status-dot {
+        width: 8px;
+        height: 8px;
+    }
+}
+
+.status-dot.green { background: #059669; }
+.status-dot.orange { background: #d97706; }
+
+.status-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.status-value {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* ===== GROUP CARD ACTIONS ===== */
+.group-card-actions {
+    display: flex;
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .group-card-actions {
+        gap: 8px;
+        padding-top: 14px;
+    }
+}
+
+.btn-action-primary {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .btn-action-primary {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+.btn-action-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-action-secondary {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .btn-action-secondary {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        min-width: 80px;
+    }
+}
+
+.btn-action-secondary:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.04);
+    text-decoration: none;
+}
+
+.btn-action-text {
+    display: inline;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state-full {
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+@media (min-width: 576px) {
+    .empty-state-full {
+        padding: 50px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .empty-state-full {
+        padding: 60px 20px;
+    }
+}
+
+.empty-state-content {
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 2.8rem;
+    color: #e2e8f0;
+    display: block;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 576px) {
+    .empty-icon {
+        font-size: 3.2rem;
+        margin-bottom: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .empty-icon {
+        font-size: 3.5rem;
+        margin-bottom: 16px;
+    }
+}
+
+.empty-state-content h5 {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 576px) {
+    .empty-state-content h5 {
+        font-size: 1.05rem;
+    }
+}
+
+.empty-state-content p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+@media (min-width: 576px) {
+    .empty-state-content p {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE GLOBAL ===== */
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+    }
+    
+    .col-6 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .col-12 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .col-sm-6 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .g-2 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+    
+    .g-3 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+    
+    .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .gap-3 {
+        gap: 0.75rem !important;
+    }
+    
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    .flex-1 {
+        flex: 1 !important;
+    }
+    
+    .btn-action-primary,
+    .btn-action-secondary {
+        font-size: 0.65rem !important;
+        padding: 6px 10px !important;
+    }
+    
+    .group-status {
+        flex-direction: row !important;
+        gap: 8px !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .col-lg-4 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}
+</style>
+{% endblock %}

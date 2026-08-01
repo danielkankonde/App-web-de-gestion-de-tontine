@@ -1,80 +1,184 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="card shadow mb-4">
-    <div class="card-header py-3 d-flex justify-content-between align-items-center">
-        <div>
-            <h3 class="m-0 font-weight-bold text-primary">Paiements du groupe {{ groupe.nom }}</h3>
-            <p class="mb-0 text-muted">Historique des cotisations enregistrées pour ce groupe.</p>
+
+<!-- ===== EN-TÊTE ===== -->
+<div class="page-header mb-3 mb-md-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto">
+            <div class="group-avatar-large" style="background: linear-gradient(135deg, #d97706, #f59e0b); flex-shrink: 0;">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="min-width-0">
+                <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                    Paiements du groupe
+                </h1>
+                <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">
+                    <i class="fas fa-layer-group me-1" style="color: #4f46e5;"></i>
+                    {{ groupe.nom }}
+                    <span class="bullet">•</span>
+                    <i class="fas fa-coins me-1" style="color: #d97706;"></i>
+                    {{ total_paiements }} paiement{{ total_paiements|pluralize }}
+                    <span class="bullet">•</span>
+                    <i class="fas fa-users me-1" style="color: #4f46e5;"></i>
+                    {{ groupe.total_membres }} membre{{ groupe.total_membres|pluralize }}
+                </p>
+            </div>
         </div>
-        <div class="d-flex flex-wrap justify-content-end">
-            <a href="{% url 'liste_groupes_paiements' %}" class="btn btn-light btn-sm mr-2 mb-2">
-                Tous les groupes
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <a href="{% url 'liste_groupes_paiements' %}" class="btn btn-outline-modern flex-1">
+                <i class="fas fa-arrow-left me-1"></i> 
+                <span class="d-none d-sm-inline">Tous les groupes</span>
+                <span class="d-sm-none">Retour</span>
             </a>
-            <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-warning btn-sm mb-2">
-                Enregistrer un paiement
+            <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-primary-modern flex-1">
+                <i class="fas fa-plus me-1"></i> 
+                <span class="d-none d-sm-inline">Enregistrer</span>
+                <span class="d-sm-none">Ajouter</span>
             </a>
         </div>
     </div>
+</div>
 
-    {% include "partials/messages.html" %}
-
-    <div class="card-body">
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="card border-left-primary shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Nombre de paiements</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_paiements }}</div>
-                    </div>
+<!-- ===== STATISTIQUES RAPIDES ===== -->
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+    <div class="col-4">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon purple">
+                    <i class="fas fa-coins"></i>
                 </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card border-left-success shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total encaissé</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_encaisse }}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card border-left-warning shadow h-100 py-2">
-                    <div class="card-body">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Montant attendu par tour</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_attendu }}</div>
-                    </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Nombre de paiements</span>
+                    <h5 class="stat-mini-value">{{ total_paiements }}</h5>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="col-4">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon green">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Total encaissé</span>
+                    <h5 class="stat-mini-value">{{ total_encaisse|floatformat:0 }} FCFA</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-4">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon orange">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Attendu par tour</span>
+                    <h5 class="stat-mini-value">{{ total_attendu|floatformat:0 }} FCFA</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- ===== MESSAGES ===== -->
+{% include "partials/messages.html" %}
+
+<!-- ===== TABLEAU DES PAIEMENTS ===== -->
+<div class="card-modern">
+    <div class="card-modern-header d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
+        <span class="card-modern-title">
+            <i class="fas fa-list me-2" style="color: #d97706;"></i>
+            Historique des paiements
+        </span>
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <div class="search-wrapper flex-grow-1 flex-sm-grow-0">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Rechercher un membre..." id="tableSearch">
+            </div>
+            <div class="filter-wrapper flex-grow-1 flex-sm-grow-0">
+                <select class="filter-select" id="statusFilter">
+                    <option value="all">Tous</option>
+                    <option value="PAYE">Payé</option>
+                    <option value="NON_PAYE">Non payé</option>
+                </select>
+            </div>
+            <button class="btn-filter-table" onclick="window.location.reload();">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="card-modern-body p-0">
         <div class="table-responsive">
-            <table class="table table-bordered" width="100%" cellspacing="0">
+            <table class="table-modern" id="paymentTable">
                 <thead>
                     <tr>
                         <th>Membre</th>
                         <th>Montant</th>
-                        <th>Date de paiement</th>
+                        <th class="d-none d-md-table-cell">Date paiement</th>
                         <th>Statut</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for paiement in paiements %}
-                    <tr>
-                        <td>{{ paiement.membre.nom_affiche }}</td>
-                        <td>{{ paiement.montant }}</td>
-                        <td>{{ paiement.date_paiement }}</td>
+                    <tr data-status="{{ paiement.statut }}">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="member-avatar" style="background: linear-gradient(135deg, {% cycle '#4f46e5' '#7c3aed' '#059669' '#d97706' '#2563eb' '#dc2626' %}, {% cycle '#7c3aed' '#6d28d9' '#047857' '#b45309' '#1d4ed8' '#b91c1c' %}); flex-shrink: 0;">
+                                    {{ paiement.membre.nom_affiche|make_list|first|upper }}
+                                </div>
+                                <div class="min-width-0">
+                                    <span class="fw-semibold d-block text-truncate" style="color: #0f172a; max-width: 100px;">{{ paiement.membre.nom_affiche }}</span>
+                                    <span class="d-md-none text-muted" style="font-size: 0.6rem;">
+                                        <i class="far fa-calendar-alt me-1"></i>
+                                        {{ paiement.date_paiement|date:"d/m/Y" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-semibold" style="color: #0f172a; font-size: 0.85rem;">
+                                {{ paiement.montant|floatformat:0 }}
+                            </span>
+                            <span class="d-none d-sm-inline" style="font-size: 0.7rem; color: #94a3b8;">FCFA</span>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            <span style="color: #64748b; font-size: 0.85rem;">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                {{ paiement.date_paiement|date:"d/m/Y" }}
+                            </span>
+                        </td>
                         <td>
                             {% if paiement.statut == "PAYE" %}
-                                <span class="badge badge-success">Paye</span>
+                                <span class="badge-status success">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    <span class="d-none d-sm-inline">Payé</span>
+                                    <span class="d-sm-none">✓</span>
+                                </span>
                             {% else %}
-                                <span class="badge badge-warning">Non paye</span>
+                                <span class="badge-status warning">
+                                    <i class="fas fa-clock me-1"></i>
+                                    <span class="d-none d-sm-inline">Non payé</span>
+                                    <span class="d-sm-none">⏳</span>
+                                </span>
                             {% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center">
-                            Aucun paiement enregistré pour ce groupe.
+                        <td colspan="4" class="empty-state">
+                            <div class="empty-state-content">
+                                <i class="fas fa-coins empty-icon"></i>
+                                <h5>Aucun paiement enregistré</h5>
+                                <p class="text-muted">Ce groupe n'a pas encore de paiements</p>
+                                <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-primary-modern mt-2">
+                                    <i class="fas fa-plus me-1"></i> Enregistrer un paiement
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -82,5 +186,865 @@
             </table>
         </div>
     </div>
+    
+    <!-- ===== PIED DE TABLE ===== -->
+    <div class="card-modern-footer d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+        <span class="text-muted small">
+            <i class="fas fa-info-circle me-1"></i>
+            {{ paiements|length }} paiement(s) au total
+            <span class="d-none d-sm-inline">• {{ total_encaisse|floatformat:0 }} FCFA encaissés</span>
+            <span class="d-sm-none">• {{ total_encaisse|floatformat:0 }} FCFA</span>
+        </span>
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <button class="btn-export w-100 w-sm-auto" onclick="exportTable()">
+                <i class="fas fa-file-export me-1"></i> Exporter
+            </button>
+            <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn-action-generate w-100 w-sm-auto">
+                <i class="fas fa-plus me-1"></i> Ajouter
+            </a>
+        </div>
+    </div>
 </div>
-{% endblock content %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ===== RECHERCHE =====
+        const searchInput = document.getElementById('tableSearch');
+        const statusFilter = document.getElementById('statusFilter');
+        const table = document.getElementById('paymentTable');
+        const rows = table.querySelectorAll('tbody tr:not(.empty-state)');
+        
+        function filterTable() {
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            const status = statusFilter ? statusFilter.value : 'all';
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const rowStatus = row.dataset.status || '';
+                
+                let matchesSearch = text.includes(query);
+                let matchesStatus = status === 'all' || rowStatus === status;
+                
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            let emptyMsg = table.querySelector('.no-results');
+            if (visibleCount === 0 && rows.length > 0) {
+                if (!emptyMsg) {
+                    emptyMsg = document.createElement('tr');
+                    emptyMsg.className = 'no-results';
+                    emptyMsg.innerHTML = `
+                        <td colspan="4" class="empty-state">
+                            <div class="empty-state-content">
+                                <i class="fas fa-search empty-icon"></i>
+                                <h5>Aucun résultat</h5>
+                                <p class="text-muted">Aucun paiement ne correspond à votre recherche</p>
+                            </div>
+                        </td>
+                    `;
+                    table.querySelector('tbody').appendChild(emptyMsg);
+                }
+                emptyMsg.style.display = '';
+            } else if (emptyMsg) {
+                emptyMsg.style.display = 'none';
+            }
+        }
+        
+        if (searchInput) {
+            searchInput.addEventListener('keyup', filterTable);
+        }
+        if (statusFilter) {
+            statusFilter.addEventListener('change', filterTable);
+        }
+        
+        // ===== ANIMATION DES LIGNES =====
+        rows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-10px)';
+            row.style.transition = 'all 0.3s ease';
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, 100 + (index * 30));
+        });
+    });
+    
+    // ===== EXPORT =====
+    function exportTable() {
+        alert('📤 Exportation des données en cours...\nLe fichier sera téléchargé prochainement.');
+    }
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== HELPERS ===== */
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+.bullet {
+    color: #e2e8f0;
+    margin: 0 4px;
+}
+
+/* ===== GROUP AVATAR LARGE ===== */
+.group-avatar-large {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .group-avatar-large {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-avatar-large {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
+}
+
+/* ===== BOUTONS ===== */
+.btn-primary-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: none;
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-primary-modern {
+        padding: 10px 24px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(217, 119, 6, 0.35);
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-outline-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-outline-modern {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-outline-modern:hover {
+    border-color: #d97706;
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.04);
+    text-decoration: none;
+}
+
+/* ===== STAT MINI ===== */
+.stat-mini {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-mini:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.stat-mini-body {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-body {
+        padding: 14px 18px;
+        gap: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-body {
+        padding: 16px 20px;
+        gap: 16px;
+    }
+}
+
+.stat-mini-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}
+
+.stat-mini-icon.purple { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
+.stat-mini-icon.green { background: rgba(5, 150, 105, 0.1); color: #059669; }
+.stat-mini-icon.orange { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+
+.stat-mini-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.stat-mini-label {
+    font-size: 0.55rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    display: block;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-label {
+        font-size: 0.6rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-label {
+        font-size: 0.65rem;
+    }
+}
+
+.stat-mini-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-value {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-value {
+        font-size: 1.1rem;
+    }
+}
+
+/* ===== CARD MODERN ===== */
+.card-modern {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.card-modern-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-header {
+        padding: 16px 20px;
+        gap: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-header {
+        padding: 18px 24px;
+        gap: 12px;
+    }
+}
+
+.card-modern-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0f172a;
+}
+
+@media (min-width: 768px) {
+    .card-modern-title {
+        font-size: 0.95rem;
+    }
+}
+
+.card-modern-body {
+    padding: 0;
+}
+
+.card-modern-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .card-modern-footer {
+        padding: 14px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-footer {
+        padding: 14px 24px;
+    }
+}
+
+/* ===== RECHERCHE & FILTRE ===== */
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .search-wrapper {
+        width: auto;
+    }
+}
+
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+@media (min-width: 576px) {
+    .search-wrapper .search-icon {
+        left: 12px;
+        font-size: 0.8rem;
+    }
+}
+
+.search-input {
+    padding: 6px 10px 6px 30px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+    color: #0f172a;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .search-input {
+        padding: 6px 12px 6px 36px;
+        font-size: 0.8rem;
+        min-width: 160px;
+        width: auto;
+    }
+}
+
+@media (min-width: 768px) {
+    .search-input {
+        min-width: 180px;
+    }
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #d97706;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.search-input::placeholder {
+    color: #94a3b8;
+}
+
+.filter-wrapper {
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .filter-wrapper {
+        width: auto;
+    }
+}
+
+.filter-select {
+    padding: 6px 28px 6px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    color: #0f172a;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .filter-select {
+        padding: 6px 32px 6px 14px;
+        font-size: 0.8rem;
+        min-width: 130px;
+        width: auto;
+    }
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.btn-filter-table {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #64748b;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.btn-filter-table:hover {
+    border-color: #d97706;
+    color: #d97706;
+    background: #fff;
+}
+
+/* ===== TABLE MODERN ===== */
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+@media (min-width: 576px) {
+    .table-modern {
+        font-size: 0.85rem;
+    }
+}
+
+.table-modern thead {
+    background: #f8fafc;
+}
+
+.table-modern thead th {
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .table-modern thead th {
+        padding: 12px 16px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .table-modern thead th {
+        padding: 12px 20px;
+    }
+}
+
+.table-modern tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+@media (min-width: 576px) {
+    .table-modern tbody td {
+        padding: 12px 16px;
+    }
+}
+
+@media (min-width: 768px) {
+    .table-modern tbody td {
+        padding: 14px 20px;
+    }
+}
+
+.table-modern tbody tr {
+    transition: background 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+    background: #f8fafc;
+}
+
+.table-modern tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== MEMBER AVATAR ===== */
+.member-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .member-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .member-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+}
+
+/* ===== BADGES ===== */
+.badge-status {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .badge-status {
+        padding: 4px 14px;
+        font-size: 0.7rem;
+    }
+}
+
+.badge-status.success {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+}
+
+.badge-status.warning {
+    background: rgba(217, 119, 6, 0.1);
+    color: #d97706;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px !important;
+}
+
+@media (min-width: 576px) {
+    .empty-state {
+        padding: 50px 20px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .empty-state {
+        padding: 60px 20px !important;
+    }
+}
+
+.empty-state-content {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 2.5rem;
+    color: #e2e8f0;
+    display: block;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 576px) {
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+    }
+}
+
+.empty-state-content h5 {
+    color: #0f172a;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 576px) {
+    .empty-state-content h5 {
+        font-size: 1.05rem;
+    }
+}
+
+.empty-state-content p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+@media (min-width: 576px) {
+    .empty-state-content p {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== BOUTONS ===== */
+.btn-export {
+    padding: 6px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #fff;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .btn-export {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+.btn-export:hover {
+    border-color: #d97706;
+    color: #d97706;
+    background: rgba(217, 119, 6, 0.04);
+}
+
+.btn-action-generate {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .btn-action-generate {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
+}
+
+.btn-action-generate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE GLOBAL ===== */
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+    }
+    
+    .col-4 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        flex: 0 0 33.333%;
+        max-width: 33.333%;
+    }
+    
+    .g-2 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+    
+    .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .gap-3 {
+        gap: 0.75rem !important;
+    }
+    
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    .flex-1 {
+        flex: 1 !important;
+    }
+    
+    .table-modern td,
+    .table-modern th {
+        padding: 6px 8px !important;
+        font-size: 0.7rem !important;
+    }
+    
+    .btn-primary-modern,
+    .btn-outline-modern {
+        font-size: 0.7rem !important;
+        padding: 6px 10px !important;
+    }
+    
+    .badge-status {
+        font-size: 0.55rem !important;
+        padding: 2px 8px !important;
+    }
+    
+    .member-avatar {
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 0.6rem !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .table-modern thead th:not(:first-child):not(:last-child) {
+        display: none !important;
+    }
+    .table-modern tbody td:not(:first-child):not(:last-child) {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

@@ -1,32 +1,864 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
-<h1 class="h3 mb-4 text-gray-800">Détails du Groupe</h1>
-
-<div class="card shadow">
-    <div class="card-body">
-
-        <p><strong>Nom :</strong> {{ groupe.nom }}</p>
-        <p><strong>Montant :</strong> {{ groupe.montant_cotisation }}</p>
-        <p><strong>Fréquence :</strong> {{ groupe.frequence }}</p>
-        <p><strong>Date début :</strong> {{ groupe.date_debut }}</p>
-        <p><strong>Statut :</strong> {{ groupe.statut }}</p>
-
-        <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-primary btn-sm">
-            Voir les membres du groupe
-        </a>
-        <a href="{% url 'liste_tours' groupe.id %}" class="btn btn-info btn-sm">
-            Voir les tours
-        </a>
-        <a href="{% url 'paiements_groupe' groupe.id %}" class="btn btn-warning btn-sm">
-            Voir les paiements
-        </a>
-        <a href="{% url 'lancer_tours' groupe.id %}" class="btn btn-success btn-sm">
-        <i class="fas fa-play"></i> Générer les tours
-    </a>
-
+<!-- ===== EN-TÊTE ===== -->
+<div class="page-header mb-3 mb-md-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+        <div class="d-flex align-items-center gap-3 w-100 w-md-auto">
+            <div class="group-avatar-large" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); flex-shrink: 0;">
+                {{ groupe.nom|make_list|first|upper }}
+            </div>
+            <div class="min-width-0">
+                <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a; word-break: break-word;">
+                    Détails du groupe
+                </h1>
+                <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">
+                    <i class="fas fa-info-circle me-1" style="color: #4f46e5;"></i>
+                    Informations complètes
+                </p>
+            </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+            <a href="{% url 'liste_groupes' %}" class="btn btn-outline-modern flex-1 flex-md-grow-0">
+                <i class="fas fa-arrow-left me-1"></i> 
+                <span class="d-none d-sm-inline">Retour</span>
+            </a>
+            <a href="{% url 'update_groupe' groupe.id %}" class="btn btn-primary-modern flex-1 flex-md-grow-0">
+                <i class="fas fa-pen me-1"></i> 
+                <span class="d-none d-sm-inline">Modifier</span>
+            </a>
+        </div>
     </div>
 </div>
 
+<!-- ===== STATISTIQUES RAPIDES ===== -->
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon purple">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Total membres</span>
+                    <h5 class="stat-mini-value">{{ total_membres|default:"0" }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon green">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Total tours</span>
+                    <h5 class="stat-mini-value">{{ total_tours|default:"0" }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon orange">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Cotisation</span>
+                    <h5 class="stat-mini-value">{{ groupe.montant_cotisation|floatformat:0 }} FCFA</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-mini">
+            <div class="stat-mini-body">
+                <div class="stat-mini-icon red">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <span class="stat-mini-label">Statut</span>
+                    <h5 class="stat-mini-value">
+                        {% if groupe.statut == 'ACTIF' %}
+                            <span class="badge-status success">
+                                <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                                Actif
+                            </span>
+                        {% else %}
+                            <span class="badge-status danger">
+                                <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                                Terminé
+                            </span>
+                        {% endif %}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== DÉTAILS DU GROUPE ===== -->
+<div class="row g-3 g-md-4">
+    <div class="col-12 col-lg-8">
+        <div class="card-modern">
+            <div class="card-modern-header">
+                <span class="card-modern-title">
+                    <i class="fas fa-info-circle me-2" style="color: #4f46e5;"></i>
+                    Informations générales
+                </span>
+            </div>
+            <div class="card-modern-body">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-tag me-1" style="color: #4f46e5;"></i>
+                            Nom du groupe
+                        </span>
+                        <span class="detail-value">{{ groupe.nom }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-coins me-1" style="color: #d97706;"></i>
+                            Montant de cotisation
+                        </span>
+                        <span class="detail-value">{{ groupe.montant_cotisation|floatformat:0 }} FCFA</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-clock me-1" style="color: #059669;"></i>
+                            Fréquence
+                        </span>
+                        <span class="detail-value">{{ groupe.get_frequence_display }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-calendar-alt me-1" style="color: #7c3aed;"></i>
+                            Date de début
+                        </span>
+                        <span class="detail-value">{{ groupe.date_debut|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-calendar-plus me-1" style="color: #2563eb;"></i>
+                            Date de création
+                        </span>
+                        <span class="detail-value">{{ groupe.date_creation|date:"d/m/Y à H:i" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">
+                            <i class="fas fa-user-cog me-1" style="color: #8b5cf6;"></i>
+                            Administrateur
+                        </span>
+                        <span class="detail-value">{{ groupe.admin.username }}</span>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <span class="detail-label">
+                            <i class="fas fa-info-circle me-1" style="color: #94a3b8;"></i>
+                            Statut
+                        </span>
+                        <span class="detail-value">
+                            {% if groupe.statut == 'ACTIF' %}
+                                <span class="badge-status success">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                                    Actif
+                                </span>
+                            {% else %}
+                                <span class="badge-status danger">
+                                    <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                                    Terminé
+                                </span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SIDEBAR DROIT ===== -->
+    <div class="col-12 col-lg-4">
+        <div class="card-modern">
+            <div class="card-modern-header">
+                <span class="card-modern-title" style="font-size: 0.85rem;">
+                    <i class="fas fa-bolt me-2" style="color: #f59e0b;"></i>
+                    Actions rapides
+                </span>
+            </div>
+            <div class="card-modern-body" style="padding: 12px 16px 16px;">
+                <div class="action-grid">
+                    <a href="{% url 'membres_groupe' groupe.id %}" class="action-card">
+                        <div class="action-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="action-content">
+                            <span class="action-label">Membres</span>
+                            <span class="action-count">{{ total_membres|default:"0" }}</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-arrow"></i>
+                    </a>
+                    <a href="{% url 'liste_tours' groupe.id %}" class="action-card">
+                        <div class="action-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="action-content">
+                            <span class="action-label">Tours</span>
+                            <span class="action-count">{{ total_tours|default:"0" }}</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-arrow"></i>
+                    </a>
+                    <a href="{% url 'paiements_groupe' groupe.id %}" class="action-card">
+                        <div class="action-icon" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="action-content">
+                            <span class="action-label">Paiements</span>
+                            <span class="action-count">{{ total_paiements|default:"0" }}</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-arrow"></i>
+                    </a>
+                    <a href="{% url 'lancer_tours' groupe.id %}" class="action-card" style="border-bottom: none;">
+                        <div class="action-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="action-content">
+                            <span class="action-label">Générer les tours</span>
+                            <span class="action-count">
+                                <i class="fas fa-play" style="font-size: 0.6rem; color: #ef4444;"></i>
+                            </span>
+                        </div>
+                        <i class="fas fa-chevron-right action-arrow"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STATUT DU GROUPE ===== -->
+        <div class="card-modern mt-3">
+            <div class="card-modern-body" style="padding: 14px 16px;">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div style="width: 12px; height: 12px; border-radius: 50%; {% if groupe.statut == 'ACTIF' %}background: #059669;{% else %}background: #ef4444;{% endif %} flex-shrink: 0;"></div>
+                    <div class="flex-grow-1 min-width-0">
+                        <span class="text-muted small d-block">Statut actuel</span>
+                        <p class="fw-bold mb-0" style="color: #0f172a; font-size: 0.9rem;">
+                            {% if groupe.statut == 'ACTIF' %}
+                                Groupe actif
+                            {% else %}
+                                Groupe terminé
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        {% if groupe.statut == 'ACTIF' %}
+                            <span class="badge-status success">En cours</span>
+                        {% else %}
+                            <span class="badge-status danger">Fermé</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ===== ANIMATION DES ÉLÉMENTS =====
+        const elements = document.querySelectorAll('.card-modern, .stat-mini');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 80);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        elements.forEach((el, index) => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+            el.style.transitionDelay = (index * 0.05) + 's';
+            observer.observe(el);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== HELPERS ===== */
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    .flex-md-grow-0 {
+        flex-grow: 0 !important;
+    }
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+/* ===== GROUP AVATAR LARGE ===== */
+.group-avatar-large {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .group-avatar-large {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
+}
+
+/* ===== BOUTONS ===== */
+.btn-primary-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-outline-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.btn-outline-modern:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.04);
+    text-decoration: none;
+}
+
+@media (min-width: 576px) {
+    .btn-primary-modern,
+    .btn-outline-modern {
+        padding: 10px 24px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ===== STAT MINI ===== */
+.stat-mini {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.stat-mini:hover {
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.stat-mini-body {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-body {
+        padding: 14px 18px;
+        gap: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-body {
+        padding: 16px 20px;
+        gap: 16px;
+    }
+}
+
+.stat-mini-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+}
+
+.stat-mini-icon.purple { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
+.stat-mini-icon.green { background: rgba(5, 150, 105, 0.1); color: #059669; }
+.stat-mini-icon.orange { background: rgba(217, 119, 6, 0.1); color: #d97706; }
+.stat-mini-icon.red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.stat-mini-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.stat-mini-label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    display: block;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-label {
+        font-size: 0.65rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-label {
+        font-size: 0.7rem;
+    }
+}
+
+.stat-mini-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-value {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-value {
+        font-size: 1.2rem;
+    }
+}
+
+/* ===== CARD MODERN ===== */
+.card-modern {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.card-modern:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-modern-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-header {
+        padding: 16px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-header {
+        padding: 16px 24px;
+    }
+}
+
+.card-modern-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0f172a;
+}
+
+@media (min-width: 768px) {
+    .card-modern-title {
+        font-size: 0.95rem;
+    }
+}
+
+.card-modern-body {
+    padding: 16px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-body {
+        padding: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-body {
+        padding: 24px;
+    }
+}
+
+/* ===== DETAIL GRID ===== */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+@media (min-width: 576px) {
+    .detail-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .detail-grid {
+        gap: 16px;
+    }
+}
+
+.detail-item {
+    padding: 10px 12px;
+    background: #f8fafc;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+@media (min-width: 576px) {
+    .detail-item {
+        padding: 12px 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .detail-item {
+        padding: 14px 16px;
+    }
+}
+
+.detail-item:hover {
+    background: #f1f4f9;
+}
+
+.detail-item:last-child {
+    grid-column: 1 / -1;
+}
+
+.detail-label {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-bottom: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@media (min-width: 768px) {
+    .detail-label {
+        font-size: 0.7rem;
+        margin-bottom: 4px;
+    }
+}
+
+.detail-value {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0f172a;
+    word-break: break-word;
+}
+
+@media (min-width: 768px) {
+    .detail-value {
+        font-size: 0.95rem;
+    }
+}
+
+/* ===== BADGES STATUS ===== */
+.badge-status {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+@media (min-width: 768px) {
+    .badge-status {
+        padding: 4px 14px;
+        font-size: 0.75rem;
+    }
+}
+
+.badge-status.success {
+    background: rgba(5, 150, 105, 0.1);
+    color: #059669;
+}
+
+.badge-status.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+/* ===== ACTION GRID ===== */
+.action-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .action-card {
+        padding: 11px 14px;
+        gap: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .action-card {
+        padding: 12px 14px;
+        gap: 14px;
+    }
+}
+
+.action-card:last-child {
+    border-bottom: none;
+}
+
+.action-card:hover {
+    background: #f8fafc;
+    text-decoration: none;
+}
+
+.action-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+}
+
+@media (min-width: 576px) {
+    .action-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .action-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+.action-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.action-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #0f172a;
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .action-label {
+        font-size: 0.85rem;
+    }
+}
+
+.action-count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748b;
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .action-count {
+        font-size: 0.75rem;
+    }
+}
+
+.action-arrow {
+    color: #94a3b8;
+    font-size: 0.6rem;
+}
+
+@media (min-width: 768px) {
+    .action-arrow {
+        font-size: 0.7rem;
+    }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE GLOBAL ===== */
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+    }
+    
+    .col-6 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .col-12 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .g-3 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .mt-3 {
+        margin-top: 0.5rem !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .page-header .d-flex {
+        gap: 12px !important;
+    }
+    
+    .page-header .gap-2 {
+        gap: 6px !important;
+    }
+    
+    .btn-primary-modern,
+    .btn-outline-modern {
+        font-size: 0.7rem !important;
+        padding: 6px 12px !important;
+    }
+    
+    .stat-mini-value {
+        font-size: 0.9rem !important;
+    }
+}
+</style>
 {% endblock %}

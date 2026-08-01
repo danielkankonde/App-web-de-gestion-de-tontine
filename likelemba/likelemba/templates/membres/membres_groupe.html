@@ -4,96 +4,90 @@
 {% block content %}
 
 <!-- ===== EN-TÊTE ===== -->
-<div class="page-header mb-4">
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="group-avatar-large" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
-                    {{ groupe.nom|make_list|first|upper }}
-                </div>
-                <div>
-                    <h1 class="h3 mb-1 fw-bold" style="color: #0f172a;">
-                        Membres du groupe
-                    </h1>
-                    <p class="text-muted small mb-0">
-                        <i class="fas fa-layer-group me-1" style="color: #4f46e5;"></i>
-                        {{ groupe.nom }}
-                        <span class="bullet">•</span>
-                        <i class="fas fa-users me-1" style="color: #4f46e5;"></i>
-                        {{ membres|length }} membre{{ membres|length|pluralize }}
-                        <span class="bullet">•</span>
-                        <i class="fas fa-coins me-1" style="color: #d97706;"></i>
-                        {{ groupe.montant_cotisation|floatformat:0 }} FCFA
-                        <span class="bullet">•</span>
-                        <i class="fas fa-clock me-1" style="color: #059669;"></i>
-                        {{ groupe.get_frequence_display }}
-                    </p>
-                </div>
+<div class="page-header mb-3 mb-md-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto">
+            <div class="group-avatar-large" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); flex-shrink: 0;">
+                {{ groupe.nom|make_list|first|upper }}
+            </div>
+            <div class="min-width-0">
+                <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                    Membres du groupe
+                </h1>
+                <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">
+                    <i class="fas fa-layer-group me-1" style="color: #4f46e5;"></i>
+                    {{ groupe.nom }}
+                    <span class="bullet">•</span>
+                    <i class="fas fa-users me-1" style="color: #4f46e5;"></i>
+                    {{ membres|length }} membre{{ membres|length|pluralize }}
+                </p>
             </div>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{% url 'liste_membres' %}" class="btn btn-outline-modern">
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <a href="{% url 'liste_membres' %}" class="btn btn-outline-modern flex-1">
                 <i class="fas fa-arrow-left me-1"></i> 
                 <span class="d-none d-sm-inline">Tous les groupes</span>
+                <span class="d-sm-none">Retour</span>
             </a>
-            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn btn-primary-modern">
+            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn btn-primary-modern flex-1">
                 <i class="fas fa-user-plus me-1"></i> 
                 <span class="d-none d-sm-inline">Ajouter un membre</span>
+                <span class="d-sm-none">Ajouter</span>
             </a>
         </div>
     </div>
 </div>
 
 <!-- ===== STATISTIQUES RAPIDES ===== -->
-<div class="row g-3 mb-4">
-    <div class="col-xl-3 col-md-6">
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+    <div class="col-6 col-md-3">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon purple">
                     <i class="fas fa-users"></i>
                 </div>
-                <div>
+                <div class="stat-mini-content">
                     <span class="stat-mini-label">Total membres</span>
                     <h5 class="stat-mini-value">{{ membres|length }}</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-6 col-md-3">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon green">
                     <i class="fas fa-coins"></i>
                 </div>
-                <div>
+                <div class="stat-mini-content">
                     <span class="stat-mini-label">Cotisation</span>
                     <h5 class="stat-mini-value">{{ groupe.montant_cotisation|floatformat:0 }} FCFA</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-6 col-md-3">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon orange">
                     <i class="fas fa-clock"></i>
                 </div>
-                <div>
+                <div class="stat-mini-content">
                     <span class="stat-mini-label">Fréquence</span>
                     <h5 class="stat-mini-value">{{ groupe.get_frequence_display }}</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-6 col-md-3">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon red">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
-                <div>
+                <div class="stat-mini-content">
                     <span class="stat-mini-label">Date début</span>
-                    <h5 class="stat-mini-value" style="font-size: 0.9rem;">{{ groupe.date_debut|date:"d/m/Y" }}</h5>
+                    <h5 class="stat-mini-value" style="font-size: 0.8rem;">{{ groupe.date_debut|date:"d/m/Y" }}</h5>
                 </div>
             </div>
         </div>
@@ -105,15 +99,15 @@
 
 <!-- ===== TABLEAU DES MEMBRES ===== -->
 <div class="card-modern">
-    <div class="card-modern-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="card-modern-header d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
         <span class="card-modern-title">
             <i class="fas fa-list me-2" style="color: #4f46e5;"></i>
             Liste des membres
         </span>
-        <div class="d-flex gap-2">
-            <div class="search-wrapper">
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <div class="search-wrapper flex-grow-1 flex-sm-grow-0">
                 <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Rechercher un membre..." id="tableSearch">
+                <input type="text" class="search-input" placeholder="Rechercher..." id="tableSearch">
             </div>
             <button class="btn-filter-table" onclick="window.location.reload();">
                 <i class="fas fa-sync-alt"></i>
@@ -127,23 +121,29 @@
                 <thead>
                     <tr>
                         <th>Membre</th>
-                        <th style="width: 160px;">Téléphone</th>
-                        <th style="width: 180px;">Ordre de réception</th>
-                        <th style="width: 140px;" class="text-center">Actions</th>
+                        <th class="d-none d-sm-table-cell">Téléphone</th>
+                        <th class="d-none d-md-table-cell">Ordre</th>
+                        <th class="text-center" style="min-width: 100px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for membre in membres %}
                     <tr>
                         <td>
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="member-avatar" style="background: linear-gradient(135deg, {% cycle '#4f46e5' '#7c3aed' '#059669' '#d97706' '#2563eb' '#dc2626' %}, {% cycle '#7c3aed' '#6d28d9' '#047857' '#b45309' '#1d4ed8' '#b91c1c' %});">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="member-avatar" style="background: linear-gradient(135deg, {% cycle '#4f46e5' '#7c3aed' '#059669' '#d97706' '#2563eb' '#dc2626' %}, {% cycle '#7c3aed' '#6d28d9' '#047857' '#b45309' '#1d4ed8' '#b91c1c' %}); flex-shrink: 0;">
                                     {{ membre.nom_affiche|make_list|first|upper }}
                                 </div>
-                                <div>
-                                    <span class="fw-semibold" style="color: #0f172a;">{{ membre.nom_affiche }}</span>
+                                <div class="min-width-0">
+                                    <span class="fw-semibold d-block text-truncate" style="color: #0f172a; max-width: 100px;">{{ membre.nom_affiche }}</span>
+                                    <span class="d-sm-none text-muted" style="font-size: 0.65rem;">
+                                        <i class="fas fa-phone me-1"></i>{{ membre.telephone|default:"—" }}
+                                    </span>
+                                    <span class="d-md-none text-muted" style="font-size: 0.65rem;">
+                                        <i class="fas fa-hashtag me-1"></i>{{ membre.ordre_reception }}ème
+                                    </span>
                                     {% if membre.email %}
-                                        <small class="d-block text-muted" style="font-size: 0.7rem;">
+                                        <small class="d-none d-sm-block text-muted" style="font-size: 0.6rem;">
                                             <i class="fas fa-envelope me-1"></i>
                                             {{ membre.email }}
                                         </small>
@@ -151,13 +151,13 @@
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <span style="color: #64748b; font-size: 0.9rem;">
+                        <td class="d-none d-sm-table-cell">
+                            <span style="color: #64748b; font-size: 0.85rem;">
                                 <i class="fas fa-phone me-1"></i>
                                 {{ membre.telephone|default:"—" }}
                             </span>
                         </td>
-                        <td>
+                        <td class="d-none d-md-table-cell">
                             <div class="order-display">
                                 <span class="order-number">{{ membre.ordre_reception }}</span>
                                 <span class="order-label">ème</span>
@@ -166,62 +166,24 @@
                         <td>
                             <div class="d-flex justify-content-center gap-1">
                                 <a href="{% url 'modifier_ordre_membre' membre.id %}" 
-                                   class="btn-action edit" 
-                                   title="Modifier l'ordre">
+                                    class="btn-action edit" 
+                                    title="Modifier l'ordre">
                                     <i class="fas fa-pen"></i>
                                 </a>
-                                <button class="btn-action delete" 
-                                        data-toggle="modal"
-                                        data-target="#deleteModal{{ membre.id }}"
-                                        title="Supprimer">
+                                <button
+                                    class="btn-action delete"
+                                    onclick="openDeleteModal(
+                                        '{{ membre.id }}',
+                                        '{{ membre.nom_affiche|escapejs }}',
+                                        '{{ groupe.nom|escapejs }}'
+                                    )"
+                                    type="button"
+                                    title="Supprimer">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>
                     </tr>
-                    
-                    <!-- ===== MODAL SUPPRESSION ===== -->
-                    <div class="modal fade" id="deleteModal{{ membre.id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-                            <div class="modal-content modal-modern">
-                                <div class="modal-header modal-modern-header">
-                                    <h6 class="modal-title fw-bold" style="color: #0f172a;">
-                                        <i class="fas fa-trash-alt text-danger me-2"></i>
-                                        Confirmer la suppression
-                                    </h6>
-                                    <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fermer">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body modal-modern-body text-center py-4">
-                                    <div class="delete-icon-wrapper">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                    </div>
-                                    <h6 style="color: #0f172a; font-weight: 600;">Supprimer ce membre ?</h6>
-                                    <p class="text-muted small mb-0">
-                                        Vous êtes sur le point de supprimer <br>
-                                        <strong style="color: #0f172a;">"{{ membre.nom_affiche }}"</strong>
-                                    </p>
-                                    <p class="text-muted small mt-2 mb-0">
-                                        du groupe <strong style="color: #0f172a;">{{ groupe.nom }}</strong>
-                                    </p>
-                                    <p class="text-danger small mt-2 mb-0">
-                                        <i class="fas fa-info-circle me-1"></i>
-                                        Cette action est irréversible
-                                    </p>
-                                </div>
-                                <div class="modal-footer modal-modern-footer justify-content-center gap-2">
-                                    <button class="btn-cancel" data-dismiss="modal">Annuler</button>
-                                    <form method="POST" action="{% url 'supprimer_membre' membre.id %}" style="display: inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn-delete">
-                                            <i class="fas fa-trash me-1"></i> Supprimer
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     {% empty %}
                     <tr>
                         <td colspan="4" class="empty-state">
@@ -242,16 +204,16 @@
     </div>
     
     <!-- ===== PIED DE TABLE ===== -->
-    <div class="card-modern-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="card-modern-footer d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
         <span class="text-muted small">
             <i class="fas fa-info-circle me-1"></i>
             {{ membres|length }} membre(s) dans le groupe
         </span>
-        <div class="d-flex gap-2">
-            <button class="btn-export" onclick="exportTable()">
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <button class="btn-export w-100 w-sm-auto" onclick="exportTable()">
                 <i class="fas fa-file-export me-1"></i> Exporter
             </button>
-            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn-action-generate">
+            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn-action-generate w-100 w-sm-auto">
                 <i class="fas fa-user-plus me-1"></i> Ajouter
             </a>
         </div>
@@ -283,7 +245,6 @@
                     }
                 });
                 
-                // Afficher/masquer le message "aucun résultat"
                 let emptyMsg = table.querySelector('.no-results');
                 if (visibleCount === 0 && rows.length > 0) {
                     if (!emptyMsg) {
@@ -328,6 +289,15 @@
 
 {% block extra_css %}
 <style>
+/* ===== HELPERS ===== */
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
 /* ===== PAGE HEADER ===== */
 .page-header {
     animation: fadeInUp 0.5s ease;
@@ -340,24 +310,40 @@
 
 /* ===== GROUP AVATAR LARGE ===== */
 .group-avatar-large {
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     border-radius: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-weight: 700;
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .group-avatar-large {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-avatar-large {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
 }
 
 /* ===== BOUTONS ===== */
 .btn-primary-modern {
-    padding: 10px 24px;
+    padding: 8px 16px;
     border-radius: 10px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     border: none;
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: #fff;
@@ -366,7 +352,15 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-primary-modern {
+        padding: 10px 24px;
+        font-size: 0.85rem;
+    }
 }
 
 .btn-primary-modern:hover {
@@ -377,10 +371,10 @@
 }
 
 .btn-outline-modern {
-    padding: 8px 20px;
+    padding: 8px 16px;
     border-radius: 10px;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     border: 1px solid #e2e8f0;
     background: #fff;
     color: #0f172a;
@@ -388,7 +382,15 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-outline-modern {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
 }
 
 .btn-outline-modern:hover {
@@ -413,21 +415,51 @@
 }
 
 .stat-mini-body {
-    padding: 16px 20px;
+    padding: 12px 14px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-body {
+        padding: 14px 18px;
+        gap: 14px;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-body {
+        padding: 16px 20px;
+        gap: 16px;
+    }
 }
 
 .stat-mini-icon {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
 }
 
 .stat-mini-icon.purple { background: rgba(79, 70, 229, 0.1); color: #4f46e5; }
@@ -435,8 +467,13 @@
 .stat-mini-icon.orange { background: rgba(217, 119, 6, 0.1); color: #d97706; }
 .stat-mini-icon.red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
+.stat-mini-content {
+    min-width: 0;
+    flex: 1;
+}
+
 .stat-mini-label {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -444,11 +481,35 @@
     display: block;
 }
 
+@media (min-width: 576px) {
+    .stat-mini-label {
+        font-size: 0.65rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-label {
+        font-size: 0.7rem;
+    }
+}
+
 .stat-mini-value {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #0f172a;
     margin: 0;
+}
+
+@media (min-width: 576px) {
+    .stat-mini-value {
+        font-size: 1.1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .stat-mini-value {
+        font-size: 1.2rem;
+    }
 }
 
 /* ===== CARD MODERN ===== */
@@ -461,19 +522,39 @@
 }
 
 .card-modern-header {
-    padding: 18px 24px;
+    padding: 14px 16px;
     border-bottom: 1px solid #f1f5f9;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-header {
+        padding: 16px 20px;
+        gap: 12px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-header {
+        padding: 18px 24px;
+        gap: 12px;
+    }
 }
 
 .card-modern-title {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     color: #0f172a;
+}
+
+@media (min-width: 768px) {
+    .card-modern-title {
+        font-size: 0.95rem;
+    }
 }
 
 .card-modern-body {
@@ -481,35 +562,76 @@
 }
 
 .card-modern-footer {
-    padding: 14px 24px;
+    padding: 12px 16px;
     border-top: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .card-modern-footer {
+        padding: 14px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-footer {
+        padding: 14px 24px;
+    }
 }
 
 /* ===== RECHERCHE ===== */
 .search-wrapper {
     position: relative;
     display: inline-block;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .search-wrapper {
+        width: auto;
+    }
 }
 
 .search-wrapper .search-icon {
     position: absolute;
-    left: 12px;
+    left: 10px;
     top: 50%;
     transform: translateY(-50%);
     color: #94a3b8;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+}
+
+@media (min-width: 576px) {
+    .search-wrapper .search-icon {
+        left: 12px;
+        font-size: 0.8rem;
+    }
 }
 
 .search-input {
-    padding: 6px 12px 6px 36px;
+    padding: 6px 10px 6px 30px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-family: 'Inter', sans-serif;
     transition: all 0.2s ease;
     background: #f8fafc;
     color: #0f172a;
-    min-width: 200px;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .search-input {
+        padding: 6px 12px 6px 36px;
+        font-size: 0.8rem;
+        min-width: 160px;
+        width: auto;
+    }
+}
+
+@media (min-width: 768px) {
+    .search-input {
+        min-width: 200px;
+    }
 }
 
 .search-input:focus {
@@ -531,6 +653,7 @@
     color: #64748b;
     transition: all 0.2s ease;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .btn-filter-table:hover {
@@ -543,7 +666,13 @@
 .table-modern {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+}
+
+@media (min-width: 576px) {
+    .table-modern {
+        font-size: 0.85rem;
+    }
 }
 
 .table-modern thead {
@@ -551,21 +680,46 @@
 }
 
 .table-modern thead th {
-    padding: 12px 20px;
+    padding: 10px 12px;
     text-align: left;
     font-weight: 600;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: #64748b;
     border-bottom: 1px solid #f1f5f9;
 }
 
+@media (min-width: 576px) {
+    .table-modern thead th {
+        padding: 12px 16px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .table-modern thead th {
+        padding: 12px 20px;
+    }
+}
+
 .table-modern tbody td {
-    padding: 14px 20px;
+    padding: 10px 12px;
     border-bottom: 1px solid #f1f5f9;
     vertical-align: middle;
     color: #334155;
+}
+
+@media (min-width: 576px) {
+    .table-modern tbody td {
+        padding: 12px 16px;
+    }
+}
+
+@media (min-width: 768px) {
+    .table-modern tbody td {
+        padding: 14px 20px;
+    }
 }
 
 .table-modern tbody tr {
@@ -582,16 +736,32 @@
 
 /* ===== MEMBER AVATAR ===== */
 .member-avatar {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
     font-weight: 600;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .member-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .member-avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 0.85rem;
+    }
 }
 
 /* ===== ORDER DISPLAY ===== */
@@ -602,30 +772,59 @@
 }
 
 .order-number {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #4f46e5;
 }
 
+@media (min-width: 576px) {
+    .order-number {
+        font-size: 1.1rem;
+    }
+}
+
 .order-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #94a3b8;
     font-weight: 500;
 }
 
+@media (min-width: 576px) {
+    .order-label {
+        font-size: 0.7rem;
+    }
+}
+
 /* ===== BOUTONS ACTION ===== */
 .btn-action {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
     cursor: pointer;
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
+}
+
+@media (min-width: 576px) {
+    .btn-action {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+        border-radius: 8px;
+    }
+}
+
+@media (min-width: 768px) {
+    .btn-action {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
 }
 
 .btn-action.edit {
@@ -653,7 +852,19 @@
 /* ===== EMPTY STATE ===== */
 .empty-state {
     text-align: center;
-    padding: 60px 20px !important;
+    padding: 40px 20px !important;
+}
+
+@media (min-width: 576px) {
+    .empty-state {
+        padding: 50px 20px !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .empty-state {
+        padding: 60px 20px !important;
+    }
 }
 
 .empty-state-content {
@@ -662,118 +873,65 @@
 }
 
 .empty-icon {
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: #e2e8f0;
     display: block;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 576px) {
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+    }
 }
 
 .empty-state-content h5 {
     color: #0f172a;
     font-weight: 600;
+    font-size: 0.95rem;
     margin-bottom: 4px;
 }
 
+@media (min-width: 576px) {
+    .empty-state-content h5 {
+        font-size: 1.05rem;
+    }
+}
+
 .empty-state-content p {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #94a3b8;
 }
 
-/* ===== MODAL MODERN ===== */
-.modal-modern {
-    border-radius: 16px;
-    border: none;
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
-}
-
-.modal-modern-header {
-    padding: 16px 24px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.modal-modern-body {
-    padding: 20px 24px;
-}
-
-.modal-modern-footer {
-    padding: 0 24px 20px;
-    border-top: none;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #94a3b8;
-    cursor: pointer;
-    transition: color 0.2s ease;
-    padding: 0 4px;
-    line-height: 1;
-}
-
-.modal-close:hover {
-    color: #0f172a;
-}
-
-.delete-icon-wrapper {
-    width: 64px;
-    height: 64px;
-    background: #fef2f2;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px;
-}
-
-.delete-icon-wrapper i {
-    font-size: 2rem;
-    color: #ef4444;
+@media (min-width: 576px) {
+    .empty-state-content p {
+        font-size: 0.9rem;
+    }
 }
 
 /* ===== BOUTONS ===== */
-.btn-cancel {
-    padding: 8px 28px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: #fff;
-    color: #64748b;
-    font-weight: 600;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
-}
-
-.btn-cancel:hover {
-    border-color: #94a3b8;
-    background: #f8fafc;
-}
-
-.btn-delete {
-    padding: 8px 28px;
-    border: none;
-    border-radius: 10px;
-    background: #ef4444;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.8rem;
-    transition: all 0.2s ease;
-}
-
-.btn-delete:hover {
-    background: #dc2626;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
 .btn-export {
-    padding: 6px 16px;
+    padding: 6px 14px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: #fff;
     color: #64748b;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
     transition: all 0.2s ease;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .btn-export {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
 }
 
 .btn-export:hover {
@@ -783,18 +941,26 @@
 }
 
 .btn-action-generate {
-    padding: 6px 16px;
+    padding: 6px 14px;
     border: none;
     border-radius: 8px;
     background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: #fff;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 500;
     transition: all 0.2s ease;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .btn-action-generate {
+        padding: 6px 16px;
+        font-size: 0.8rem;
+    }
 }
 
 .btn-action-generate:hover {
@@ -816,99 +982,89 @@
     }
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-    .page-header h1 {
-        font-size: 1.3rem;
+/* ===== RESPONSIVE GLOBAL ===== */
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
     }
     
-    .group-avatar-large {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
     }
     
-    .card-modern-header {
-        padding: 14px 16px;
-        flex-direction: column;
-        align-items: stretch;
+    .col-6 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
     }
     
-    .search-input {
-        min-width: 120px;
-        width: 100%;
+    .g-2 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
     }
     
-    .table-modern thead th,
-    .table-modern tbody td {
-        padding: 10px 12px;
-        font-size: 0.8rem;
+    .g-3 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
     }
     
-    .stat-mini-body {
-        padding: 14px 16px;
-        gap: 12px;
+    .mb-3 {
+        margin-bottom: 0.75rem !important;
     }
     
-    .stat-mini-icon {
-        width: 38px;
-        height: 38px;
-        font-size: 0.9rem;
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
     }
     
-    .stat-mini-value {
-        font-size: 1rem;
+    .gap-3 {
+        gap: 0.75rem !important;
+    }
+    
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    .flex-1 {
+        flex: 1 !important;
+    }
+    
+    .table-modern td,
+    .table-modern th {
+        padding: 6px 8px !important;
+        font-size: 0.7rem !important;
     }
     
     .btn-action {
-        width: 28px;
-        height: 28px;
-        font-size: 0.7rem;
-    }
-    
-    .member-avatar {
-        width: 32px;
-        height: 32px;
-        font-size: 0.7rem;
-    }
-    
-    .card-modern-footer {
-        padding: 12px 16px;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-}
-
-@media (max-width: 576px) {
-    .table-modern {
-        font-size: 0.75rem;
-    }
-    
-    .table-modern thead th,
-    .table-modern tbody td {
-        padding: 8px 10px;
-    }
-    
-    .order-number {
-        font-size: 0.9rem;
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 0.6rem !important;
     }
     
     .btn-primary-modern,
     .btn-outline-modern {
-        padding: 6px 12px;
-        font-size: 0.7rem;
-        width: 100%;
-        justify-content: center;
+        font-size: 0.7rem !important;
+        padding: 6px 10px !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
     }
     
-    .page-header .d-flex {
-        flex-direction: column;
-        align-items: stretch !important;
+    .flex-sm-0 {
+        flex: 0 !important;
     }
-    
-    .page-header .d-flex .gap-2 {
-        flex-direction: column;
+}
+
+@media (max-width: 767.98px) {
+    .table-modern thead th:not(:first-child):not(:last-child) {
+        display: none !important;
+    }
+    .table-modern tbody td:not(:first-child):not(:last-child) {
+        display: none !important;
     }
 }
 </style>

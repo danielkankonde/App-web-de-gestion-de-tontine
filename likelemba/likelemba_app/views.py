@@ -2,10 +2,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count, Sum
+from django.db.models import Q, Count, Sum, query_utils
 from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm, PaiementForm
 from .models import Groupe, Paiement, Tour
 from datetime import timedelta
+
 
 # Create your views here.
 @login_required
@@ -178,16 +179,23 @@ def dashboard_financier_view(request, groupe_id):
         context
     )
 
-
 # Fonction pour voir detail d'un groupe
 @login_required(login_url="login")
 def detail_groupe(request, id):
-
     groupe = get_object_or_404(Groupe, id=id, admin=request.user)
-
+    
+    # Calcul des statistiques
+    total_membres = MembreGroupe.objects.filter(groupe=groupe).count()
+    total_tours = Tour.objects.filter(groupe=groupe).count()
+    total_paiements = Paiement.objects.filter(membre__groupe=groupe).count()
+    
     return render(request, 'groupes/detail_groupe.html', {
-        'groupe': groupe
+        'groupe': groupe,
+        'total_membres': total_membres,
+        'total_tours': total_tours,
+        'total_paiements': total_paiements,
     })
+
 # Ajouter un membre dans un groupe
 @login_required(login_url="login")
 def ajouter_membre(request, groupe_id):
@@ -212,7 +220,7 @@ def ajouter_membre(request, groupe_id):
     else:
         form = MembreGroupeForm(groupe=groupe)
 
-    return render(request, 'membres/ajouter.html', {
+    return render(request, 'membres/ajouter_membre.html', {
         'form': form,
         'groupe': groupe
     })
@@ -286,9 +294,11 @@ def liste_paiements_groupes_view(request):
         return redirect('dashboard_membre')
 
     groupes = Groupe.objects.filter(admin=request.user).annotate(
-        total_paiements=Count('membregroupe__paiement')
+        total_membres=Count('membregroupe', distinct=True),
+        total_paiements=Count('membregroupe__paiement', distinct=True),
+        total_payes=Count('membregroupe__paiement', filter=Q(membregroupe__paiement__statut='PAYE'), distinct=True),
+        total_attente=Count('membregroupe__paiement', filter=Q(membregroupe__paiement__statut='NON_PAYE'), distinct=True)
     )
-
     return render(request, 'paiements/liste_groupes_paiements.html', {
         'groupes': groupes
     })
@@ -374,13 +384,48 @@ def liste_tours_groupes_view(request):
         return redirect('dashboard_membre')
 
     groupes = Groupe.objects.filter(admin=request.user).annotate(
-        total_tours=Count('tour')
+        total_tours=Count('tour', distinct=True),
+        total_membres=Count('membregroupe', distinct=True),
+        total_payes=Count('tour', filter=Q(tour__statut='PAYE'), distinct=True),
+        total_attente=Count('tour', filter=Q(tour__statut='EN_ATTENTE'), distinct=True)
     )
+
+    # Calcul du nombre de tours terminés (payés) et en cours (en attente)
+    for groupe in groupes:
+        groupe.tours_termines = groupe.total_payes
+        groupe.tours_en_cours = groupe.total_attente
+
+    # Calcul des statistiques globales
+    total_groupes = groupes.count()
+    total_tours = sum(g.total_tours for g in groupes)
+    total_payes = sum(g.total_payes for g in groupes)
+    total_attente = sum(g.total_attente for g in groupes)
+
+    return render(request, 'tours/liste_groupes_tours.html', {
+        'groupes': groupes,
+        'total_groupes': total_groupes,
+        'total_tours': total_tours,
+        'total_payes': total_payes,
+        'total_attente': total_attente,
+    })
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    groupes = Groupe.objects.filter(admin=request.user).annotate(
+        total_tours=Count('tour', distinct=True),
+        total_membres=Count('membregroupe', distinct=True),
+        total_payes=Count('tour', filter=Q(tour__statut='PAYE'), distinct=True),
+        total_attente=Count('tour', filter=Q(tour__statut='EN_ATTENTE'), distinct=True)
+    )
+
+    # Calcul du nombre de tours terminés (payés) et en cours (en attente)
+    for groupe in groupes:
+        groupe.tours_termines = groupe.total_payes
+        groupe.tours_en_cours = groupe.total_attente
 
     return render(request, 'tours/liste_groupes_tours.html', {
         'groupes': groupes
     })
-
 def generer_tours(groupe):
     membres = MembreGroupe.objects.filter(groupe=groupe).order_by('ordre_reception')
 
@@ -415,15 +460,30 @@ def lancer_tours(request, groupe_id):
 def liste_tours_view(request, groupe_id):
     groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
 
-    tours = Tour.objects.filter(groupe=groupe).order_by('date_tour')
+    # Récupérer les tours du groupe
+    tours = Tour.objects.filter(groupe=groupe).select_related('membre').order_by('date_tour')
+
+    # Compter les statistiques
+    total_tours = tours.count()
+    tours_payes = tours.filter(statut='PAYE').count()
+    tours_attente = tours.filter(statut='EN_ATTENTE').count()
+    
+    # Nombre de membres dans le groupe
+    total_membres = MembreGroupe.objects.filter(groupe=groupe).count()
+
+    # Ajouter les propriétés au groupe pour le template
+    groupe.total_membres = total_membres
+    groupe.total_tours = total_tours
+    groupe.tours_payes = tours_payes
+    groupe.tours_attente = tours_attente
+    groupe.taux_completion = int((tours_payes / total_tours * 100)) if total_tours > 0 else 0
 
     return render(request, 'tours/liste_tours.html', {
         'groupe': groupe,
-        'tours': tours
+        'tours': tours,
     })
 
 # Vues pour les utilisateurs membres
-
 @login_required
 def groupes_membre_view(request):
 

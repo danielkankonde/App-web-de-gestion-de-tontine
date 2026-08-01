@@ -1,53 +1,1031 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
-<h1 class="h3 mb-4 text-gray-800">Ajouter un groupe</h1>
-
-<!-- Messages -->
-{% include "partials/messages.html" %}
-
-<div class="card shadow mb-4">
-    <div class="card-body">
-
-        <form method="POST">
-            {% csrf_token %}
-
-            <!-- NOM -->
-            <div class="form-group">
-                <label>Nom du groupe</label>
-                {{ form.nom }}
-                <small class="text-danger">{{ form.nom.errors }}</small>
+<!-- ===== EN-TÊTE ===== -->
+<div class="page-header mb-3 mb-md-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-3">
+                <div class="group-avatar-large" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <div>
+                    <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                        Ajouter un groupe
+                    </h1>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-info-circle me-1" style="color: #4f46e5;"></i>
+                        Créez un nouveau groupe d'épargne en quelques étapes
+                    </p>
+                </div>
             </div>
-
-            <!-- MONTANT -->
-            <div class="form-group">
-                <label>Montant de cotisation</label>
-                {{ form.montant_cotisation }}
-                <small class="text-danger">{{ form.montant_cotisation.errors }}</small>
-            </div>
-
-            <!-- FREQUENCE -->
-            <div class="form-group">
-                <label>Fréquence</label>
-                {{ form.frequence }}
-                <small class="text-danger">{{ form.frequence.errors }}</small>
-            </div>
-
-            <!-- DATE -->
-            <div class="form-group">
-                <label>Date de début</label>
-                {{ form.date_debut }}
-                <small class="text-danger">{{ form.date_debut.errors }}</small>
-            </div>
-
-            <button type="submit" class="btn btn-success">
-                Créer le groupe
-            </button>
-
-        </form>
-
+        </div>
+        <a href="{% url 'liste_groupes' %}" class="btn btn-outline-modern w-100 w-sm-auto">
+            <i class="fas fa-arrow-left me-1"></i> 
+            <span class="d-none d-sm-inline">Retour à la liste</span>
+            <span class="d-sm-none">Retour</span>
+        </a>
     </div>
 </div>
 
+<!-- ===== FORMULAIRE ===== -->
+<div class="row g-3 g-md-4">
+    <div class="col-12 col-lg-8">
+        <div class="card-modern">
+            <div class="card-modern-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <span class="card-modern-title">
+                    <i class="fas fa-layer-group me-2" style="color: #4f46e5;"></i>
+                    Informations du groupe
+                </span>
+                <span class="badge-step">
+                    <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
+                    Étape 1 sur 1
+                </span>
+            </div>
+            
+            <div class="card-modern-body">
+                <!-- Messages -->
+                {% include "partials/messages.html" %}
+
+                <!-- Erreurs du formulaire -->
+                {% if form.non_field_errors %}
+                    <div class="alert-modern alert-danger-modern">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- ===== INFORMATION ===== -->
+                <div class="info-banner" style="border-left-color: #4f46e5;">
+                    <i class="fas fa-info-circle" style="color: #4f46e5; font-size: 1.1rem;"></i>
+                    <div>
+                        <strong style="color: #0f172a;">Information :</strong>
+                        <span style="color: #64748b;">
+                            Remplissez tous les champs pour créer un nouveau groupe d'épargne.
+                        </span>
+                    </div>
+                </div>
+
+                <form method="POST" id="groupForm" novalidate>
+                    {% csrf_token %}
+
+                    <!-- ===== NOM DU GROUPE ===== -->
+                    <div class="form-group-modern">
+                        <label for="id_nom" class="form-label-modern">
+                            <i class="fas fa-tag me-1" style="color: #4f46e5;"></i>
+                            Nom du groupe
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-layer-group input-icon-modern"></i>
+                            {{ form.nom }}
+                        </div>
+                        {% if form.nom.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.nom.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Choisissez un nom unique et descriptif pour votre groupe
+                        </small>
+                    </div>
+
+                    <!-- ===== MONTANT COTISATION ===== -->
+                    <div class="form-group-modern">
+                        <label for="id_montant_cotisation" class="form-label-modern">
+                            <i class="fas fa-coins me-1" style="color: #d97706;"></i>
+                            Montant de cotisation
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-money-bill-wave input-icon-modern"></i>
+                            {{ form.montant_cotisation }}
+                            <span class="input-suffix">FCFA</span>
+                        </div>
+                        {% if form.montant_cotisation.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.montant_cotisation.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Montant que chaque membre devra cotiser périodiquement
+                        </small>
+                    </div>
+
+                    <!-- ===== FRÉQUENCE ===== -->
+                    <div class="form-group-modern">
+                        <label for="id_frequence" class="form-label-modern">
+                            <i class="fas fa-clock me-1" style="color: #059669;"></i>
+                            Fréquence
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-sync-alt input-icon-modern"></i>
+                            {{ form.frequence }}
+                        </div>
+                        {% if form.frequence.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.frequence.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Définissez la périodicité des cotisations
+                        </small>
+                    </div>
+
+                    <!-- ===== DATE DE DÉBUT ===== -->
+                    <div class="form-group-modern">
+                        <label for="id_date_debut" class="form-label-modern">
+                            <i class="fas fa-calendar-alt me-1" style="color: #7c3aed;"></i>
+                            Date de début
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-calendar-day input-icon-modern"></i>
+                            {{ form.date_debut }}
+                        </div>
+                        {% if form.date_debut.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.date_debut.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Date à laquelle les cotisations débuteront
+                        </small>
+                    </div>
+
+                    <!-- ===== BOUTONS ===== -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <span class="btn-text">
+                                <i class="fas fa-plus-circle me-2"></i>
+                                Créer le groupe
+                            </span>
+                            <span class="spinner"></span>
+                        </button>
+                        <a href="{% url 'liste_groupes' %}" class="btn-cancel-form">
+                            <i class="fas fa-times me-1"></i>
+                            Annuler
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SIDEBAR DROIT ===== -->
+    <div class="col-12 col-lg-4">
+        <div class="card-modern">
+            <div class="card-modern-header">
+                <span class="card-modern-title" style="font-size: 0.85rem;">
+                    <i class="fas fa-lightbulb me-2" style="color: #f59e0b;"></i>
+                    Conseils
+                </span>
+            </div>
+            <div class="card-modern-body" style="padding: 14px 16px 16px;">
+                <div class="tip-item">
+                    <div class="tip-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                        <i class="fas fa-tag"></i>
+                    </div>
+                    <div>
+                        <h6>Nom du groupe</h6>
+                        <p>Choisissez un nom qui reflète l'objectif du groupe d'épargne.</p>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div>
+                        <h6>Montant adapté</h6>
+                        <p>Fixez un montant qui convient à tous les membres du groupe.</p>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <h6>Date de début</h6>
+                        <p>La date de début détermine le premier cycle de cotisation.</p>
+                    </div>
+                </div>
+                <div class="tip-item" style="border-bottom: none; padding-bottom: 0;">
+                    <div class="tip-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h6>Invitez des membres</h6>
+                        <p>Un groupe peut accueillir plusieurs membres. Pensez à les inviter !</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== RÉSUMÉ ===== -->
+        <div class="card-modern mt-3">
+            <div class="card-modern-body" style="padding: 14px 16px;">
+                <p class="text-muted small mb-2 fw-semibold text-uppercase" style="letter-spacing: 0.5px;">
+                    <i class="fas fa-file-alt me-1"></i>
+                    Résumé du groupe
+                </p>
+                <div class="summary-item">
+                    <span class="summary-label">
+                        <i class="fas fa-tag me-1" style="color: #4f46e5;"></i>
+                        Nom
+                    </span>
+                    <span class="summary-value" id="previewNom">—</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">
+                        <i class="fas fa-coins me-1" style="color: #d97706;"></i>
+                        Cotisation
+                    </span>
+                    <span class="summary-value" id="previewMontant">—</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">
+                        <i class="fas fa-clock me-1" style="color: #059669;"></i>
+                        Fréquence
+                    </span>
+                    <span class="summary-value" id="previewFrequence">—</span>
+                </div>
+                <div class="summary-item" style="border-bottom: none; padding-bottom: 0;">
+                    <span class="summary-label">
+                        <i class="fas fa-calendar me-1" style="color: #7c3aed;"></i>
+                        Date de début
+                    </span>
+                    <span class="summary-value" id="previewDate">—</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ===== PRÉVISUALISATION EN TEMPS RÉEL =====
+        const nomInput = document.getElementById('id_nom');
+        const montantInput = document.getElementById('id_montant_cotisation');
+        const frequenceSelect = document.getElementById('id_frequence');
+        const dateInput = document.getElementById('id_date_debut');
+        
+        const previewNom = document.getElementById('previewNom');
+        const previewMontant = document.getElementById('previewMontant');
+        const previewFrequence = document.getElementById('previewFrequence');
+        const previewDate = document.getElementById('previewDate');
+        
+        // Mapping des fréquences
+        const frequenceMap = {
+            'QUOTIDIEN': 'Quotidien',
+            'HEBDOMADAIRE': 'Hebdomadaire',
+            'MENSUEL': 'Mensuel',
+            'ANNUEL': 'Annuel'
+        };
+        
+        function updatePreview() {
+            if (nomInput && previewNom) {
+                previewNom.textContent = nomInput.value.trim() || '—';
+            }
+            if (montantInput && previewMontant) {
+                const val = montantInput.value;
+                previewMontant.textContent = val ? val + ' FCFA' : '—';
+            }
+            if (frequenceSelect && previewFrequence) {
+                const val = frequenceSelect.value;
+                previewFrequence.textContent = frequenceMap[val] || '—';
+            }
+            if (dateInput && previewDate) {
+                const val = dateInput.value;
+                previewDate.textContent = val ? new Date(val).toLocaleDateString('fr-FR') : '—';
+            }
+        }
+        
+        // Écouteurs d'événements
+        if (nomInput) nomInput.addEventListener('input', updatePreview);
+        if (montantInput) montantInput.addEventListener('input', updatePreview);
+        if (frequenceSelect) frequenceSelect.addEventListener('change', updatePreview);
+        if (dateInput) dateInput.addEventListener('change', updatePreview);
+        
+        // Mise à jour initiale
+        updatePreview();
+
+        // ===== VALIDATION ET LOADING =====
+        const form = document.getElementById('groupForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                const requiredFields = form.querySelectorAll('[required]');
+                
+                requiredFields.forEach(field => {
+                    const wrapper = field.closest('.input-wrapper-modern');
+                    if (!field.value.trim()) {
+                        if (wrapper) wrapper.classList.add('error');
+                        isValid = false;
+                    } else {
+                        if (wrapper) wrapper.classList.remove('error');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    const firstError = form.querySelector('.input-wrapper-modern.error');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.querySelector('input, select').focus();
+                    }
+                    return;
+                }
+                
+                // Loading state
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+        }
+        
+        // ===== SUPPRESSION ERREUR AU CHANGEMENT =====
+        document.querySelectorAll('.input-wrapper-modern input, .input-wrapper-modern select').forEach(input => {
+            input.addEventListener('input', function() {
+                this.closest('.input-wrapper-modern').classList.remove('error');
+            });
+            input.addEventListener('change', function() {
+                this.closest('.input-wrapper-modern').classList.remove('error');
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== PAGE HEADER ===== */
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+/* ===== GROUP AVATAR LARGE ===== */
+.group-avatar-large {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .group-avatar-large {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-avatar-large {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
+}
+
+/* ===== BOUTONS ===== */
+.btn-outline-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-outline-modern {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-outline-modern:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.04);
+    text-decoration: none;
+}
+
+/* ===== CARD MODERN ===== */
+.card-modern {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.card-modern:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-modern-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-header {
+        padding: 16px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-header {
+        padding: 16px 24px;
+    }
+}
+
+.card-modern-title {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #0f172a;
+}
+
+@media (min-width: 768px) {
+    .card-modern-title {
+        font-size: 0.95rem;
+    }
+}
+
+.card-modern-body {
+    padding: 16px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-body {
+        padding: 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-body {
+        padding: 24px;
+    }
+}
+
+/* ===== BADGE STEP ===== */
+.badge-step {
+    padding: 3px 12px;
+    border-radius: 20px;
+    background: rgba(79, 70, 229, 0.08);
+    color: #4f46e5;
+    font-size: 0.65rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .badge-step {
+        padding: 4px 14px;
+        font-size: 0.7rem;
+    }
+}
+
+/* ===== ALERT MODERN ===== */
+.alert-modern {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+@media (min-width: 576px) {
+    .alert-modern {
+        padding: 14px 18px;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+}
+
+.alert-danger-modern {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* ===== INFO BANNER ===== */
+.info-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #f0f4ff;
+    border-radius: 12px;
+    border-left: 4px solid #4f46e5;
+    margin-bottom: 16px;
+}
+
+@media (min-width: 576px) {
+    .info-banner {
+        gap: 12px;
+        padding: 14px 18px;
+        margin-bottom: 20px;
+    }
+}
+
+.info-banner div {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+@media (min-width: 576px) {
+    .info-banner div {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== FORM GROUP ===== */
+.form-group-modern {
+    margin-bottom: 16px;
+}
+
+@media (min-width: 576px) {
+    .form-group-modern {
+        margin-bottom: 18px;
+    }
+}
+
+@media (min-width: 768px) {
+    .form-group-modern {
+        margin-bottom: 20px;
+    }
+}
+
+.form-label-modern {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 576px) {
+    .form-label-modern {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+}
+
+.form-label-modern .required {
+    color: #ef4444;
+    margin-left: 2px;
+}
+
+.input-wrapper-modern {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper-modern .input-icon-modern {
+    position: absolute;
+    left: 12px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    pointer-events: none;
+    z-index: 1;
+    transition: color 0.2s ease;
+}
+
+@media (min-width: 576px) {
+    .input-wrapper-modern .input-icon-modern {
+        left: 14px;
+        font-size: 0.9rem;
+    }
+}
+
+.input-wrapper-modern input,
+.input-wrapper-modern select {
+    width: 100%;
+    padding: 8px 12px 8px 38px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    background: #fafbfc;
+    color: #0f172a;
+    appearance: none;
+}
+
+@media (min-width: 576px) {
+    .input-wrapper-modern input,
+    .input-wrapper-modern select {
+        padding: 9px 14px 9px 42px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .input-wrapper-modern input,
+    .input-wrapper-modern select {
+        padding: 10px 14px 10px 44px;
+    }
+}
+
+.input-wrapper-modern select {
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+
+.input-wrapper-modern select option {
+    padding: 8px;
+}
+
+.input-wrapper-modern input:focus,
+.input-wrapper-modern select:focus {
+    outline: none;
+    border-color: #4f46e5;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.06);
+}
+
+.input-wrapper-modern input:focus ~ .input-icon-modern,
+.input-wrapper-modern select:focus ~ .input-icon-modern {
+    color: #4f46e5;
+}
+
+.input-wrapper-modern input::placeholder {
+    color: #94a3b8;
+}
+
+/* ===== INPUT SUFFIX ===== */
+.input-suffix {
+    position: absolute;
+    right: 12px;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-weight: 500;
+    pointer-events: none;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+@media (min-width: 576px) {
+    .input-suffix {
+        right: 14px;
+        font-size: 0.8rem;
+        padding: 2px 10px;
+    }
+}
+
+/* ===== FORM ERROR ===== */
+.input-wrapper-modern.error input,
+.input-wrapper-modern.error select {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.input-wrapper-modern.error .input-icon-modern {
+    color: #ef4444;
+}
+
+.form-error {
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+@media (min-width: 576px) {
+    .form-error {
+        font-size: 0.8rem;
+    }
+}
+
+.form-hint {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    margin-top: 4px;
+}
+
+@media (min-width: 576px) {
+    .form-hint {
+        font-size: 0.75rem;
+    }
+}
+
+/* ===== FORM ACTIONS ===== */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 4px;
+}
+
+@media (min-width: 576px) {
+    .form-actions {
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        padding-top: 20px;
+        margin-top: 8px;
+    }
+}
+
+.btn-submit {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    min-width: 140px;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .btn-submit {
+        padding: 12px 32px;
+        font-size: 0.9rem;
+        min-width: 180px;
+        width: auto;
+    }
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+}
+
+.btn-submit:active {
+    transform: scale(0.98);
+}
+
+.btn-submit .spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+.btn-submit.loading .spinner {
+    display: inline-block;
+}
+
+.btn-submit.loading .btn-text {
+    display: none;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.btn-cancel-form {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+    .btn-cancel-form {
+        padding: 10px 24px;
+        font-size: 0.85rem;
+        width: auto;
+    }
+}
+
+.btn-cancel-form:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+    text-decoration: none;
+}
+
+/* ===== TIPS ===== */
+.tip-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+    .tip-item {
+        gap: 14px;
+        padding: 12px 0;
+    }
+}
+
+.tip-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.tip-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(79, 70, 229, 0.08);
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+}
+
+@media (min-width: 576px) {
+    .tip-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+}
+
+.tip-item h6 {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 2px;
+}
+
+@media (min-width: 576px) {
+    .tip-item h6 {
+        font-size: 0.85rem;
+    }
+}
+
+.tip-item p {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+@media (min-width: 576px) {
+    .tip-item p {
+        font-size: 0.8rem;
+    }
+}
+
+/* ===== SUMMARY ===== */
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+@media (min-width: 576px) {
+    .summary-label {
+        font-size: 0.8rem;
+    }
+}
+
+.summary-value {
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #0f172a;
+    text-align: right;
+}
+
+@media (min-width: 576px) {
+    .summary-value {
+        font-size: 0.85rem;
+    }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE GLOBAL ===== */
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+    }
+    
+    .col-12 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .g-3 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+    
+    .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .gap-3 {
+        gap: 0.75rem !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+</style>
 {% endblock %}

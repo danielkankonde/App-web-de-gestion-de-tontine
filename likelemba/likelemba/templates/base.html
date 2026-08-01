@@ -532,6 +532,107 @@
 
             {% include 'components/footer.html' %}
 
+            <!-- ===== MODAL DETAIL TOUR ===== -->
+            <div class="modal fade" id="tourDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fas fa-info-circle text-primary mr-2"></i>
+                                Détails du tour
+                            </h5>
+
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="mb-3">
+                                <small class="text-muted">Membre</small>
+                                <div class="font-weight-bold" id="detailMembre"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Date</small>
+                                <div class="font-weight-bold" id="detailDate"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Ordre</small>
+                                <div class="font-weight-bold" id="detailOrdre"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Montant</small>
+                                <div class="font-weight-bold" id="detailMontant"></div>
+                            </div>
+
+                            <div>
+                                <small class="text-muted">Statut</small>
+                                <div id="detailStatut"></div>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer justify-content-center">
+                            <button class="btn btn-secondary" data-dismiss="modal">
+                                Fermer
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- ===== MODAL DE SUPPRESSION (ajouté ici) ===== -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-danger">
+                                <i class="fas fa-trash-alt me-2"></i>Confirmer la suppression
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <div style="width: 60px; height: 60px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                                <i class="fas fa-exclamation-triangle text-danger" style="font-size: 1.8rem;"></i>
+                            </div>
+                            <h6 class="fw-bold" style="color: #1e293b;">Supprimer ce membre ?</h6>
+                            <p class="text-muted mb-0">
+                                Vous êtes sur le point de supprimer <br>
+                                <strong id="deleteMembreNom" style="color: #0f172a;">"Membre"</strong>
+                            </p>
+                            <p class="text-muted mt-2 mb-0">
+                                du groupe <strong id="deleteGroupeNom" style="color: #0f172a;">Groupe</strong>
+                            </p>
+                            <p class="text-danger small mt-2 mb-0">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Cette action est irréversible
+                            </p>
+                        </div>
+                        <div class="modal-footer justify-content-center">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                Annuler
+                            </button>
+                            <form method="POST" id="deleteForm" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-trash me-1"></i> Supprimer
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -540,6 +641,60 @@
     {% include 'components/scripts.html' %}
 
     <script>
+    function openTourDetailModal(membre, date, ordre, montant, statut) {
+
+        document.getElementById('detailMembre').textContent = membre;
+        document.getElementById('detailDate').textContent = date;
+        document.getElementById('detailOrdre').textContent = "#" + ordre;
+        document.getElementById('detailMontant').textContent = montant + " FCFA";
+
+        let badge = '';
+
+        if (statut === 'PAYE') {
+            badge = '<span class="badge badge-success px-3 py-2">Payé</span>';
+        } else {
+            badge = '<span class="badge badge-warning px-3 py-2">En attente</span>';
+        }
+
+        document.getElementById('detailStatut').innerHTML = badge;
+
+        $('#tourDetailModal').modal('show');
+    }
+
+
+        // ===== POPUP DE SUPPRESSION D'UN GROUPE =====
+        function openDeleteGroupeModal(groupeId, groupeNom) {
+
+            document.getElementById('deleteMembreNom').textContent = '"' + groupeNom + '"';
+            document.getElementById('deleteGroupeNom').parentElement.style.display = "none";
+
+            // Changer le texte
+            document.querySelector('#deleteModal h6.fw-bold').textContent = "Supprimer ce groupe ?";
+
+            document.querySelector('#deleteModal .text-muted').innerHTML =
+                'Vous êtes sur le point de supprimer <br><strong id="deleteMembreNom">"' +
+                groupeNom +
+                '"</strong>';
+
+            // URL de suppression
+            document.getElementById('deleteForm').action =
+                '/groupes/' + groupeId + '/delete/';
+
+            $('#deleteModal').modal('show');
+        }
+        // ===== FONCTION POUR OUVRIR LE MODAL DE SUPPRESSION MEMBRES =====
+        function openDeleteModal(membreId, membreNom, groupeNom) {
+            // Mettre à jour les données
+            document.getElementById('deleteMembreNom').textContent = '"' + membreNom + '"';
+            document.getElementById('deleteGroupeNom').textContent = groupeNom;
+            
+            // Mettre à jour l'action du formulaire
+            var form = document.getElementById('deleteForm');
+            form.action = '/membres/' + membreId + '/delete/';
+            
+            // Ouvrir le modal
+            $('#deleteModal').modal('show');
+        }
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle sidebar on mobile
             const toggleBtn = document.getElementById('sidebarToggleTop');

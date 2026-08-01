@@ -6,26 +6,24 @@
 <!-- ===== EN-TÊTE ===== -->
 <div class="page-header mb-3 mb-md-4">
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
-        <div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="group-avatar-large" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
-                    <i class="fas fa-sort-numeric-up"></i>
-                </div>
-                <div>
-                    <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
-                        Modifier l'ordre
-                    </h1>
-                    <p class="text-muted small mb-0">
-                        <i class="fas fa-user me-1" style="color: #4f46e5;"></i>
-                        Membre : <strong style="color: #0f172a;">{{ membre.nom_affiche }}</strong>
-                        <span class="bullet">•</span>
-                        <i class="fas fa-layer-group me-1" style="color: #4f46e5;"></i>
-                        Groupe : <strong style="color: #0f172a;">{{ membre.groupe.nom }}</strong>
-                    </p>
-                </div>
+        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto">
+            <div class="group-avatar-large" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); flex-shrink: 0;">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <div class="min-width-0">
+                <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                    Ajouter un membre
+                </h1>
+                <p class="text-muted small mb-0 text-truncate" style="max-width: 200px;">
+                    <i class="fas fa-layer-group me-1" style="color: #4f46e5;"></i>
+                    Groupe : <strong style="color: #0f172a;">{{ groupe.nom }}</strong>
+                    <span class="bullet">•</span>
+                    <i class="fas fa-users me-1" style="color: #4f46e5;"></i>
+                    {{ groupe.total_membres }} membre{{ groupe.total_membres|pluralize }}
+                </p>
             </div>
         </div>
-        <a href="{% url 'membres_groupe' membre.groupe.id %}" class="btn btn-outline-modern w-100 w-sm-auto">
+        <a href="{% url 'membres_groupe' groupe.id %}" class="btn btn-outline-modern w-100 w-sm-auto">
             <i class="fas fa-arrow-left me-1"></i> 
             <span class="d-none d-sm-inline">Retour au groupe</span>
             <span class="d-sm-none">Retour</span>
@@ -39,20 +37,17 @@
         <div class="card-modern">
             <div class="card-modern-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <span class="card-modern-title">
-                    <i class="fas fa-edit me-2" style="color: #d97706;"></i>
-                    Modifier l'ordre de réception
+                    <i class="fas fa-user-plus me-2" style="color: #4f46e5;"></i>
+                    Informations du membre
                 </span>
                 <span class="badge-step">
                     <i class="fas fa-circle me-1" style="font-size: 0.4rem;"></i>
-                    Édition
+                    Étape 1 sur 1
                 </span>
             </div>
             
             <div class="card-modern-body">
-                <!-- Messages -->
-                {% include "partials/messages.html" %}
-
-                <!-- Erreurs du formulaire -->
+                <!-- Messages d'erreur -->
                 {% if form.non_field_errors %}
                     <div class="alert-modern alert-danger-modern">
                         <i class="fas fa-exclamation-circle me-2"></i>
@@ -61,39 +56,91 @@
                 {% endif %}
 
                 <!-- ===== INFORMATION ===== -->
-                <div class="info-banner" style="border-left-color: #d97706;">
-                    <i class="fas fa-info-circle" style="color: #d97706; font-size: 1.1rem;"></i>
+                <div class="info-banner">
+                    <i class="fas fa-info-circle" style="color: #4f46e5; font-size: 1.1rem;"></i>
                     <div>
-                        <strong style="color: #0f172a;">Information :</strong>
+                        <strong style="color: #0f172a;">Conseil :</strong>
                         <span style="color: #64748b;">
-                            Modifiez l'ordre de réception du membre <strong>{{ membre.nom_affiche }}</strong> dans le groupe <strong>{{ membre.groupe.nom }}</strong>.
+                            Choisissez un utilisateur qui a déjà un compte, ou laissez ce champ vide et saisissez seulement le nom du membre.
                         </span>
                     </div>
                 </div>
 
-                <form method="POST" id="updateOrderForm" novalidate>
+                <form method="POST" id="memberForm" novalidate>
                     {% csrf_token %}
 
-                    <!-- ===== MEMBRE ===== -->
+                    <!-- ===== UTILISATEUR EXISTANT ===== -->
                     <div class="form-group-modern">
-                        <label class="form-label-modern" style="color: #64748b;">
+                        <label for="id_utilisateur" class="form-label-modern">
                             <i class="fas fa-user me-1" style="color: #4f46e5;"></i>
-                            Membre
+                            Utilisateur existant
+                            <span class="optional">(Optionnel)</span>
                         </label>
-                        <div class="info-display">
-                            <div class="info-display-icon" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
-                                {{ membre.nom_affiche|make_list|first|upper }}
-                            </div>
-                            <div>
-                                <span class="fw-semibold" style="color: #0f172a;">{{ membre.nom_affiche }}</span>
-                                {% if membre.telephone %}
-                                    <small class="d-block text-muted" style="font-size: 0.75rem;">
-                                        <i class="fas fa-phone me-1"></i>
-                                        {{ membre.telephone }}
-                                    </small>
-                                {% endif %}
-                            </div>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-users input-icon-modern"></i>
+                            {{ form.utilisateur }}
                         </div>
+                        {% if form.utilisateur.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.utilisateur.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Sélectionnez un utilisateur existant ou laissez vide pour créer un membre sans compte
+                        </small>
+                    </div>
+
+                    <!-- ===== DIVISEUR ===== -->
+                    <div class="form-divider">
+                        <span>OU</span>
+                    </div>
+
+                    <!-- ===== NOM ===== -->
+                    <div class="form-group-modern">
+                        <label for="id_nom" class="form-label-modern">
+                            <i class="fas fa-tag me-1" style="color: #d97706;"></i>
+                            Nom du membre
+                            <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-user input-icon-modern"></i>
+                            {{ form.nom }}
+                        </div>
+                        {% if form.nom.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.nom.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Saisissez le nom complet du membre
+                        </small>
+                    </div>
+
+                    <!-- ===== TÉLÉPHONE ===== -->
+                    <div class="form-group-modern">
+                        <label for="id_telephone" class="form-label-modern">
+                            <i class="fas fa-phone me-1" style="color: #059669;"></i>
+                            Téléphone
+                            <span class="optional">(Optionnel)</span>
+                        </label>
+                        <div class="input-wrapper-modern">
+                            <i class="fas fa-phone-alt input-icon-modern"></i>
+                            {{ form.telephone }}
+                        </div>
+                        {% if form.telephone.errors %}
+                            <div class="form-error">
+                                <i class="fas fa-exclamation-circle me-1"></i>
+                                {{ form.telephone.errors }}
+                            </div>
+                        {% endif %}
+                        <small class="form-hint">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Numéro de téléphone du membre
+                        </small>
                     </div>
 
                     <!-- ===== ORDRE DE RÉCEPTION ===== -->
@@ -119,29 +166,16 @@
                         </small>
                     </div>
 
-                    <!-- ===== ORDRE ACTUEL ===== -->
-                    <div class="form-group-modern" style="background: #f8fafc; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted small">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Ordre actuel
-                            </span>
-                            <span class="fw-bold" style="color: #0f172a; font-size: 1.1rem;">
-                                {{ membre.ordre_reception }}<span class="text-muted" style="font-size: 0.8rem;">ème</span>
-                            </span>
-                        </div>
-                    </div>
-
                     <!-- ===== BOUTONS ===== -->
                     <div class="form-actions">
                         <button type="submit" class="btn-submit" id="submitBtn">
                             <span class="btn-text">
-                                <i class="fas fa-save me-2"></i>
-                                Enregistrer
+                                <i class="fas fa-user-plus me-2"></i>
+                                Ajouter le membre
                             </span>
                             <span class="spinner"></span>
                         </button>
-                        <a href="{% url 'membres_groupe' membre.groupe.id %}" class="btn-cancel-form">
+                        <a href="{% url 'membres_groupe' groupe.id %}" class="btn-cancel-form">
                             <i class="fas fa-times me-1"></i>
                             Annuler
                         </a>
@@ -163,7 +197,25 @@
             </div>
             <div class="card-modern-body" style="padding: 14px 16px 16px;">
                 <div class="tip-item">
-                    <div class="tip-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                    <div class="tip-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div>
+                        <h6>Utilisateur existant</h6>
+                        <p>Si le membre a déjà un compte, sélectionnez-le pour lier automatiquement.</p>
+                    </div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <div>
+                        <h6>Nouveau membre</h6>
+                        <p>Laissez le champ utilisateur vide et remplissez le nom et téléphone.</p>
+                    </div>
+                </div>
+                <div class="tip-item" style="border-bottom: none; padding-bottom: 0;">
+                    <div class="tip-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
                         <i class="fas fa-sort-numeric-up"></i>
                     </div>
                     <div>
@@ -171,61 +223,43 @@
                         <p>Détermine la position du membre dans le tour de cotisation.</p>
                     </div>
                 </div>
-                <div class="tip-item">
-                    <div class="tip-icon" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">
-                        <i class="fas fa-exchange-alt"></i>
-                    </div>
-                    <div>
-                        <h6>Modification</h6>
-                        <p>Assurez-vous que le nouvel ordre ne crée pas de conflit avec d'autres membres.</p>
-                    </div>
-                </div>
-                <div class="tip-item" style="border-bottom: none; padding-bottom: 0;">
-                    <div class="tip-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
-                        <i class="fas fa-info-circle"></i>
-                    </div>
-                    <div>
-                        <h6>Impact</h6>
-                        <p>L'ordre de réception affecte le calendrier des tours du groupe.</p>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <!-- ===== RÉSUMÉ DU MEMBRE ===== -->
+        <!-- ===== RÉSUMÉ ===== -->
         <div class="card-modern mt-3">
             <div class="card-modern-body" style="padding: 14px 16px;">
                 <p class="text-muted small mb-2 fw-semibold text-uppercase" style="letter-spacing: 0.5px;">
                     <i class="fas fa-file-alt me-1"></i>
-                    Informations du membre
+                    Résumé du groupe
                 </p>
-                <div class="summary-item">
-                    <span class="summary-label">
-                        <i class="fas fa-user me-1" style="color: #4f46e5;"></i>
-                        Membre
-                    </span>
-                    <span class="summary-value">{{ membre.nom_affiche }}</span>
-                </div>
-                <div class="summary-item">
-                    <span class="summary-label">
-                        <i class="fas fa-phone me-1" style="color: #059669;"></i>
-                        Téléphone
-                    </span>
-                    <span class="summary-value">{{ membre.telephone|default:"—" }}</span>
-                </div>
                 <div class="summary-item">
                     <span class="summary-label">
                         <i class="fas fa-layer-group me-1" style="color: #4f46e5;"></i>
                         Groupe
                     </span>
-                    <span class="summary-value">{{ membre.groupe.nom }}</span>
+                    <span class="summary-value">{{ groupe.nom }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">
+                        <i class="fas fa-users me-1" style="color: #4f46e5;"></i>
+                        Membres actuels
+                    </span>
+                    <span class="summary-value">{{ groupe.total_membres }}</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">
+                        <i class="fas fa-coins me-1" style="color: #d97706;"></i>
+                        Cotisation
+                    </span>
+                    <span class="summary-value">{{ groupe.montant_cotisation|floatformat:0 }} FCFA</span>
                 </div>
                 <div class="summary-item" style="border-bottom: none; padding-bottom: 0;">
                     <span class="summary-label">
-                        <i class="fas fa-sort-numeric-up me-1" style="color: #7c3aed;"></i>
-                        Ordre actuel
+                        <i class="fas fa-clock me-1" style="color: #059669;"></i>
+                        Fréquence
                     </span>
-                    <span class="summary-value">{{ membre.ordre_reception }}ème</span>
+                    <span class="summary-value">{{ groupe.get_frequence_display }}</span>
                 </div>
             </div>
         </div>
@@ -238,7 +272,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // ===== VALIDATION ET LOADING =====
-        const form = document.getElementById('updateOrderForm');
+        const form = document.getElementById('memberForm');
         const submitBtn = document.getElementById('submitBtn');
         
         if (form) {
@@ -255,6 +289,36 @@
                         if (wrapper) wrapper.classList.remove('error');
                     }
                 });
+                
+                // Vérifier que soit utilisateur soit nom est rempli
+                const utilisateur = document.getElementById('id_utilisateur');
+                const nom = document.getElementById('id_nom');
+                const utilisateurWrapper = utilisateur ? utilisateur.closest('.input-wrapper-modern') : null;
+                const nomWrapper = nom ? nom.closest('.input-wrapper-modern') : null;
+                
+                const hasUtilisateur = utilisateur && utilisateur.value;
+                const hasNom = nom && nom.value.trim();
+                
+                if (!hasUtilisateur && !hasNom) {
+                    if (utilisateurWrapper) utilisateurWrapper.classList.add('error');
+                    if (nomWrapper) nomWrapper.classList.add('error');
+                    isValid = false;
+                    // Ajouter un message d'erreur
+                    let errorMsg = document.querySelector('.form-error.global');
+                    if (!errorMsg) {
+                        errorMsg = document.createElement('div');
+                        errorMsg.className = 'form-error global';
+                        errorMsg.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Veuillez sélectionner un utilisateur ou saisir un nom';
+                        const formBody = form.querySelector('.card-modern-body') || form;
+                        formBody.insertBefore(errorMsg, form.querySelector('.form-group-modern'));
+                    }
+                    errorMsg.style.display = 'block';
+                } else {
+                    const globalError = document.querySelector('.form-error.global');
+                    if (globalError) globalError.style.display = 'none';
+                    if (utilisateurWrapper) utilisateurWrapper.classList.remove('error');
+                    if (nomWrapper) nomWrapper.classList.remove('error');
+                }
                 
                 if (!isValid) {
                     e.preventDefault();
@@ -279,6 +343,9 @@
             });
             input.addEventListener('change', function() {
                 this.closest('.input-wrapper-modern').classList.remove('error');
+                // Cacher l'erreur globale
+                const globalError = document.querySelector('.form-error.global');
+                if (globalError) globalError.style.display = 'none';
             });
         });
     });
@@ -357,9 +424,9 @@
 }
 
 .btn-outline-modern:hover {
-    border-color: #d97706;
-    color: #d97706;
-    background: rgba(217, 119, 6, 0.04);
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.04);
     text-decoration: none;
 }
 
@@ -430,8 +497,8 @@
 .badge-step {
     padding: 3px 12px;
     border-radius: 20px;
-    background: rgba(217, 119, 6, 0.08);
-    color: #d97706;
+    background: rgba(79, 70, 229, 0.08);
+    color: #4f46e5;
     font-size: 0.65rem;
     font-weight: 600;
     display: inline-flex;
@@ -477,9 +544,9 @@
     align-items: flex-start;
     gap: 10px;
     padding: 12px 16px;
-    background: #fffbeb;
+    background: #f0f4ff;
     border-radius: 12px;
-    border-left: 4px solid #d97706;
+    border-left: 4px solid #4f46e5;
     margin-bottom: 16px;
 }
 
@@ -500,30 +567,6 @@
     .info-banner div {
         font-size: 0.9rem;
     }
-}
-
-/* ===== INFO DISPLAY ===== */
-.info-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    background: #f8fafc;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-}
-
-.info-display-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.9rem;
-    flex-shrink: 0;
 }
 
 /* ===== FORM GROUP ===== */
@@ -561,6 +604,19 @@
 .form-label-modern .required {
     color: #ef4444;
     margin-left: 2px;
+}
+
+.form-label-modern .optional {
+    color: #94a3b8;
+    font-weight: 400;
+    font-size: 0.7rem;
+    margin-left: 4px;
+}
+
+@media (min-width: 576px) {
+    .form-label-modern .optional {
+        font-size: 0.75rem;
+    }
 }
 
 .input-wrapper-modern {
@@ -615,21 +671,68 @@
     }
 }
 
+.input-wrapper-modern select {
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    cursor: pointer;
+}
+
+.input-wrapper-modern select option {
+    padding: 8px;
+}
+
 .input-wrapper-modern input:focus,
 .input-wrapper-modern select:focus {
     outline: none;
-    border-color: #d97706;
+    border-color: #4f46e5;
     background: #ffffff;
-    box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.06);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.06);
 }
 
 .input-wrapper-modern input:focus ~ .input-icon-modern,
 .input-wrapper-modern select:focus ~ .input-icon-modern {
-    color: #d97706;
+    color: #4f46e5;
 }
 
 .input-wrapper-modern input::placeholder {
     color: #94a3b8;
+}
+
+/* ===== FORM DIVIDER ===== */
+.form-divider {
+    display: flex;
+    align-items: center;
+    margin: 16px 0;
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (min-width: 576px) {
+    .form-divider {
+        margin: 18px 0;
+        font-size: 0.75rem;
+    }
+}
+
+.form-divider::before,
+.form-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.form-divider::before { margin-right: 14px; }
+.form-divider::after { margin-left: 14px; }
+
+@media (min-width: 576px) {
+    .form-divider::before { margin-right: 16px; }
+    .form-divider::after { margin-left: 16px; }
 }
 
 /* ===== FORM ERROR ===== */
@@ -656,6 +759,16 @@
     .form-error {
         font-size: 0.8rem;
     }
+}
+
+.form-error.global {
+    background: #fef2f2;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid #fecaca;
+    display: none;
+    font-size: 0.85rem;
 }
 
 .form-hint {
@@ -696,7 +809,7 @@
     padding: 10px 20px;
     border: none;
     border-radius: 10px;
-    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: #fff;
     font-weight: 600;
     font-size: 0.85rem;
@@ -706,7 +819,7 @@
     justify-content: center;
     gap: 6px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     min-width: 140px;
     width: 100%;
 }
@@ -722,7 +835,7 @@
 
 .btn-submit:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(217, 119, 6, 0.35);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
 }
 
 .btn-submit:active {
@@ -938,15 +1051,25 @@
         gap: 0.5rem !important;
     }
     
-    .info-display {
-        padding: 8px 12px !important;
-        gap: 10px !important;
+    .form-actions {
+        gap: 8px !important;
+        padding-top: 14px !important;
     }
     
-    .info-display-icon {
-        width: 34px !important;
-        height: 34px !important;
+    .info-banner {
+        padding: 10px 12px !important;
+        gap: 8px !important;
+    }
+    
+    .input-wrapper-modern input,
+    .input-wrapper-modern select {
         font-size: 0.8rem !important;
+        padding: 8px 10px 8px 34px !important;
+    }
+    
+    .input-wrapper-modern .input-icon-modern {
+        left: 10px !important;
+        font-size: 0.75rem !important;
     }
 }
 
