@@ -40,3 +40,4 @@ class ResetPasswordOTP(models.Model):
     def generate_code(self):
         self.code = str(random.randint(100000, 999999))
         self.save()
+

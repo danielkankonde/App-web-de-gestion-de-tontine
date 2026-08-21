@@ -9,34 +9,137 @@ from datetime import timedelta
 
 
 # Create your views here.
-@login_required
-def dashboard(request):
-
-    if request.user.role == 'ADMIN':
-    
-        context = {
-            'total_utilisateurs': Utilisateur.objects.count(),
-            'total_groupes': Groupe.objects.count(),
-            'total_paiements': Paiement.objects.count(),
-            'total_tours': Tour.objects.count(),
-        }
-        return render(request, 'pages/dashboard_admin.html', context)
-    return render(request, 'pages/dashboard_membre.html')
-
 @login_required(login_url="login")
 def dashboard_admin(request):
 
-    if request.user.role != 'ADMIN':
-        return redirect('dashboard_membre')
-    
+    if request.user.role != "ADMIN":
+        return redirect("dashboard_membre")
+
+    # =========================
+    # DONNÉES DU TABLEAU DE BORD
+    # =========================
+
+    groupes = Groupe.objects.filter(
+        admin=request.user
+    )
+
+    membres = MembreGroupe.objects.filter(
+        groupe__admin=request.user
+    )
+
+    paiements = Paiement.objects.filter(
+        membre__groupe__admin=request.user
+    )
+
+    tours = Tour.objects.filter(
+        groupe__admin=request.user
+    )
+
+    # =========================
+    # ACTIVITÉS RÉCENTES
+    # =========================
+
+    activites_recentes = []
+
+    # =========================
+    # NOUVEAUX MEMBRES
+    # =========================
+
+    membres_recents = MembreGroupe.objects.filter(
+        groupe__admin=request.user
+    ).order_by("-date_inscription")[:5]
+
+    for membre in membres_recents:
+
+        activites_recentes.append({
+            "type": "MEMBRE",
+            "titre": "Nouveau membre inscrit",
+            "description": f"{membre.nom_affiche} a rejoint {membre.groupe.nom}",
+            "date": membre.date_inscription.date(),
+        })
+
+    # =========================
+    # COTISATIONS REÇUES
+    # =========================
+
+    paiements_recents = Paiement.objects.filter(
+        membre__groupe__admin=request.user,
+        statut="PAYE"
+    ).order_by("-date_paiement")[:5]
+
+    for paiement in paiements_recents:
+
+        activites_recentes.append({
+            "type": "COTISATION",
+            "titre": "Cotisation reçue",
+            "description": f"{paiement.membre.nom_affiche} - {paiement.montant:,.0f} FCFA",
+            "date": paiement.date_paiement,
+        })
+
+    # =========================
+    # TOURS TERMINÉS
+    # =========================
+
+    tours_termines = Tour.objects.filter(
+        groupe__admin=request.user,
+        statut="PAYE"
+    ).order_by("-date_tour")[:5]
+
+    for tour in tours_termines:
+
+        activites_recentes.append({
+            "type": "TOUR",
+            "titre": "Tour terminé",
+            "description": f"{tour.groupe.nom} - Tour de {tour.membre.nom_affiche}",
+            "date": tour.date_tour,
+        })
+
+    # =========================
+    # PAIEMENTS EN RETARD
+    # =========================
+
+    paiements_en_retard = Paiement.objects.filter(
+        membre__groupe__admin=request.user,
+        statut="NON_PAYE"
+    ).order_by("-date_paiement")[:5]
+
+    for paiement in paiements_en_retard:
+
+        activites_recentes.append({
+            "type": "RETARD",
+            "titre": "Paiement en retard",
+            "description": f"{paiement.membre.nom_affiche} - {paiement.montant:,.0f} FCFA",
+            "date": paiement.date_paiement,
+        })
+
+    # =========================
+    # TRIER LES ACTIVITÉS
+    # =========================
+
+    activites_recentes = sorted(
+        activites_recentes,
+        key=lambda activite: activite["date"],
+        reverse=True
+    )[:5]
+
+    # =========================
+    # CONTEXT
+    # =========================
+
     context = {
-            'membres': MembreGroupe.objects.count(),
-            'total_groupes': Groupe.objects.count(),
-            'total_paiements': Paiement.objects.count(),
-            'total_tours': Tour.objects.count(),
+        "total_membres": membres.count(),
+        "total_groupes": groupes.count(),
+        "total_paiements": paiements.count(),
+        "total_tours": tours.count(),
+
+        "activites_recentes": activites_recentes,
     }
 
-    return render(request, 'pages/dashboard_admin.html', context)
+    return render(
+        request,
+        "pages/dashboard_admin.html",
+        context
+    )
 
 @login_required(login_url="login")
 def dashboard_membre(request):
@@ -496,7 +599,7 @@ def groupes_membre_view(request):
     context = {
         'groupes': groupes
     }
-    return render(request, 'groupes/liste_groupes_membre.html', context)
+    return render(request, 'groupes/membres/liste_groupes_membre.html', context)
 
 # Vues pour voir les paiements des membres 
 @login_required(login_url='login')

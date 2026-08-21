@@ -32,11 +32,6 @@
                 <span class="d-none d-sm-inline">Retour</span>
                 <span class="d-sm-none">Retour</span>
             </a>
-            <button class="btn btn-primary-modern flex-1" onclick="window.location.reload();">
-                <i class="fas fa-sync-alt me-1"></i> 
-                <span class="d-none d-sm-inline">Actualiser</span>
-                <span class="d-sm-none">Rafraîchir</span>
-            </button>
         </div>
     </div>
 </div>
@@ -179,85 +174,19 @@
                             {% endif %}
                         </td>
                         <td class="text-center">
-                            <button
-                                class="btn btn-info btn-sm"
-                                onclick="openTourDetailModal(
-                                    '{{ tour.membre.nom_affiche|escapejs }}',
-                                    '{{ tour.date_tour|date:"d/m/Y" }}',
-                                    '{{ forloop.counter }}',
-                                    '{{ groupe.montant_cotisation|floatformat:0 }}',
-                                    '{{ tour.statut }}'
-                                )">
-
+                            <button class="btn-action view" 
+                                    title="Voir détails"
+                                    onclick="openTourDetailModal(
+                                        '{{ tour.membre.nom_affiche|escapejs }}',
+                                        '{{ tour.date_tour|date:"d/m/Y" }}',
+                                        '{{ forloop.counter }}',
+                                        '{{ groupe.montant_cotisation|floatformat:0 }}',
+                                        '{{ tour.statut }}'
+                                    )">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </td>
                     </tr>
-                    
-                    <!-- ===== MODAL DÉTAILS TOUR ===== -->
-                    <div class="modal fade" id="tourModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content modal-modern">
-                                <div class="modal-header modal-modern-header">
-                                    <h6 class="modal-title fw-bold" style="color: #0f172a;">
-                                        <i class="fas fa-info-circle me-2" style="color: #4f46e5;"></i>
-                                        Détails du tour #{{ forloop.counter }}
-                                    </h6>
-                                    <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fermer">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body modal-modern-body">
-                                    <div class="tour-detail-grid">
-                                        <div class="tour-detail-item">
-                                            <span class="tour-detail-label">
-                                                <i class="fas fa-user me-1" style="color: #4f46e5;"></i>
-                                                Membre
-                                            </span>
-                                            <span class="tour-detail-value">{{ tour.membre.nom_affiche }}</span>
-                                        </div>
-                                        <div class="tour-detail-item">
-                                            <span class="tour-detail-label">
-                                                <i class="fas fa-calendar me-1" style="color: #7c3aed;"></i>
-                                                Date du tour
-                                            </span>
-                                            <span class="tour-detail-value">{{ tour.date_tour|date:"d/m/Y" }}</span>
-                                        </div>
-                                        <div class="tour-detail-item">
-                                            <span class="tour-detail-label">
-                                                <i class="fas fa-tag me-1" style="color: #d97706;"></i>
-                                                Ordre
-                                            </span>
-                                            <span class="tour-detail-value">#{{ forloop.counter }}</span>
-                                        </div>
-                                        <div class="tour-detail-item">
-                                            <span class="tour-detail-label">
-                                                <i class="fas fa-coins me-1" style="color: #059669;"></i>
-                                                Montant
-                                            </span>
-                                            <span class="tour-detail-value">{{ groupe.montant_cotisation|floatformat:0 }} FCFA</span>
-                                        </div>
-                                        <div class="tour-detail-item" style="grid-column: span 2;">
-                                            <span class="tour-detail-label">
-                                                <i class="fas fa-info-circle me-1" style="color: #94a3b8;"></i>
-                                                Statut
-                                            </span>
-                                            <span class="tour-detail-value">
-                                                {% if tour.statut == "PAYE" %}
-                                                    <span class="badge-status success">Payé</span>
-                                                {% else %}
-                                                    <span class="badge-status warning">En attente</span>
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer modal-modern-footer justify-content-center">
-                                    <button class="btn-cancel" data-dismiss="modal">Fermer</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     {% empty %}
                     <tr>
                         <td colspan="5" class="empty-state">
@@ -295,6 +224,7 @@
     </div>
 </div>
 
+
 {% endblock %}
 
 {% block extra_js %}
@@ -326,7 +256,6 @@
                 }
             });
             
-            // Afficher/masquer le message "aucun résultat"
             let emptyMsg = table.querySelector('.no-results');
             if (visibleCount === 0 && rows.length > 0) {
                 if (!emptyMsg) {
@@ -368,9 +297,35 @@
         });
     });
     
+    // ===== OUVERTURE DU MODAL DÉTAILS TOUR =====
+    function openTourDetailModal(membre, date, ordre, montant, statut) {
+        document.getElementById('detailMembre').textContent = membre;
+        document.getElementById('detailDate').textContent = date;
+        document.getElementById('detailOrdre').textContent = '#' + ordre;
+        document.getElementById('detailMontant').textContent = montant + ' FCFA';
+        
+        const statutElement = document.getElementById('detailStatut');
+        if (statut === 'PAYE') {
+            statutElement.innerHTML = '<span class="badge-status success">Payé</span>';
+        } else {
+            statutElement.innerHTML = '<span class="badge-status warning">En attente</span>';
+        }
+        
+        $('#tourDetailModal').modal('show');
+    }
+    
+    // ===== OUVERTURE DU MODAL EXPORT =====
+    function openExportModal() {
+        $('#exportModal').modal('show');
+    }
+    
     // ===== EXPORT =====
-    function exportTable() {
-        alert('📤 Exportation des données en cours...\nLe fichier sera téléchargé prochainement.');
+    function exportData(format) {
+        $('#exportModal').modal('hide');
+        const formats = { 'pdf': 'PDF', 'excel': 'Excel', 'csv': 'CSV' };
+        setTimeout(() => {
+            alert('📤 Exportation en format ' + formats[format] + ' démarrée...\nLes données seront téléchargées prochainement.');
+        }, 300);
     }
 </script>
 {% endblock %}
@@ -1226,6 +1181,25 @@
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     color: #fff;
     text-decoration: none;
+}
+
+/* ===== EXPORT MODAL BUTTONS ===== */
+.btn-export-format {
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.btn-export-format:hover {
+    border-color: #4f46e5;
+    background: #f0f4ff;
+    transform: translateY(-1px);
 }
 
 /* ===== ANIMATIONS ===== */

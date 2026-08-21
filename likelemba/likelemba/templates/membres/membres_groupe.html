@@ -272,9 +272,29 @@
         });
     });
     
+    // ===== FONCTION POUR OUVRIR LE MODAL DE SUPPRESSION =====
+    function openDeleteModal(membreId, membreNom, groupeNom) {
+        document.getElementById('deleteMembreNom').textContent = '"' + membreNom + '"';
+        document.getElementById('deleteGroupeNom').textContent = groupeNom;
+        
+        var form = document.getElementById('deleteForm');
+        form.action = "{% url 'supprimer_membre' 0 %}".replace('0', membreId);
+        
+        $('#deleteModal').modal('show');
+    }
+    
+    // ===== OUVERTURE DU MODAL EXPORT =====
+    function openExportModal() {
+        $('#exportModal').modal('show');
+    }
+    
     // ===== EXPORT =====
-    function exportTable() {
-        alert('📤 Exportation des données en cours...\nLe fichier sera téléchargé prochainement.');
+    function exportData(format) {
+        $('#exportModal').modal('hide');
+        const formats = { 'pdf': 'PDF', 'excel': 'Excel', 'csv': 'CSV' };
+        setTimeout(() => {
+            alert('📤 Exportation en format ' + formats[format] + ' démarrée...\nLes données seront téléchargées prochainement.');
+        }, 300);
     }
 </script>
 {% endblock %}
@@ -960,6 +980,77 @@
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     color: #fff;
     text-decoration: none;
+}
+
+/* ===== EXPORT MODAL BUTTONS ===== */
+.btn-export-format {
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.btn-export-format:hover {
+    border-color: #4f46e5;
+    background: #f0f4ff;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    padding: 6px 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+}
+
+/* ===== MODAL MODERN ===== */
+.modal-modern {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-modern-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-modern-body {
+    padding: 20px 24px;
+}
+
+.modal-modern-footer {
+    padding: 0 24px 20px;
+    border-top: none;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #0f172a;
 }
 
 /* ===== ANIMATIONS ===== */

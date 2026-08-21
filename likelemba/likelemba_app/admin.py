@@ -2,7 +2,6 @@ from django.contrib import admin
 from .models import *
 from django.contrib import admin
 
-
 class GroupeAdmin(admin.ModelAdmin):
     list_display = ['nom', 'montant_cotisation', 'frequence', 'date_debut', 'statut', 'date_creation', 'admin']
 
@@ -21,3 +20,5 @@ class TourAdmin(admin.ModelAdmin):
     list_display = ['groupe', 'membre', 'date_tour', 'statut']
 
 admin.site.register(Tour, TourAdmin)
+
+
