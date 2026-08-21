@@ -209,14 +209,6 @@
             <i class="fas fa-info-circle me-1"></i>
             {{ membres|length }} membre(s) dans le groupe
         </span>
-        <div class="d-flex gap-2 w-100 w-sm-auto">
-            <button class="btn-export w-100 w-sm-auto" onclick="exportTable()">
-                <i class="fas fa-file-export me-1"></i> Exporter
-            </button>
-            <a href="{% url 'ajouter_membre' groupe.id %}" class="btn-action-generate w-100 w-sm-auto">
-                <i class="fas fa-user-plus me-1"></i> Ajouter
-            </a>
-        </div>
     </div>
 </div>
 

@@ -285,10 +285,7 @@
             <span class="d-none d-sm-inline">• {{ groupe.tours_payes }} payé(s) • {{ groupe.tours_attente }} en attente</span>
             <span class="d-sm-none">• P:{{ groupe.tours_payes }} • A:{{ groupe.tours_attente }}</span>
         </span>
-        <div class="d-flex gap-2 w-100 w-sm-auto">
-            <button class="btn-export w-100 w-sm-auto" onclick="exportTable()">
-                <i class="fas fa-file-export me-1"></i> Exporter
-            </button>
+        <div class="d-flex gap-2 w-40 w-sm-auto">
             {% if tours %}
                 <a href="{% url 'lancer_tours' groupe.id %}" class="btn-action-generate w-100 w-sm-auto">
                     <i class="fas fa-plus me-1"></i> Générer
