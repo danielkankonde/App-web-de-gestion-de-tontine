@@ -210,12 +210,90 @@
             {{ membres|length }} membre(s) dans le groupe
         </span>
         <div class="d-flex gap-2 w-100 w-sm-auto">
-            <button class="btn-export w-100 w-sm-auto" onclick="exportTable()">
+            <button class="btn-export w-100 w-sm-auto" onclick="openExportModal()">
                 <i class="fas fa-file-export me-1"></i> Exporter
             </button>
             <a href="{% url 'ajouter_membre' groupe.id %}" class="btn-action-generate w-100 w-sm-auto">
                 <i class="fas fa-user-plus me-1"></i> Ajouter
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL DE SUPPRESSION ===== -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 25px 60px rgba(0,0,0,0.2);">
+            <div class="modal-header border-0 pb-0">
+                <div class="modal-title h5 fw-bold" style="color: #1e293b;">
+                    <i class="fas fa-trash-alt text-danger me-2"></i>Confirmer la suppression
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div style="width: 64px; height: 64px; background: #fef2f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                    <i class="fas fa-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                </div>
+                <h6 style="color: #1e293b; font-weight: 600;">Supprimer ce membre ?</h6>
+                <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">
+                    Vous êtes sur le point de supprimer <br>
+                    <strong style="color: #0f172a;" id="deleteMembreNom">"Membre"</strong>
+                </p>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 8px;">
+                    du groupe <strong style="color: #0f172a;" id="deleteGroupeNom">Groupe</strong>
+                </p>
+                <p style="color: #ef4444; font-size: 0.8rem; margin-top: 8px;">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Cette action est irréversible
+                </p>
+            </div>
+            <div class="modal-footer border-0 pt-0 justify-content-center gap-2">
+                <button class="btn btn-light" data-dismiss="modal" style="padding: 8px 28px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; border: 1px solid #e2e8f0;">
+                    Annuler
+                </button>
+                <form method="POST" id="deleteForm" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" style="padding: 8px 28px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; background: #ef4444; border: none;">
+                        <i class="fas fa-trash me-1"></i> Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL EXPORT ===== -->
+<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modal-modern-header">
+                <h6 class="modal-title fw-bold" style="color: #0f172a;">
+                    <i class="fas fa-file-export me-2" style="color: #4f46e5;"></i>
+                    Exporter les données
+                </h6>
+                <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fermer">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-modern-body">
+                <p class="text-muted small mb-3">Choisissez le format d'exportation :</p>
+                <div class="d-grid gap-2">
+                    <button class="btn-export-format" onclick="exportData('pdf')">
+                        <i class="fas fa-file-pdf me-2" style="color: #dc2626;"></i> PDF
+                    </button>
+                    <button class="btn-export-format" onclick="exportData('excel')">
+                        <i class="fas fa-file-excel me-2" style="color: #16a34a;"></i> Excel
+                    </button>
+                    <button class="btn-export-format" onclick="exportData('csv')">
+                        <i class="fas fa-file-csv me-2" style="color: #2563eb;"></i> CSV
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer modal-modern-footer">
+                <button class="btn-cancel" data-dismiss="modal">Annuler</button>
+            </div>
         </div>
     </div>
 </div>
@@ -280,9 +358,29 @@
         });
     });
     
+    // ===== FONCTION POUR OUVRIR LE MODAL DE SUPPRESSION =====
+    function openDeleteModal(membreId, membreNom, groupeNom) {
+        document.getElementById('deleteMembreNom').textContent = '"' + membreNom + '"';
+        document.getElementById('deleteGroupeNom').textContent = groupeNom;
+        
+        var form = document.getElementById('deleteForm');
+        form.action = "{% url 'supprimer_membre' 0 %}".replace('0', membreId);
+        
+        $('#deleteModal').modal('show');
+    }
+    
+    // ===== OUVERTURE DU MODAL EXPORT =====
+    function openExportModal() {
+        $('#exportModal').modal('show');
+    }
+    
     // ===== EXPORT =====
-    function exportTable() {
-        alert('📤 Exportation des données en cours...\nLe fichier sera téléchargé prochainement.');
+    function exportData(format) {
+        $('#exportModal').modal('hide');
+        const formats = { 'pdf': 'PDF', 'excel': 'Excel', 'csv': 'CSV' };
+        setTimeout(() => {
+            alert('📤 Exportation en format ' + formats[format] + ' démarrée...\nLes données seront téléchargées prochainement.');
+        }, 300);
     }
 </script>
 {% endblock %}
@@ -968,6 +1066,77 @@
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     color: #fff;
     text-decoration: none;
+}
+
+/* ===== EXPORT MODAL BUTTONS ===== */
+.btn-export-format {
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.btn-export-format:hover {
+    border-color: #4f46e5;
+    background: #f0f4ff;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    padding: 6px 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+}
+
+/* ===== MODAL MODERN ===== */
+.modal-modern {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-modern-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-modern-body {
+    padding: 20px 24px;
+}
+
+.modal-modern-footer {
+    padding: 0 24px 20px;
+    border-top: none;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #0f172a;
 }
 
 /* ===== ANIMATIONS ===== */

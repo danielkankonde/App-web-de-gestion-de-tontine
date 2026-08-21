@@ -6,10 +6,10 @@
 <!-- ===== EN-TÊTE ===== -->
 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
     <div>
-        <h1 class="h3 mb-1 fw-bold" style="color: #0f172a;">
+        <h2 class="h3 mb-1 fw-bold" style="color: #0f172a;">
             <i class="fas fa-chart-pie me-2" style="color: #4f46e5;"></i>
             Tableau de bord
-        </h1>
+        </h2>
         <p class="text-muted small mb-0">
             <i class="fas fa-calendar-alt me-1"></i>
             {{ now|date:"l d F Y" }}
@@ -124,68 +124,110 @@
         </div>
     </div>
 
-    <!-- Activité récente -->
-    <div class="col-12 col-lg-4">
-        <div class="card-modern">
-            <div class="card-modern-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <span class="card-modern-title">
-                    <i class="fas fa-clock me-2" style="color: #4f46e5;"></i>
-                    Activité récente
-                </span>
-                <a href="#" class="card-modern-link">Voir tout</a>
-            </div>
-            <div class="card-modern-body p-0">
-                <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon purple">
-                            <i class="fas fa-user-plus"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="activity-title">Nouveau membre inscrit</p>
-                            <p class="activity-desc">Jean Dupont a rejoint Likelemba</p>
-                        </div>
-                        <span class="activity-time">Il y a 2h</span>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon green">
-                            <i class="fas fa-coins"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="activity-title">Cotisation reçue</p>
-                            <p class="activity-desc">Groupe Épargne - 25 000 FCFA</p>
-                        </div>
-                        <span class="activity-time">Il y a 4h</span>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon orange">
-                            <i class="fas fa-sync-alt"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="activity-title">Tour terminé</p>
-                            <p class="activity-desc">Groupe Solidarité - Tour #3</p>
-                        </div>
-                        <span class="activity-time">Hier</span>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon red">
-                            <i class="fas fa-exclamation-triangle"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p class="activity-title">Paiement en retard</p>
-                            <p class="activity-desc">Marie Claire - 15 000 FCFA</p>
-                        </div>
-                        <span class="activity-time">Hier</span>
-                    </div>
-                </div>
-            </div>
+<!-- Activité récente -->
+<div class="col-12 col-lg-4">
+
+    <div class="card-modern">
+
+        <!-- HEADER -->
+        <div class="card-modern-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+            <span class="card-modern-title">
+                <i class="fas fa-clock me-2" style="color:#4f46e5;"></i>
+                Activité récente
+            </span>
+
+            <a href="#" class="card-modern-link">
+                Voir tout
+            </a>
+
         </div>
+
+        <!-- BODY -->
+        <div class="card-modern-body p-0">
+
+            <div class="activity-list">
+
+                {% if activites_recentes %}
+
+                    {% for activite in activites_recentes %}
+
+                        <div class="activity-item">
+
+                            <!-- ICÔNE -->
+                            {% if activite.type == "MEMBRE" %}
+
+                                <div class="activity-icon purple">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+
+                            {% elif activite.type == "COTISATION" %}
+
+                                <div class="activity-icon green">
+                                    <i class="fas fa-coins"></i>
+                                </div>
+
+                            {% elif activite.type == "TOUR" %}
+
+                                <div class="activity-icon orange">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+
+                            {% elif activite.type == "RETARD" %}
+
+                                <div class="activity-icon red">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+
+                            {% endif %}
+
+
+                            <!-- CONTENU -->
+                            <div class="activity-content">
+
+                                <p class="activity-title">
+                                    {{ activite.titre }}
+                                </p>
+
+                                <p class="activity-desc">
+                                    {{ activite.description }}
+                                </p>
+
+                            </div>
+
+
+                            <!-- DATE -->
+                            <span class="activity-time">
+
+                                {{ activite.date|date:"d/m/Y" }}
+
+                            </span>
+
+                        </div>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <div class="text-center py-4 text-muted">
+
+                        Aucune activité récente.
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
     </div>
 
 </div>
 
 <!-- ===== TROISIÈME LIGNE : STATUT DU SYSTÈME ===== -->
-<div class="row g-3 g-md-4 mt-2">
-    <div class="col-12 col-md-6 col-lg-4">
+<div class="row g-3 g-md-6 mt-2">
+    <div class="w-100 col-12 col-md-4 col-lg-4">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon purple">
@@ -193,12 +235,12 @@
                 </div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-label">Total membres</span>
-                    <h5 class="stat-mini-value">{{ total_utilisateurs }}</h5>
+                    <h5 class="stat-mini-value">{{ total_membres }}</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-6 col-lg-4">
+    <div class="w-100 col-12 col-md-4 col-lg-4">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon orange">
@@ -206,12 +248,12 @@
                 </div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-label">Total paiements</span>
-                    <h5 class="stat-mini-value">{{ total_paiements }}</h5>
+                    <h5 class="stat-mini-value">{{ total_membres }}</h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-6 col-lg-4">
+    <div class="w-100 col-12 col-md-4 col-lg-4">
         <div class="stat-mini">
             <div class="stat-mini-body">
                 <div class="stat-mini-icon red">

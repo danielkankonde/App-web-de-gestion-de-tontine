@@ -67,6 +67,7 @@ class MembreGroupe(models.Model):
     telephone = models.CharField(max_length=20, blank=True)
 
     ordre_reception = models.IntegerField()
+    date_inscription = models.DateTimeField(auto_now_add=True)
 
     @property
     def nom_affiche(self):
@@ -79,7 +80,7 @@ class MembreGroupe(models.Model):
     
     class Meta:
         unique_together = ('utilisateur', 'groupe')
-
+    
 # =====================
 # TOUR
 # =====================

@@ -32,11 +32,11 @@
                 <span class="d-none d-sm-inline">Tous les groupes</span>
                 <span class="d-sm-none">Retour</span>
             </a>
-            <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn btn-primary-modern flex-1">
-                <i class="fas fa-plus me-1"></i> 
-                <span class="d-none d-sm-inline">Enregistrer</span>
-                <span class="d-sm-none">Ajouter</span>
-            </a>
+            <button class="btn btn-primary-modern flex-1" data-toggle="modal" data-target="#exportModal">
+                <i class="fas fa-file-export me-1"></i> 
+                <span class="d-none d-sm-inline">Exporter</span>
+                <span class="d-sm-none">Export</span>
+            </button>
         </div>
     </div>
 </div>
@@ -196,12 +196,46 @@
             <span class="d-sm-none">• {{ total_encaisse|floatformat:0 }} FCFA</span>
         </span>
         <div class="d-flex gap-2 w-100 w-sm-auto">
-            <button class="btn-export w-100 w-sm-auto" onclick="exportTable()">
+            <button class="btn-export w-100 w-sm-auto" onclick="openExportModal()">
                 <i class="fas fa-file-export me-1"></i> Exporter
             </button>
             <a href="{% url 'ajouter_paiement' groupe.id %}" class="btn-action-generate w-100 w-sm-auto">
                 <i class="fas fa-plus me-1"></i> Ajouter
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL EXPORT ===== -->
+<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modal-modern-header">
+                <h6 class="modal-title fw-bold" style="color: #0f172a;">
+                    <i class="fas fa-file-export me-2" style="color: #d97706;"></i>
+                    Exporter les données
+                </h6>
+                <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fermer">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body modal-modern-body">
+                <p class="text-muted small mb-3">Choisissez le format d'exportation :</p>
+                <div class="d-grid gap-2">
+                    <button class="btn-export-format" onclick="exportData('pdf')">
+                        <i class="fas fa-file-pdf me-2" style="color: #dc2626;"></i> PDF
+                    </button>
+                    <button class="btn-export-format" onclick="exportData('excel')">
+                        <i class="fas fa-file-excel me-2" style="color: #16a34a;"></i> Excel
+                    </button>
+                    <button class="btn-export-format" onclick="exportData('csv')">
+                        <i class="fas fa-file-csv me-2" style="color: #2563eb;"></i> CSV
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer modal-modern-footer">
+                <button class="btn-cancel" data-dismiss="modal">Annuler</button>
+            </div>
         </div>
     </div>
 </div>
@@ -278,9 +312,18 @@
         });
     });
     
+    // ===== OUVERTURE DU MODAL EXPORT =====
+    function openExportModal() {
+        $('#exportModal').modal('show');
+    }
+    
     // ===== EXPORT =====
-    function exportTable() {
-        alert('📤 Exportation des données en cours...\nLe fichier sera téléchargé prochainement.');
+    function exportData(format) {
+        $('#exportModal').modal('hide');
+        const formats = { 'pdf': 'PDF', 'excel': 'Excel', 'csv': 'CSV' };
+        setTimeout(() => {
+            alert('📤 Exportation en format ' + formats[format] + ' démarrée...\nLes données seront téléchargées prochainement.');
+        }, 300);
     }
 </script>
 {% endblock %}
@@ -949,6 +992,76 @@
     box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
     color: #fff;
     text-decoration: none;
+}
+
+/* ===== MODAL EXPORT ===== */
+.modal-modern {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-modern-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-modern-body {
+    padding: 20px 24px;
+}
+
+.modal-modern-footer {
+    padding: 0 24px 20px;
+    border-top: none;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: #0f172a;
+}
+
+.btn-export-format {
+    padding: 10px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.btn-export-format:hover {
+    border-color: #d97706;
+    background: #fffbeb;
+    transform: translateY(-1px);
+}
+
+.btn-cancel {
+    padding: 6px 28px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
 }
 
 /* ===== ANIMATIONS ===== */
