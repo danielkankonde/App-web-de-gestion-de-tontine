@@ -268,40 +268,6 @@
     </div>
 </div>
 
-<!-- ===== MODAL EXPORT ===== -->
-<div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
-        <div class="modal-content modal-modern">
-            <div class="modal-header modal-modern-header">
-                <h6 class="modal-title fw-bold" style="color: #0f172a;">
-                    <i class="fas fa-file-export me-2" style="color: #4f46e5;"></i>
-                    Exporter les données
-                </h6>
-                <button type="button" class="modal-close" data-dismiss="modal" aria-label="Fermer">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body modal-modern-body">
-                <p class="text-muted small mb-3">Choisissez le format d'exportation :</p>
-                <div class="d-grid gap-2">
-                    <button class="btn-export" onclick="exportData('pdf')">
-                        <i class="fas fa-file-pdf me-2" style="color: #dc2626;"></i> PDF
-                    </button>
-                    <button class="btn-export" onclick="exportData('excel')">
-                        <i class="fas fa-file-excel me-2" style="color: #16a34a;"></i> Excel
-                    </button>
-                    <button class="btn-export" onclick="exportData('csv')">
-                        <i class="fas fa-file-csv me-2" style="color: #2563eb;"></i> CSV
-                    </button>
-                </div>
-            </div>
-            <div class="modal-footer modal-modern-footer">
-                <button class="btn-cancel" data-dismiss="modal">Annuler</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% endblock %}
 
 {% block extra_js %}

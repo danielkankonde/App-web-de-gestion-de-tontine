@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('dashboard/admin/', dashboard_admin, name='dashboard_admin'),
+    path("export/excel/", export_excel, name="export_excel"),
     path('', dashboard_membre, name='dashboard_membre'),
 
     path('groupes/', liste_groupes_view, name="liste_groupes"),

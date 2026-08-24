@@ -532,6 +532,84 @@
 
             {% include 'components/footer.html' %}
 
+            <!-- ===== MODAL EXPORT DASHBOARD ===== -->
+            <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-hidden="true">
+
+                <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+
+                    <div class="modal-content modal-modern">
+
+                        <!-- HEADER -->
+                        <div class="modal-header modal-modern-header">
+
+                            <h6 class="modal-title fw-bold" style="color: #0f172a;">
+
+                                <i class="fas fa-file-export me-2"
+                                style="color: #4f46e5;"></i>
+
+                                Exporter les données
+
+                            </h6>
+
+                            <button type="button"
+                                    class="modal-close"
+                                    data-dismiss="modal"
+                                    aria-label="Fermer">
+
+                                <span aria-hidden="true">&times;</span>
+
+                            </button>
+
+                        </div>
+
+
+                        <!-- BODY -->
+                        <div class="modal-body modal-modern-body">
+
+                            <p class="text-muted small mb-3">
+                                Choisissez le format d'exportation :
+                            </p>
+                            <div class="d-grid gap-2">
+
+                                <!-- PDF -->
+                                <button type="button" class="btn-export">
+                                    <i class="fas fa-file-pdf me-2" style="color: #dc2626;"></i> PDF
+                                </button>
+
+                                <!-- EXCEL -->
+                                <a href="{% url 'export_excel' %}" class="btn-export text-decoration-none">
+                                    <i class="fas fa-file-excel me-2" style="color: #16a34a;"></i> Excel
+                                </a>
+
+                                <!-- CSV -->
+                                <button type="button" class="btn-export">
+                                    <i class="fas fa-file-csv me-2" style="color: #2563eb;"></i> CSV
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- FOOTER -->
+                        <div class="modal-footer modal-modern-footer">
+
+                            <button type="button"
+                                    class="btn-cancel"
+                                    data-dismiss="modal">
+
+                                Annuler
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
             <!-- ===== MODAL DETAIL TOUR ===== -->
             <div class="modal fade" id="tourDetailModal" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -641,6 +719,8 @@
     {% include 'components/scripts.html' %}
 
     <script>
+
+
     function openTourDetailModal(membre, date, ordre, montant, statut) {
 
         document.getElementById('detailMembre').textContent = membre;
@@ -726,7 +806,8 @@
         });
     </script>
 
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}
+    {% endblock %}
 </body>
 
 </html>

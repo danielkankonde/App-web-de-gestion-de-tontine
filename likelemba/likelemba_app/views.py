@@ -6,6 +6,11 @@ from django.db.models import Q, Count, Sum, query_utils
 from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm, PaiementForm
 from .models import Groupe, Paiement, Tour
 from datetime import timedelta
+from django.utils import timezone
+
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -139,8 +144,233 @@ def dashboard_admin(request):
         request,
         "pages/dashboard_admin.html",
         context
+    ) 
+
+# VIEW EXPORT EXCEL MODAL
+@login_required(login_url="login")
+def export_excel(request):
+
+    # Vérifier que l'utilisateur est administrateur
+    if request.user.role != "ADMIN":
+        return redirect("dashboard_membre")
+
+    # =========================
+    # RÉCUPÉRER LES DONNÉES
+    # =========================
+
+    groupes = Groupe.objects.filter(
+        admin=request.user
     )
 
+    membres = MembreGroupe.objects.filter(
+        groupe__admin=request.user
+    ).select_related(
+        "groupe",
+        "utilisateur"
+    )
+
+    paiements = Paiement.objects.filter(
+        membre__groupe__admin=request.user
+    ).select_related(
+        "membre",
+        "membre__groupe",
+        "tour"
+    )
+
+    tours = Tour.objects.filter(
+        groupe__admin=request.user
+    ).select_related(
+        "groupe",
+        "membre"
+    )
+
+    # =========================
+    # CRÉER LE FICHIER EXCEL
+    # =========================
+
+    workbook = Workbook()
+
+    # =========================
+    # FEUILLE GROUPES
+    # =========================
+
+    feuille_groupes = workbook.active
+    feuille_groupes.title = "Groupes"
+
+    entetes_groupes = [
+        "Nom du groupe",
+        "Montant cotisation",
+        "Fréquence",
+        "Date début",
+        "Statut",
+    ]
+
+    feuille_groupes.append(entetes_groupes)
+
+    for groupe in groupes:
+
+        feuille_groupes.append([
+            groupe.nom,
+            float(groupe.montant_cotisation),
+            groupe.get_frequence_display(),
+            groupe.date_debut,
+            groupe.get_statut_display(),
+        ])
+
+    # =========================
+    # FEUILLE MEMBRES
+    # =========================
+
+    feuille_membres = workbook.create_sheet("Membres")
+
+    entetes_membres = [
+        "Membre",
+        "Téléphone",
+        "Groupe",
+        "Ordre de réception",
+        "Date d'inscription",
+    ]
+
+    feuille_membres.append(entetes_membres)
+
+    for membre in membres:
+
+        # Retirer la timezone du DateTimeField
+        date_inscription = membre.date_inscription
+
+        if date_inscription:
+            date_inscription = timezone.make_naive(
+                date_inscription
+            )
+
+        feuille_membres.append([
+            membre.nom_affiche,
+            membre.telephone,
+            membre.groupe.nom if membre.groupe else "",
+            membre.ordre_reception,
+            date_inscription,
+        ])
+
+    # =========================
+    # FEUILLE TOURS
+    # =========================
+
+    feuille_tours = workbook.create_sheet("Tours")
+
+    entetes_tours = [
+        "Groupe",
+        "Membre",
+        "Date du tour",
+        "Statut",
+    ]
+
+    feuille_tours.append(entetes_tours)
+
+    for tour in tours:
+
+        feuille_tours.append([
+            tour.groupe.nom,
+            tour.membre.nom_affiche,
+            tour.date_tour,
+            tour.get_statut_display(),
+        ])
+
+    # =========================
+    # FEUILLE PAIEMENTS
+    # =========================
+
+    feuille_paiements = workbook.create_sheet("Paiements")
+
+    entetes_paiements = [
+        "Membre",
+        "Groupe",
+        "Tour",
+        "Montant",
+        "Date paiement",
+        "Statut",
+    ]
+
+    feuille_paiements.append(entetes_paiements)
+
+    for paiement in paiements:
+
+        feuille_paiements.append([
+            paiement.membre.nom_affiche,
+            paiement.membre.groupe.nom,
+            paiement.tour.date_tour,
+            float(paiement.montant),
+            paiement.date_paiement,
+            paiement.get_statut_display(),
+        ])
+
+    # =========================
+    # STYLE DES EN-TÊTES
+    # =========================
+
+    feuilles = [
+        feuille_groupes,
+        feuille_membres,
+        feuille_tours,
+        feuille_paiements,
+    ]
+
+    for feuille in feuilles:
+
+        # Style des en-têtes
+        for cellule in feuille[1]:
+
+            cellule.font = Font(
+                bold=True,
+                color="FFFFFF"
+            )
+
+            cellule.fill = PatternFill(
+                fill_type="solid",
+                fgColor="4F46E5"
+            )
+
+            cellule.alignment = Alignment(
+                horizontal="center"
+            )
+
+        # Ajuster automatiquement la largeur
+        for colonne in feuille.columns:
+
+            longueur = 0
+
+            lettre_colonne = colonne[0].column_letter
+
+            for cellule in colonne:
+
+                if cellule.value is not None:
+
+                    longueur = max(
+                        longueur,
+                        len(str(cellule.value))
+                    )
+
+            feuille.column_dimensions[
+                lettre_colonne
+            ].width = longueur + 3
+
+    # =========================
+    # RÉPONSE HTTP
+    # =========================
+
+    response = HttpResponse(
+        content_type=(
+            "application/vnd.openxmlformats-officedocument."
+            "spreadsheetml.sheet"
+        )
+    )
+
+    response["Content-Disposition"] = (
+        'attachment; filename="likelemba_export.xlsx"'
+    )
+
+    workbook.save(response)
+
+    return response
 @login_required(login_url="login")
 def dashboard_membre(request):
 
@@ -585,6 +815,8 @@ def liste_tours_view(request, groupe_id):
         'groupe': groupe,
         'tours': tours,
     })
+
+
 
 # Vues pour les utilisateurs membres
 @login_required
