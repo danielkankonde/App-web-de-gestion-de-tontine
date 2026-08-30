@@ -102,120 +102,208 @@
     </div>
 </div>
 
-<!-- ===== DEUXIÈME LIGNE : GRAPHIQUES & ACTIVITÉ ===== -->
+<!-- ===================================================== -->
+<!-- DEUXIÈME LIGNE : GRAPHIQUE + ACTIVITÉ RÉCENTE -->
+<!-- ===================================================== -->
+
 <div class="row g-3 g-md-4">
 
-    <!-- Graphique des cotisations -->
+    <!-- ================================================= -->
+    <!-- GRAPHIQUE DES COTISATIONS - GAUCHE -->
+    <!-- ================================================= -->
+
     <div class="col-12 col-lg-8">
-        <div class="card-modern">
-            <div class="card-modern-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+
+        <div class="card-modern h-100">
+
+            <!-- HEADER -->
+            <div class="card-modern-header
+                        d-flex
+                        flex-wrap
+                        justify-content-between
+                        align-items-center
+                        gap-2">
+
                 <span class="card-modern-title">
-                    <i class="fas fa-chart-bar me-2" style="color: #4f46e5;"></i>
+
+                    <i class="fas fa-chart-line me-2"
+                    style="color: #4f46e5;"></i>
+
                     Évolution des cotisations
+
                 </span>
+
+
+                <!-- FILTRES -->
                 <div class="d-flex gap-2">
-                    <button class="btn-filter-chart active">Mois</button>
-                    <button class="btn-filter-chart">Semaine</button>
+
+                    <button
+                        type="button"
+                        class="btn-filter-chart active"
+                        id="btnMois">
+
+                        Mois
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn-filter-chart"
+                        id="btnSemaine">
+
+                        Semaine
+
+                    </button>
+
                 </div>
+
             </div>
+
+
+            <!-- BODY -->
             <div class="card-modern-body">
-                <canvas id="cotisationChart" height="250"></canvas>
+
+                <div style="height: 300px; position: relative;">
+
+                    <canvas id="cotisationChart"></canvas>
+
+                </div>
+
             </div>
+
         </div>
+
     </div>
 
-<!-- Activité récente -->
-<div class="col-12 col-lg-4">
 
-    <div class="card-modern">
+    <!-- ================================================= -->
+    <!-- ACTIVITÉ RÉCENTE - DROITE -->
+    <!-- ================================================= -->
 
-        <!-- HEADER -->
-        <div class="card-modern-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div class="col-12 col-lg-4">
 
-            <span class="card-modern-title">
-                <i class="fas fa-clock me-2" style="color:#4f46e5;"></i>
-                Activité récente
-            </span>
+        <div class="card-modern h-100">
 
-            <a href="#" class="card-modern-link">
-                Voir tout
-            </a>
+            <!-- HEADER -->
+            <div class="card-modern-header
+                        d-flex
+                        flex-wrap
+                        justify-content-between
+                        align-items-center
+                        gap-2">
 
-        </div>
+                <span class="card-modern-title">
 
-        <!-- BODY -->
-        <div class="card-modern-body p-0">
+                    <i class="fas fa-clock me-2"
+                       style="color:#4f46e5;"></i>
 
-            <div class="activity-list">
+                    Activité récente
 
-                {% if activites_recentes %}
+                </span>
 
-                    {% for activite in activites_recentes %}
 
-                        <div class="activity-item">
+                <a href="#" class="card-modern-link">
 
-                            <!-- ICÔNE -->
-                            {% if activite.type == "MEMBRE" %}
+                    Voir tout
 
-                                <div class="activity-icon purple">
-                                    <i class="fas fa-user-plus"></i>
+                </a>
+
+            </div>
+
+
+            <!-- BODY -->
+            <div class="card-modern-body p-0">
+
+                <div class="activity-list">
+
+                    {% if activites_recentes %}
+
+                        {% for activite in activites_recentes %}
+
+                            <div class="activity-item">
+
+                                <!-- ICÔNE -->
+                                {% if activite.type == "MEMBRE" %}
+
+                                    <div class="activity-icon purple">
+
+                                        <i class="fas fa-user-plus"></i>
+
+                                    </div>
+
+
+                                {% elif activite.type == "COTISATION" %}
+
+                                    <div class="activity-icon green">
+
+                                        <i class="fas fa-coins"></i>
+
+                                    </div>
+
+
+                                {% elif activite.type == "TOUR" %}
+
+                                    <div class="activity-icon orange">
+
+                                        <i class="fas fa-sync-alt"></i>
+
+                                    </div>
+
+
+                                {% elif activite.type == "RETARD" %}
+
+                                    <div class="activity-icon red">
+
+                                        <i class="fas fa-exclamation-triangle"></i>
+
+                                    </div>
+
+                                {% endif %}
+
+
+                                <!-- CONTENU -->
+                                <div class="activity-content">
+
+                                    <p class="activity-title">
+
+                                        {{ activite.titre }}
+
+                                    </p>
+
+
+                                    <p class="activity-desc">
+
+                                        {{ activite.description }}
+
+                                    </p>
+
                                 </div>
 
-                            {% elif activite.type == "COTISATION" %}
 
-                                <div class="activity-icon green">
-                                    <i class="fas fa-coins"></i>
-                                </div>
+                                <!-- DATE -->
+                                <span class="activity-time">
 
-                            {% elif activite.type == "TOUR" %}
+                                    {{ activite.date|date:"d/m/Y" }}
 
-                                <div class="activity-icon orange">
-                                    <i class="fas fa-sync-alt"></i>
-                                </div>
-
-                            {% elif activite.type == "RETARD" %}
-
-                                <div class="activity-icon red">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                </div>
-
-                            {% endif %}
-
-
-                            <!-- CONTENU -->
-                            <div class="activity-content">
-
-                                <p class="activity-title">
-                                    {{ activite.titre }}
-                                </p>
-
-                                <p class="activity-desc">
-                                    {{ activite.description }}
-                                </p>
+                                </span>
 
                             </div>
 
+                        {% endfor %}
 
-                            <!-- DATE -->
-                            <span class="activity-time">
 
-                                {{ activite.date|date:"d/m/Y" }}
+                    {% else %}
 
-                            </span>
+                        <div class="text-center py-4 text-muted">
+
+                            Aucune activité récente.
 
                         </div>
 
-                    {% endfor %}
+                    {% endif %}
 
-                {% else %}
-
-                    <div class="text-center py-4 text-muted">
-
-                        Aucune activité récente.
-
-                    </div>
-
-                {% endif %}
+                </div>
 
             </div>
 
@@ -235,7 +323,7 @@
                 </div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-label">Total membres</span>
-                    <h5 class="stat-mini-value">{{ total_membres }}</h5>
+                    <h5 class="stat-mini-value">{{ membres }}</h5>
                 </div>
             </div>
         </div>
@@ -248,7 +336,7 @@
                 </div>
                 <div class="stat-mini-content">
                     <span class="stat-mini-label">Total paiements</span>
-                    <h5 class="stat-mini-value">{{ total_membres }}</h5>
+                    <h5 class="stat-mini-value">{{ total_paiements }}</h5>
                 </div>
             </div>
         </div>
@@ -271,110 +359,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ===== GRAPHIQUE COTISATIONS =====
-        const ctx = document.getElementById('cotisationChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'],
-                    datasets: [{
-                        label: 'Cotisations (FCFA)',
-                        data: [120000, 150000, 180000, 140000, 200000, 220000, 190000, 250000, 280000, 260000, 310000, 340000],
-                        borderColor: '#4f46e5',
-                        backgroundColor: 'rgba(79, 70, 229, 0.08)',
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#4f46e5',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            titleColor: '#fff',
-                            bodyColor: '#e2e8f0',
-                            cornerRadius: 10,
-                            padding: 12,
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y.toLocaleString() + ' FCFA';
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return (value / 1000).toFixed(0) + 'k FCFA';
-                                },
-                                maxTicksLimit: 6,
-                                color: '#94a3b8',
-                            },
-                            grid: {
-                                color: 'rgba(0,0,0,0.04)',
-                                drawBorder: false,
-                            }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8' }
-                        }
-                    }
-                }
-            });
-        }
 
-        // ===== FILTRES CHART =====
-        document.querySelectorAll('.btn-filter-chart').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.btn-filter-chart').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // ===== ANIMATION DES CARTES =====
-        const cards = document.querySelectorAll('.stat-card-main, .card-modern, .stat-mini');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }, index * 50);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            card.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
-            card.style.transitionDelay = (index * 0.03) + 's';
-            observer.observe(card);
-        });
-    });
-
-    // ===== EXPORT =====
-    function exportData(format) {
-        $('#exportModal').modal('hide');
-        const formats = { 'pdf': 'PDF', 'excel': 'Excel', 'csv': 'CSV' };
-        setTimeout(() => {
-            alert('📤 Exportation en format ' + formats[format] + ' démarrée...');
-        }, 300);
-    }
-</script>
 {% endblock %}
 
 {% block extra_css %}

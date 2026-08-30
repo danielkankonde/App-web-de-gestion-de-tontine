@@ -2,7 +2,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count, Sum, query_utils
+from django.db.models import Q, Count, Sum
+from django.db.models.functions import TruncMonth
 from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm, PaiementForm
 from .models import Groupe, Paiement, Tour
 from datetime import timedelta
@@ -13,16 +14,21 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from django.http import HttpResponse
 
 
-# Create your views here.
+
 @login_required(login_url="login")
 def dashboard_admin(request):
+
+    # =====================================================
+    # VÉRIFICATION DU RÔLE
+    # =====================================================
 
     if request.user.role != "ADMIN":
         return redirect("dashboard_membre")
 
-    # =========================
+
+    # =====================================================
     # DONNÉES DU TABLEAU DE BORD
-    # =========================
+    # =====================================================
 
     groupes = Groupe.objects.filter(
         admin=request.user
@@ -40,19 +46,21 @@ def dashboard_admin(request):
         groupe__admin=request.user
     )
 
-    # =========================
+
+    # =====================================================
     # ACTIVITÉS RÉCENTES
-    # =========================
+    # =====================================================
 
     activites_recentes = []
 
-    # =========================
+
+    # -----------------------------------------------------
     # NOUVEAUX MEMBRES
-    # =========================
+    # -----------------------------------------------------
 
     membres_recents = MembreGroupe.objects.filter(
         groupe__admin=request.user
-    ).order_by("-date_inscription")[:5]
+    ).order_by("-date_inscription")[:4]
 
     for membre in membres_recents:
 
@@ -63,88 +71,227 @@ def dashboard_admin(request):
             "date": membre.date_inscription.date(),
         })
 
-    # =========================
+
+    # -----------------------------------------------------
     # COTISATIONS REÇUES
-    # =========================
+    # -----------------------------------------------------
 
     paiements_recents = Paiement.objects.filter(
         membre__groupe__admin=request.user,
         statut="PAYE"
-    ).order_by("-date_paiement")[:5]
+    ).order_by("-date_paiement")[:4]
 
     for paiement in paiements_recents:
 
         activites_recentes.append({
             "type": "COTISATION",
             "titre": "Cotisation reçue",
-            "description": f"{paiement.membre.nom_affiche} - {paiement.montant:,.0f} FCFA",
+            "description": (
+                f"{paiement.membre.nom_affiche} - "
+                f"{paiement.montant:,.0f} FCFA"
+            ),
             "date": paiement.date_paiement,
         })
 
-    # =========================
+
+    # -----------------------------------------------------
     # TOURS TERMINÉS
-    # =========================
+    # -----------------------------------------------------
 
     tours_termines = Tour.objects.filter(
         groupe__admin=request.user,
         statut="PAYE"
-    ).order_by("-date_tour")[:5]
+    ).order_by("-date_tour")[:4]
 
     for tour in tours_termines:
 
         activites_recentes.append({
             "type": "TOUR",
             "titre": "Tour terminé",
-            "description": f"{tour.groupe.nom} - Tour de {tour.membre.nom_affiche}",
+            "description": (
+                f"{tour.groupe.nom} - "
+                f"Tour de {tour.membre.nom_affiche}"
+            ),
             "date": tour.date_tour,
         })
 
-    # =========================
+
+    # -----------------------------------------------------
     # PAIEMENTS EN RETARD
-    # =========================
+    # -----------------------------------------------------
 
     paiements_en_retard = Paiement.objects.filter(
         membre__groupe__admin=request.user,
         statut="NON_PAYE"
-    ).order_by("-date_paiement")[:5]
+    ).order_by("-date_paiement")[:4]
 
     for paiement in paiements_en_retard:
 
         activites_recentes.append({
             "type": "RETARD",
             "titre": "Paiement en retard",
-            "description": f"{paiement.membre.nom_affiche} - {paiement.montant:,.0f} FCFA",
+            "description": (
+                f"{paiement.membre.nom_affiche} - "
+                f"{paiement.montant:,.0f} FCFA"
+            ),
             "date": paiement.date_paiement,
         })
 
-    # =========================
-    # TRIER LES ACTIVITÉS
-    # =========================
+
+    # =====================================================
+    # TRI DES ACTIVITÉS
+    # =====================================================
 
     activites_recentes = sorted(
         activites_recentes,
         key=lambda activite: activite["date"],
         reverse=True
-    )[:5]
+    )[:4]
 
-    # =========================
+
+    # =====================================================
+    # GRAPHIQUE : COTISATIONS PAR MOIS
+    # =====================================================
+
+    aujourd_hui = timezone.localdate()
+
+    annee_actuelle = aujourd_hui.year
+
+
+    # Labels des 12 mois
+    noms_mois = [
+        "Jan",
+        "Fév",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Juin",
+        "Juil",
+        "Août",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Déc",
+    ]
+
+    # Dictionnaire contenant les montants
+    montants_mensuels = {
+        mois: 0
+        for mois in range(1, 13)
+    }
+
+    # Récupérer les paiements de l'administrateur
+    paiements_annee = Paiement.objects.filter(
+        membre__groupe__admin=request.user,
+        statut="PAYE",
+        date_paiement__year=annee_actuelle
+    )
+
+    # Additionner les paiements par mois
+    for paiement in paiements_annee:
+
+        mois = paiement.date_paiement.month
+
+        montants_mensuels[mois] += float(
+            paiement.montant
+        )
+
+    cotisations_mois = [
+        montants_mensuels[mois]
+        for mois in range(1, 13)
+    ]
+    # =====================================================
+    # GRAPHIQUE : COTISATIONS PAR SEMAINE
+    # =====================================================
+
+    # On affiche les 12 dernières semaines
+    debut_semaine = aujourd_hui - timedelta(
+        days=aujourd_hui.weekday()
+    )
+
+    debut_periode = debut_semaine - timedelta(
+        weeks=11
+    )
+
+    montants_hebdomadaires = {}
+
+    for i in range(12):
+
+        debut = debut_periode + timedelta(
+            weeks=i
+        )
+
+        montants_hebdomadaires[debut] = 0
+
+    paiements_semaines = Paiement.objects.filter(
+        membre__groupe__admin=request.user,
+        statut="PAYE",
+        date_paiement__gte=debut_periode
+    )
+
+    for paiement in paiements_semaines:
+
+        date_paiement = paiement.date_paiement
+
+        lundi = date_paiement - timedelta(
+            days=date_paiement.weekday()
+        )
+
+        if lundi in montants_hebdomadaires:
+
+            montants_hebdomadaires[lundi] += float(
+                paiement.montant
+            )
+
+    labels_semaines = []
+
+    cotisations_semaine = []
+
+
+    for lundi, montant in montants_hebdomadaires.items():
+
+        dimanche = lundi + timedelta(days=6)
+
+        labels_semaines.append(
+            f"{lundi.strftime('%d/%m')} - {dimanche.strftime('%d/%m')}"
+        )
+
+        cotisations_semaine.append(
+            montant
+        )
+    # =====================================================
     # CONTEXT
-    # =========================
+    # =====================================================
 
     context = {
-        "total_membres": membres.count(),
+
+        # Statistiques
+        "membres": membres.count(),
         "total_groupes": groupes.count(),
         "total_paiements": paiements.count(),
         "total_tours": tours.count(),
 
+        # Activités
         "activites_recentes": activites_recentes,
+
+        # Graphique mensuel
+        "cotisations_labels": noms_mois,
+        "cotisations_mois": cotisations_mois,
+
+        # Graphique hebdomadaire
+        "cotisations_semaine_labels": labels_semaines,
+        "cotisations_semaine": cotisations_semaine,
+
+        # Année
+        "annee_actuelle": annee_actuelle,
     }
+
 
     return render(
         request,
         "pages/dashboard_admin.html",
         context
-    ) 
+    )
 
 # VIEW EXPORT EXCEL MODAL
 @login_required(login_url="login")
@@ -741,51 +888,64 @@ def liste_tours_groupes_view(request):
         'total_payes': total_payes,
         'total_attente': total_attente,
     })
-    if request.user.role != 'ADMIN':
-        return redirect('dashboard_membre')
 
-    groupes = Groupe.objects.filter(admin=request.user).annotate(
-        total_tours=Count('tour', distinct=True),
-        total_membres=Count('membregroupe', distinct=True),
-        total_payes=Count('tour', filter=Q(tour__statut='PAYE'), distinct=True),
-        total_attente=Count('tour', filter=Q(tour__statut='EN_ATTENTE'), distinct=True)
+from datetime import timedelta
+
+def generer_tours(groupe):
+
+    membres = MembreGroupe.objects.filter(
+        groupe=groupe
+    ).order_by("ordre_reception")
+
+    # Récupérer les tours déjà créés
+    tours_existants = Tour.objects.filter(
+        groupe=groupe
     )
 
-    # Calcul du nombre de tours terminés (payés) et en cours (en attente)
-    for groupe in groupes:
-        groupe.tours_termines = groupe.total_payes
-        groupe.tours_en_cours = groupe.total_attente
+    membres_avec_tour = set(
+        tours_existants.values_list("membre_id", flat=True)
+    )
 
-    return render(request, 'tours/liste_groupes_tours.html', {
-        'groupes': groupes
-    })
-def generer_tours(groupe):
-    membres = MembreGroupe.objects.filter(groupe=groupe).order_by('ordre_reception')
+    # Trouver la dernière date de tour existante
+    dernier_tour = tours_existants.order_by("-date_tour").first()
 
-    date = groupe.date_debut
+    if dernier_tour:
+        date = dernier_tour.date_tour
 
+        # avancer d'une période
+        if groupe.frequence == "MENSUEL":
+            date += timedelta(days=30)
+        else:
+            date += timedelta(days=7)
+
+    else:
+        date = groupe.date_debut
+
+    # Générer uniquement les tours manquants
     for membre in membres:
+
+        if membre.id in membres_avec_tour:
+            continue
+
         Tour.objects.create(
             groupe=groupe,
             membre=membre,
-            date_tour=date
+            date_tour=date,
+            statut="EN_ATTENTE"
         )
 
-        # avancer selon fréquence
-        if groupe.frequence == 'MENSUEL':
-            date = date + timedelta(days=30)
+        # Passer à la prochaine période
+        if groupe.frequence == "MENSUEL":
+            date += timedelta(days=30)
         else:
-            date = date + timedelta(days=7)
+            date += timedelta(days=7)
 
 @login_required(login_url="login")
 def lancer_tours(request, groupe_id):
     groupe = get_object_or_404(Groupe, id=groupe_id, admin=request.user)
 
-    if Tour.objects.filter(groupe=groupe).exists():
-        messages.warning(request, "Les tours existent déjà")
-    else:
-        generer_tours(groupe)
-        messages.success(request, "Tours générés avec succès")
+    generer_tours(groupe)
+    messages.success(request, "Tours générés avec succès")
 
     return redirect('liste_tours', groupe_id=groupe.id)
 

@@ -716,7 +716,358 @@
 
     <script>
 
+    document.addEventListener("DOMContentLoaded", function () {
 
+
+        // =====================================================
+        // DONNÉES DJANGO
+        // =====================================================
+
+        const labelsMois = {{ cotisations_labels|safe }};
+        const donneesMois = {{ cotisations_mois|safe }};
+
+        const labelsSemaine = {{ cotisations_semaine_labels|safe }};
+        const donneesSemaine = {{ cotisations_semaine|safe }};
+
+
+        // =====================================================
+        // CANVAS
+        // =====================================================
+
+        const canvas = document.getElementById(
+            "cotisationChart"
+        );
+
+
+        if (!canvas) {
+            return;
+        }
+
+
+        const ctx = canvas.getContext("2d");
+
+
+        // =====================================================
+        // GRADIENT
+        // =====================================================
+
+        const gradient = ctx.createLinearGradient(
+            0,
+            0,
+            0,
+            300
+        );
+
+        gradient.addColorStop(
+            0,
+            "rgba(79, 70, 229, 0.20)"
+        );
+
+        gradient.addColorStop(
+            1,
+            "rgba(79, 70, 229, 0.02)"
+        );
+
+
+        // =====================================================
+        // FORMATAGE FCFA
+        // =====================================================
+
+        function formatFCFA(value) {
+
+            return new Intl.NumberFormat(
+                "fr-FR"
+            ).format(value) + " FCFA";
+
+        }
+
+
+        // =====================================================
+        // CRÉATION DU GRAPHIQUE
+        // =====================================================
+
+        let cotisationChart = new Chart(
+            ctx,
+            {
+
+                type: "line",
+
+                data: {
+
+                    labels: labelsMois,
+
+                    datasets: [
+
+                        {
+
+                            label: "Cotisations",
+
+                            data: donneesMois,
+
+                            borderColor: "#4f46e5",
+
+                            backgroundColor: gradient,
+
+                            borderWidth: 3,
+
+                            pointRadius: 4,
+
+                            pointHoverRadius: 7,
+
+                            pointBackgroundColor: "#ffffff",
+
+                            pointBorderColor: "#4f46e5",
+
+                            pointBorderWidth: 3,
+
+                            fill: true,
+
+                            tension: 0.4,
+
+                        }
+
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+
+                    interaction: {
+
+                        intersect: false,
+
+                        mode: "index"
+
+                    },
+
+
+                    legend: {
+
+                        display: true,
+
+                        position: "top",
+
+                        labels: {
+
+                            usePointStyle: true,
+
+                            padding: 20,
+
+                            font: {
+
+                                size: 12
+
+                            }
+
+                        }
+
+                    },
+
+
+                    scales: {
+
+                        xAxes: [
+
+                            {
+
+                                gridLines: {
+
+                                    display: false
+
+                                },
+
+                                ticks: {
+
+                                    fontSize: 11
+
+                                }
+
+                            }
+
+                        ],
+
+
+                        yAxes: [
+
+                            {
+
+                                beginAtZero: true,
+
+                                gridLines: {
+
+                                    color: "rgba(0, 0, 0, 0.06)",
+
+                                    drawBorder: false
+
+                                },
+
+                                ticks: {
+
+                                    beginAtZero: true,
+
+                                    padding: 10,
+
+                                    fontSize: 11,
+
+                                    callback: function(value) {
+
+                                        if (
+                                            value >= 1000000
+                                        ) {
+
+                                            return (
+                                                (value / 1000000)
+                                                .toFixed(1)
+                                                + " M"
+                                            );
+
+                                        }
+
+
+                                        if (
+                                            value >= 1000
+                                        ) {
+
+                                            return (
+                                                (value / 1000)
+                                                .toFixed(0)
+                                                + " k"
+                                            );
+
+                                        }
+
+
+                                        return value;
+
+                                    }
+
+                                }
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    tooltips: {
+
+                        backgroundColor: "#111827",
+
+                        titleFontSize: 13,
+
+                        bodyFontSize: 13,
+
+                        bodySpacing: 5,
+
+                        xPadding: 12,
+
+                        yPadding: 12,
+
+                        cornerRadius: 8,
+
+                        displayColors: false,
+
+
+                        callbacks: {
+
+                            label: function(tooltipItem, data) {
+
+                                const value =
+                                    data.datasets[
+                                        tooltipItem.datasetIndex
+                                    ].data[
+                                        tooltipItem.index
+                                    ];
+
+                                return formatFCFA(value);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+
+        // =====================================================
+        // BOUTON MOIS
+        // =====================================================
+
+        const btnMois = document.getElementById(
+            "btnMois"
+        );
+
+
+        btnMois.addEventListener(
+            "click",
+            function () {
+
+                btnMois.classList.add("active");
+
+                btnSemaine.classList.remove("active");
+
+
+                cotisationChart.data.labels =
+                    labelsMois;
+
+
+                cotisationChart.data.datasets[0].data =
+                    donneesMois;
+
+
+                cotisationChart.update();
+
+            }
+        );
+
+
+        // =====================================================
+        // BOUTON SEMAINE
+        // =====================================================
+
+        const btnSemaine = document.getElementById(
+            "btnSemaine"
+        );
+
+
+        btnSemaine.addEventListener(
+            "click",
+            function () {
+
+                btnSemaine.classList.add("active");
+
+                btnMois.classList.remove("active");
+
+
+                cotisationChart.data.labels =
+                    labelsSemaine;
+
+
+                cotisationChart.data.datasets[0].data =
+                    donneesSemaine;
+
+
+                cotisationChart.update();
+
+            }
+        );
+
+
+    });
+
+    // Modal pour afficher les détails d'un tour
     function openTourDetailModal(membre, date, ordre, montant, statut) {
 
         document.getElementById('detailMembre').textContent = membre;
@@ -771,6 +1122,7 @@
             // Ouvrir le modal
             $('#deleteModal').modal('show');
         }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Toggle sidebar on mobile
             const toggleBtn = document.getElementById('sidebarToggleTop');
