@@ -11,7 +11,6 @@ urlpatterns = [
     path('groupes/<int:id>/update/', update_groupe, name='update_groupe'),
     path('groupes/<int:id>/delete/', delete_groupe, name='delete_groupe'),
     path('groupes/<int:id>/', detail_groupe, name='detail_groupe'),
-    # path('groupes/<int:groupe_id>/dashboard/', dashboard_financier_view,name='dashboard_financier'),
 
     path('membres/', liste_membres_view, name='liste_membres'),
     path('groupes/<int:groupe_id>/membres/', membres_groupe_view, name='membres_groupe'),
@@ -26,7 +25,11 @@ urlpatterns = [
     path('tours/', liste_tours_groupes_view, name='liste_groupes_tours'),
     path('groupes/<int:groupe_id>/tours/', liste_tours_view, name='liste_tours'),
     path('groupes/<int:groupe_id>/tours/generer/', lancer_tours, name='lancer_tours'),
-    # Urls pour membres
-    path('groupes/membre/', groupes_membre_view, name='liste_groupes_membre'),
+
+    # URLs pour les membres
+    path('groupes/membre/', groupes_membre_integrer_view, name='liste_groupes_membre'),
+    path('groupes/explorer/', groupes_membre_view, name='explorer_groupes'),
+    path('groupes/explorer/<int:groupe_id>/', detail_groupe_membre, name='detail_groupe_membre'),
+    path('groupes/explorer/<int:groupe_id>/demande/', demander_adhesion, name='demander_adhesion'),
     path('paiements/membre/', paiements_membre_view, name='liste_paiements_membre'),
 ]

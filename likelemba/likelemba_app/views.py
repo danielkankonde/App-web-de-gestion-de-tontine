@@ -977,10 +977,9 @@ def liste_tours_view(request, groupe_id):
     })
 
 
-
-# Vues pour les utilisateurs membres
+# VUES POUR LES UTILISATEURS MEMBRES
 @login_required
-def groupes_membre_view(request):
+def groupes_membre_integrer_view(request):
 
     if request.user.role == 'ADMIN':
         return redirect('dashboard_admin')
@@ -1012,3 +1011,132 @@ def paiements_membre_view(request):
         'nombre_paiements': nombre_paiements,
     }
     return render(request, 'paiements/liste_paiements_membre.html', context)
+
+# Vues pour voir les groupes disponibles pour les membres
+@login_required(login_url="login")
+def groupes_membre_view(request):
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    groupes = Groupe.objects.filter(
+        statut='ACTIF'
+    ).exclude(
+        membregroupe__utilisateur=request.user
+    ).order_by('-date_creation')
+
+    demandes = DemandeAdhesion.objects.filter(
+        membre=request.user
+    )
+
+    demandes_en_attente = demandes.filter(
+        statut='EN_ATTENTE'
+    )
+
+    return render(request, 'groupes/membres/explorer_groupes_membre.html', {
+        'groupes': groupes,
+        'demandes': demandes,
+        'demandes_en_attente': demandes_en_attente,
+    })
+
+# Vues pour voir le détail d'un groupe et demander l'adhésion
+@login_required(login_url="login")
+def detail_groupe_membre(request, groupe_id):
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    groupe = get_object_or_404(
+        Groupe,
+        id=groupe_id,
+        statut='ACTIF'
+    )
+
+    deja_membre = MembreGroupe.objects.filter(
+        utilisateur=request.user,
+        groupe=groupe
+    ).exists()
+
+    demande = DemandeAdhesion.objects.filter(
+        membre=request.user,
+        groupe=groupe
+    ).order_by('-date_demande').first()
+
+    return render(request, 'groupes/membres/detail_groupe_membre.html', {
+        'groupe': groupe,
+        'deja_membre': deja_membre,
+        'demande': demande,
+    })
+
+# Vue pour demander l'adhésion à un groupe
+@login_required(login_url="login")
+def demander_adhesion(request, groupe_id):
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    if request.method != 'POST':
+        return redirect('detail_groupe_membre', groupe_id=groupe_id)
+
+    groupe = get_object_or_404(
+        Groupe,
+        id=groupe_id,
+        statut='ACTIF'
+    )
+
+    # Vérifier si le membre est déjà dans le groupe
+    if MembreGroupe.objects.filter(
+        utilisateur=request.user,
+        groupe=groupe
+    ).exists():
+        messages.warning(
+            request,
+            "Vous êtes déjà membre de ce groupe."
+        )
+        return redirect(
+            'detail_groupe_membre',
+            groupe_id=groupe.id
+        )
+
+    # Vérifier s'il existe déjà une demande en attente
+    demande_existante = DemandeAdhesion.objects.filter(
+        membre=request.user,
+        groupe=groupe,
+        statut='EN_ATTENTE'
+    ).exists()
+
+    if demande_existante:
+        messages.warning(
+            request,
+            "Votre demande d'adhésion est déjà en attente."
+        )
+        return redirect(
+            'detail_groupe_membre',
+            groupe_id=groupe.id
+        )
+
+    # Créer la demande
+    demande = DemandeAdhesion.objects.create(
+        membre=request.user,
+        groupe=groupe,
+        statut='EN_ATTENTE'
+    )
+
+    # Créer la notification pour l'administrateur
+    Notification.objects.create(
+        destinataire=groupe.admin,
+        demande=demande,
+        type='DEMANDE_ADHESION',
+        titre="Nouvelle demande d'adhésion",
+        message=(
+            f"{request.user.username} souhaite rejoindre "
+            f"le groupe « {groupe.nom} »."
+        )
+    )
+
+    messages.success(
+        request,
+        "Votre demande d'adhésion a été envoyée avec succès."
+    )
+
+    return redirect(
+        'detail_groupe_membre',
+        groupe_id=groupe.id
+    )

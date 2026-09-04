@@ -133,3 +133,105 @@ class Paiement(models.Model):
             ('NON_PAYE', 'Non payé')
         ]
     )
+### SYSTEME DE NOTIFICATION MODELS
+class DemandeAdhesion(models.Model):
+    STATUT_CHOICES = [
+        ('EN_ATTENTE', 'En attente'),
+        ('ACCEPTEE', 'Acceptée'),
+        ('REFUSEE', 'Refusée'),
+    ]
+
+    membre = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        related_name='demandes_adhesion'
+    )
+
+    groupe = models.ForeignKey(
+        Groupe,
+        on_delete=models.CASCADE,
+        related_name='demandes_adhesion'
+    )
+
+    statut = models.CharField(
+        max_length=20,
+        choices=STATUT_CHOICES,
+        default='EN_ATTENTE'
+    )
+
+    date_demande = models.DateTimeField(auto_now_add=True)
+
+    date_traitement = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    traitee_par = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='demandes_traitees'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['membre', 'groupe'],
+                condition=models.Q(statut='EN_ATTENTE'),
+                name='unique_demande_adhesion_en_attente'
+            )
+        ]
+        ordering = ['-date_demande']
+
+    def __str__(self):
+        return f"{self.membre.username} → {self.groupe.nom}"
+
+
+class Notification(models.Model):
+    TYPE_CHOICES = [
+        ('DEMANDE_ADHESION', "Demande d'adhésion"),
+        ('DEMANDE_ACCEPTEE', "Demande acceptée"),
+        ('DEMANDE_REFUSEE', "Demande refusée"),
+    ]
+
+    destinataire = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.CASCADE,
+        related_name='notifications'
+    )
+
+    demande = models.ForeignKey(
+        DemandeAdhesion,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='notifications'
+    )
+
+    type = models.CharField(
+        max_length=30,
+        choices=TYPE_CHOICES
+    )
+
+    titre = models.CharField(
+        max_length=150
+    )
+
+    message = models.CharField(
+        max_length=255
+    )
+
+    lu = models.BooleanField(
+        default=False
+    )
+
+    date_creation = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.destinataire.username} - {self.titre}"
