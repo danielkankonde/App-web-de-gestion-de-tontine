@@ -1,0 +1,315 @@
+{% extends 'base_membre.html' %}
+
+{% block title %}Mes tours{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- En-tête -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+        <div>
+
+            <h1 class="h3 mb-1 text-gray-800">
+                <i class="fas fa-calendar-check text-info mr-2"></i>
+                Mes tours
+            </h1>
+
+            <p class="text-muted mb-0">
+                Consultez vos tours dans le groupe
+                <strong>{{ groupe.nom }}</strong>.
+            </p>
+
+        </div>
+
+        <a href="{% url 'liste_groupes_membre' %}"
+           class="btn btn-secondary">
+
+            <i class="fas fa-arrow-left mr-1"></i>
+            Mes groupes
+
+        </a>
+
+    </div>
+
+
+    <!-- Informations du groupe -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-info text-white">
+
+            <i class="fas fa-users mr-2"></i>
+            Informations du groupe
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-4 mb-3">
+
+                    <small class="text-muted">
+                        Groupe
+                    </small>
+
+                    <h5 class="font-weight-bold">
+                        {{ groupe.nom }}
+                    </h5>
+
+                </div>
+
+
+                <div class="col-md-4 mb-3">
+
+                    <small class="text-muted">
+                        Montant de cotisation
+                    </small>
+
+                    <h5 class="font-weight-bold text-success">
+                        {{ groupe.montant_cotisation }}
+                    </h5>
+
+                </div>
+
+
+                <div class="col-md-4 mb-3">
+
+                    <small class="text-muted">
+                        Fréquence
+                    </small>
+
+                    <h5 class="font-weight-bold">
+                        {{ groupe.get_frequence_display }}
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Mon ordre -->
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+
+                    <h5 class="font-weight-bold text-gray-800 mb-2">
+
+                        <i class="fas fa-sort-numeric-down text-info mr-2"></i>
+
+                        Mon ordre de réception
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Votre position dans l'ordre de réception
+                        du groupe.
+                    </p>
+
+                </div>
+
+                <div class="col-md-4 text-md-right mt-3 mt-md-0">
+
+                    <span class="badge badge-info"
+                          style="font-size: 18px; padding: 10px 15px;">
+
+                        {{ membre.ordre_reception }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Liste des tours -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+
+            <h6 class="m-0 font-weight-bold text-info">
+
+                <i class="fas fa-calendar-alt mr-2"></i>
+
+                Liste de mes tours
+
+            </h6>
+
+            <span class="badge badge-info">
+
+                {{ tours|length }} tour{{ tours|length|pluralize }}
+
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if tours %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead class="thead-light">
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Date du tour</th>
+
+                                <th>Statut</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for tour in tours %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ forloop.counter }}
+                                    </td>
+
+
+                                    <td>
+
+                                        <strong>
+                                            <i class="far fa-calendar-alt text-info mr-2"></i>
+
+                                            {{ tour.date_tour|date:"d/m/Y" }}
+
+                                        </strong>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        {% if tour.statut == 'PAYE' %}
+
+                                            <span class="badge badge-success">
+
+                                                <i class="fas fa-check-circle mr-1"></i>
+
+                                                Payé
+
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge badge-warning">
+
+                                                <i class="fas fa-clock mr-1"></i>
+
+                                                En attente
+
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <!-- Aucun tour -->
+
+                <div class="text-center py-5">
+
+                    <i class="fas fa-calendar-times fa-4x text-gray-300 mb-3"></i>
+
+                    <h5 class="font-weight-bold text-gray-600">
+
+                        Aucun tour disponible
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        Aucun tour n'a encore été généré pour vous
+                        dans ce groupe.
+
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Information -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex align-items-start">
+
+                <div class="mr-3">
+
+                    <i class="fas fa-info-circle fa-lg text-info"></i>
+
+                </div>
+
+                <div>
+
+                    <h6 class="font-weight-bold text-gray-800">
+
+                        À propos de vos tours
+
+                    </h6>
+
+                    <p class="text-muted mb-0">
+
+                        Les dates affichées correspondent aux tours
+                        qui vous sont attribués dans le groupe
+                        <strong>{{ groupe.nom }}</strong>.
+
+                        Elles sont définies à partir de l'organisation
+                        du groupe et de votre ordre de réception.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -85,9 +85,9 @@
                             <button class="btn btn-outline-primary btn-sm flex-fill">
                                 <i class="fas fa-info-circle"></i> Détails
                             </button>
-                            <button class="btn btn-outline-success btn-sm flex-fill">
-                                <i class="fas fa-hand-holding-usd"></i> Cotiser
-                            </button>
+                            <a href="{% url 'mes_tours_groupe' membre.groupe.id %}" class="btn btn-outline-success btn-sm flex-fill">
+                                <i class="fas fa-hand-holding-usd"></i> Voir mon tour
+                            </a>
                             <button class="btn btn-outline-secondary btn-sm flex-fill">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>

@@ -41,4 +41,6 @@ urlpatterns = [
     path('groupes/explorer/<int:groupe_id>/demande/', demander_adhesion, name='demander_adhesion'),
     
     path('paiements/membre/', paiements_membre_view, name='liste_paiements_membre'),
+
+    path('mes-tours/<int:groupe_id>/', mes_tours_groupe, name='mes_tours_groupe'),
 ]

@@ -49,7 +49,7 @@
         </div>
 
         <!-- Mon Tour -->
-        <div class="col-lg-4 mb-4">
+        {% comment %} <div class="col-lg-4 mb-4">
             <div class="card shadow h-100">
                 <div class="card-header bg-info text-white">
                     <i class="fas fa-calendar-check"></i> Mon Tour
@@ -60,12 +60,12 @@
                 </div>
 
                 <div class="card-footer bg-white">
-                    <a href="#" class="btn btn-info btn-block">
+                    <a href="{% url 'mes_tours_groupe' groupe.id %}" class="btn btn-info btn-block">
                         Voir mon tour
                     </a>
                 </div>
             </div>
-        </div>
+        </div> {% endcomment %}
 
     </div>
 

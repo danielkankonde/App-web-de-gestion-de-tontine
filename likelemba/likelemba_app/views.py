@@ -1270,6 +1270,39 @@ def paiements_membre_view(request):
     }
     return render(request, 'paiements/membres/liste_paiements_membre.html', context)
 
+# vues pour voir les tours d'un membre dans ces groupes
+@login_required(login_url='login')
+def mes_tours_groupe(request, groupe_id):
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    groupe = get_object_or_404(
+        Groupe,
+        id=groupe_id
+    )
+
+    # Vérifier que le membre appartient bien à ce groupe
+    membre = get_object_or_404(
+        MembreGroupe,
+        utilisateur=request.user,
+        groupe=groupe
+    )
+
+    # Récupérer uniquement les tours de ce membre
+    tours = Tour.objects.filter(
+        groupe=groupe,
+        membre=membre
+    ).order_by('date_tour')
+
+    return render(
+        request,'tours/membres/mes_tours_groupe.html',
+        {
+            'groupe': groupe,
+            'membre': membre,
+            'tours': tours,
+        }
+    )
+
 # Vues pour voir les groupes disponibles pour les membres
 @login_required(login_url="login")
 def groupes_membre_view(request):
