@@ -1226,6 +1226,15 @@ def refuser_demande_adhesion(request, demande_id):
 
     return redirect('liste_demandes_adhesion')
 
+# vues pour affiché la page d'aide 
+@login_required(login_url="login")
+def aide_admin(request):
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    return render(request, 'pages/aide_admin.html')
+
+
 # VUES POUR LES UTILISATEURS MEMBRES
 @login_required
 def groupes_membre_integrer_view(request):

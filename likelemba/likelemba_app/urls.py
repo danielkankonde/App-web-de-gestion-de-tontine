@@ -31,10 +31,14 @@ urlpatterns = [
     path('demandes-adhesion/<int:demande_id>/accepter/', accepter_demande_adhesion, name='accepter_demande_adhesion'),
     path('demandes-adhesion/<int:demande_id>/refuser/', refuser_demande_adhesion, name='refuser_demande_adhesion'),
 
+    path('aide/', aide_admin, name='aide_admin'),
+
     # URLs pour les membres
     path('groupes/membre/', groupes_membre_integrer_view, name='liste_groupes_membre'),
+
     path('groupes/explorer/', groupes_membre_view, name='explorer_groupes'),
     path('groupes/explorer/<int:groupe_id>/', detail_groupe_membre, name='detail_groupe_membre'),
     path('groupes/explorer/<int:groupe_id>/demande/', demander_adhesion, name='demander_adhesion'),
+    
     path('paiements/membre/', paiements_membre_view, name='liste_paiements_membre'),
 ]

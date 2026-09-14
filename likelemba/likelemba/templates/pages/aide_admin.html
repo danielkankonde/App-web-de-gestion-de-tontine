@@ -1,0 +1,1347 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Aide - Likelemba{% endblock %}
+
+{% block content %}
+
+<!-- ===== EN-TÊTE ===== -->
+<div class="page-header mb-3 mb-md-4">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto">
+            <div class="group-avatar-large" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); flex-shrink: 0;">
+                <i class="fas fa-life-ring"></i>
+            </div>
+            <div class="min-width-0">
+                <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                    Guide d'utilisation
+                </h1>
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-info-circle me-1" style="color: #4f46e5;"></i>
+                    Toutes les informations pour utiliser Likelemba
+                </p>
+            </div>
+        </div>
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+            <button class="btn btn-outline-modern flex-1" onclick="window.print();">
+                <i class="fas fa-print me-1"></i> 
+                <span class="d-none d-sm-inline">Imprimer</span>
+                <span class="d-sm-none">Imprimer</span>
+            </button>
+            <a href="{% url 'dashboard_membre' %}" class="btn btn-primary-modern flex-1">
+                <i class="fas fa-arrow-left me-1"></i> 
+                <span class="d-none d-sm-inline">Retour</span>
+                <span class="d-sm-none">Retour</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SOMMAIRE ===== -->
+<div class="card-modern mb-3 mb-md-4">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-list me-2" style="color: #4f46e5;"></i>
+            Sommaire
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <div class="summary-grid">
+            <a href="#presentation" class="summary-item">
+                <span class="summary-number">1</span>
+                <span class="summary-text">Présentation de Likelemba</span>
+            </a>
+            <a href="#demarrage" class="summary-item">
+                <span class="summary-number">2</span>
+                <span class="summary-text">Que faire après la connexion ?</span>
+            </a>
+            <a href="#creation-groupe" class="summary-item">
+                <span class="summary-number">3</span>
+                <span class="summary-text">Créer un groupe</span>
+            </a>
+            <a href="#membres" class="summary-item">
+                <span class="summary-number">4</span>
+                <span class="summary-text">Gérer les membres</span>
+            </a>
+            <a href="#demandes" class="summary-item">
+                <span class="summary-number">5</span>
+                <span class="summary-text">Gérer les demandes d'adhésion</span>
+            </a>
+            <a href="#ordre" class="summary-item">
+                <span class="summary-number">6</span>
+                <span class="summary-text">Comprendre l'ordre de réception</span>
+            </a>
+            <a href="#tours" class="summary-item">
+                <span class="summary-number">7</span>
+                <span class="summary-text">Générer et gérer les tours</span>
+            </a>
+            <a href="#paiements" class="summary-item">
+                <span class="summary-number">8</span>
+                <span class="summary-text">Gérer les paiements</span>
+            </a>
+            <a href="#notifications" class="summary-item">
+                <span class="summary-number">9</span>
+                <span class="summary-text">Comprendre les notifications</span>
+            </a>
+            <a href="#suivi" class="summary-item">
+                <span class="summary-number">10</span>
+                <span class="summary-text">Suivre l'activité du groupe</span>
+            </a>
+            <a href="#membre" class="summary-item">
+                <span class="summary-number">11</span>
+                <span class="summary-text">Fonctionnement côté membre</span>
+            </a>
+            <a href="#fin" class="summary-item">
+                <span class="summary-number">12</span>
+                <span class="summary-text">Fin du cycle</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 1. PRÉSENTATION ===== -->
+<div class="card-modern mb-3 mb-md-4" id="presentation">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-info-circle me-2" style="color: #4f46e5;"></i>
+            1. Présentation de Likelemba
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Likelemba est une application permettant de gérer facilement
+            un système de cotisation collective dans lequel plusieurs membres
+            contribuent régulièrement et reçoivent à tour de rôle le montant prévu.
+        </p>
+        <p class="help-text">
+            L'application permet notamment à l'administrateur de créer des
+            groupes, gérer les membres, organiser l'ordre de réception,
+            générer les tours, suivre les paiements et recevoir les demandes
+            d'adhésion.
+        </p>
+
+        <div class="info-box">
+            <strong>
+                <i class="fas fa-lightbulb me-2" style="color: #4f46e5;"></i>
+                Principe général
+            </strong>
+            <p class="mb-0 mt-2">
+                L'administrateur organise le groupe et assure son suivi,
+                tandis que les membres peuvent consulter les groupes,
+                demander à rejoindre un groupe et suivre leurs paiements
+                et leur situation.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 2. DÉMARRAGE ===== -->
+<div class="card-modern mb-3 mb-md-4" id="demarrage">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-sign-in-alt me-2" style="color: #4f46e5;"></i>
+            2. Que faire après la connexion ?
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Après avoir ouvert votre session avec un compte administrateur,
+            vous accédez à votre espace d'administration.
+        </p>
+
+        <div class="help-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Accéder à votre espace administrateur</h4>
+                <p>Après la connexion, consultez les différentes rubriques disponibles dans le menu de navigation.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Créer votre premier groupe</h4>
+                <p>Si vous n'avez encore aucun groupe, la première étape consiste à créer un groupe de Likelemba.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Configurer le groupe</h4>
+                <p>Lors de la création, vous devez définir les informations principales du groupe : nom, montant de cotisation, fréquence et date de début.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 3. CRÉATION GROUPE ===== -->
+<div class="card-modern mb-3 mb-md-4" id="creation-groupe">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-users me-2" style="color: #4f46e5;"></i>
+            3. Créer un groupe
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Le groupe constitue l'élément central du système.
+            Chaque groupe possède ses propres membres, cotisations, tours et historique.
+        </p>
+
+        <div class="help-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Donner un nom au groupe</h4>
+                <p>Choisissez un nom permettant d'identifier facilement votre groupe.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Définir le montant de cotisation</h4>
+                <p>Indiquez le montant que chaque membre devra cotiser à chaque période.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Choisir la fréquence</h4>
+                <p>Le système permet de définir une fréquence de cotisation :</p>
+                <ul class="help-list">
+                    <li>Quotidienne</li>
+                    <li>Hebdomadaire</li>
+                    <li>Mensuelle</li>
+                    <li>Annuelle</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Définir la date de début</h4>
+                <p>Cette date sert de point de départ pour l'organisation des tours du groupe.</p>
+            </div>
+        </div>
+
+        <div class="success-box">
+            <strong>
+                <i class="fas fa-check-circle me-2" style="color: #059669;"></i>
+                Conseil
+            </strong>
+            <p class="mb-0 mt-2">
+                Vérifiez soigneusement le montant, la fréquence et la date
+                avant de commencer le cycle du groupe.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 4. MEMBRES ===== -->
+<div class="card-modern mb-3 mb-md-4" id="membres">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-user-friends me-2" style="color: #4f46e5;"></i>
+            4. Gérer les membres
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Une fois le groupe créé, vous devez gérer les personnes qui
+            participeront au groupe.
+        </p>
+
+        <h4 class="help-subtitle">
+            <i class="fas fa-user-plus me-2" style="color: #4f46e5;"></i>
+            Ajouter directement un membre
+        </h4>
+        <p class="help-text">
+            L'administrateur peut ajouter un membre au groupe depuis la
+            gestion des membres.
+        </p>
+        <p class="help-text">
+            Vous pouvez sélectionner un utilisateur disposant déjà d'un
+            compte membre ou renseigner les informations d'un membre
+            ne disposant pas encore d'un compte.
+        </p>
+
+        <div class="info-box">
+            <strong>
+                <i class="fas fa-info-circle me-2" style="color: #4f46e5;"></i>
+                Informations du membre
+            </strong>
+            <p class="mb-0 mt-2">
+                Selon le cas, vous pouvez renseigner le nom, le téléphone
+                et l'ordre de réception du membre.
+            </p>
+        </div>
+
+        <h4 class="help-subtitle mt-4">
+            <i class="fas fa-users-cog me-2" style="color: #4f46e5;"></i>
+            Gestion des membres déjà inscrits
+        </h4>
+        <p class="help-text">
+            Une fois ajouté, le membre apparaît dans la liste des membres
+            du groupe et peut être pris en compte dans l'organisation
+            des tours.
+        </p>
+    </div>
+</div>
+
+<!-- ===== 5. DEMANDES ===== -->
+<div class="card-modern mb-3 mb-md-4" id="demandes">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-user-plus me-2" style="color: #4f46e5;"></i>
+            5. Gérer les demandes d'adhésion
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Un membre qui souhaite rejoindre un groupe peut envoyer une
+            demande d'adhésion depuis son espace membre.
+        </p>
+
+        <div class="help-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Le membre découvre le groupe</h4>
+                <p>Le membre consulte les groupes actifs disponibles et ouvre les informations du groupe qui l'intéresse.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Le membre envoie sa demande</h4>
+                <p>Il clique sur « Demander à rejoindre ». Une notification est alors créée pour l'administrateur responsable du groupe.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>L'administrateur reçoit la notification</h4>
+                <p>Le nombre de notifications non lues est indiqué sur l'icône de notification.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Examiner la demande</h4>
+                <p>L'administrateur ouvre la liste des demandes afin de consulter les demandes en attente.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h4>Accepter ou refuser</h4>
+                <p>L'administrateur peut accepter ou refuser la demande.</p>
+            </div>
+        </div>
+
+        <div class="warning-box">
+            <strong>
+                <i class="fas fa-exclamation-triangle me-2" style="color: #d97706;"></i>
+                Important
+            </strong>
+            <p class="mb-0 mt-2">
+                Une demande acceptée ajoute automatiquement le membre
+                au groupe. Une demande refusée ne crée pas d'adhésion au groupe.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 6. ORDRE ===== -->
+<div class="card-modern mb-3 mb-md-4" id="ordre">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-sort-numeric-down me-2" style="color: #4f46e5;"></i>
+            6. Comprendre l'ordre de réception
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            L'ordre de réception permet de déterminer dans quel ordre
+            les membres bénéficieront des tours du groupe.
+        </p>
+        <p class="help-text">
+            Par exemple, si un groupe possède cinq membres :
+        </p>
+
+        <div class="table-responsive">
+            <table class="table-modern help-table">
+                <thead>
+                    <tr>
+                        <th>Ordre</th>
+                        <th>Membre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="order-badge">1</span></td><td>Membre A</td></tr>
+                    <tr><td><span class="order-badge">2</span></td><td>Membre B</td></tr>
+                    <tr><td><span class="order-badge">3</span></td><td>Membre C</td></tr>
+                    <tr><td><span class="order-badge">4</span></td><td>Membre D</td></tr>
+                    <tr><td><span class="order-badge">5</span></td><td>Membre E</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="help-text mt-3">
+            Chaque ordre doit être unique dans un même groupe.
+            Deux membres ne peuvent donc pas avoir le même ordre de réception.
+        </p>
+    </div>
+</div>
+
+<!-- ===== 7. TOURS ===== -->
+<div class="card-modern mb-3 mb-md-4" id="tours">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-sync-alt me-2" style="color: #4f46e5;"></i>
+            7. Générer et gérer les tours
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Les tours représentent les différentes périodes pendant
+            lesquelles les membres recevront leur tour.
+        </p>
+
+        <div class="help-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Vérifier les membres</h4>
+                <p>Avant de générer les tours, vérifiez que les membres du groupe sont correctement enregistrés et que leur ordre de réception est correctement défini.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Lancer la génération des tours</h4>
+                <p>L'administrateur peut lancer la génération des tours pour son groupe.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Consulter les tours</h4>
+                <p>Une fois générés, les tours permettent de visualiser le membre concerné et la date prévue pour son tour.</p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>
+                <i class="fas fa-calendar-alt me-2" style="color: #4f46e5;"></i>
+                Organisation des dates
+            </strong>
+            <p class="mb-0 mt-2">
+                Les dates des tours sont générées à partir de la date
+                de début du groupe et de sa fréquence.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 8. PAIEMENTS ===== -->
+<div class="card-modern mb-3 mb-md-4" id="paiements">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-money-bill-wave me-2" style="color: #4f46e5;"></i>
+            8. Gérer les paiements
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Les paiements permettent de suivre les cotisations effectuées
+            par les membres pour les différents tours.
+        </p>
+
+        <div class="help-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Identifier le membre</h4>
+                <p>Sélectionnez le membre concerné par le paiement.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Associer le paiement à un tour</h4>
+                <p>Le paiement est associé au tour correspondant.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Enregistrer le montant et la date</h4>
+                <p>Le montant et la date du paiement sont enregistrés afin de conserver un historique des cotisations.</p>
+            </div>
+        </div>
+
+        <div class="success-box">
+            <strong>
+                <i class="fas fa-chart-line me-2" style="color: #059669;"></i>
+                Suivi
+            </strong>
+            <p class="mb-0 mt-2">
+                L'historique des paiements permet de suivre les cotisations
+                déjà enregistrées et les montants encaissés.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 9. NOTIFICATIONS ===== -->
+<div class="card-modern mb-3 mb-md-4" id="notifications">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-bell me-2" style="color: #4f46e5;"></i>
+            9. Comprendre les notifications
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Le système de notifications permet à l'administrateur
+            d'être informé lorsqu'une action importante nécessite son attention.
+        </p>
+
+        <h4 class="help-subtitle">
+            <i class="fas fa-user-plus me-2" style="color: #4f46e5;"></i>
+            Demande d'adhésion
+        </h4>
+        <p class="help-text">
+            Lorsqu'un membre demande à rejoindre l'un de vos groupes,
+            une notification est créée automatiquement.
+        </p>
+
+        <h4 class="help-subtitle mt-4">
+            <i class="fas fa-circle me-2" style="color: #ef4444;"></i>
+            Badge de notification
+        </h4>
+        <p class="help-text">
+            Le nombre affiché sur l'icône en forme de cloche correspond
+            au nombre de notifications non lues.
+        </p>
+
+        <div class="info-box">
+            <strong>
+                <i class="fas fa-info-circle me-2" style="color: #4f46e5;"></i>
+                Exemple :
+            </strong>
+            <p class="mb-0 mt-2">
+                Si la cloche affiche <strong>3</strong>, cela signifie
+                que vous avez trois notifications qui n'ont pas encore
+                été traitées comme lues.
+            </p>
+        </div>
+
+        <p class="help-text">
+            Lorsqu'une demande d'adhésion est acceptée ou refusée,
+            la notification correspondante peut être marquée comme lue.
+        </p>
+    </div>
+</div>
+
+<!-- ===== 10. SUIVI ===== -->
+<div class="card-modern mb-3 mb-md-4" id="suivi">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-chart-bar me-2" style="color: #4f46e5;"></i>
+            10. Suivre l'activité du groupe
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            L'administrateur doit régulièrement consulter les différentes
+            informations de son groupe afin de maintenir un suivi correct.
+        </p>
+
+        <div class="row g-3">
+            <div class="col-12 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Membres</h4>
+                    <p>Consultez les membres appartenant au groupe et vérifiez leur ordre de réception.</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h4>Tours</h4>
+                    <p>Consultez les tours générés et les dates correspondantes.</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <h4>Paiements</h4>
+                    <p>Suivez les paiements enregistrés et l'historique des cotisations.</p>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h4>Notifications</h4>
+                    <p>Consultez les nouvelles demandes et les informations nécessitant votre attention.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 11. CÔTÉ MEMBRE ===== -->
+<div class="card-modern mb-3 mb-md-4" id="membre">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-user me-2" style="color: #4f46e5;"></i>
+            11. Fonctionnement côté membre
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Les membres disposent également d'un espace leur permettant
+            d'interagir avec les groupes.
+        </p>
+
+        <div class="help-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h4>Explorer les groupes</h4>
+                <p>Le membre peut consulter les groupes actifs disponibles auxquels il n'appartient pas encore.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h4>Demander à rejoindre un groupe</h4>
+                <p>Le membre peut ouvrir les détails d'un groupe et envoyer une demande d'adhésion.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h4>Attendre la décision de l'administrateur</h4>
+                <p>La demande peut être en attente, acceptée ou refusée.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h4>Consulter ses groupes</h4>
+                <p>Une fois accepté, le membre retrouve le groupe dans la liste de ses groupes.</p>
+            </div>
+        </div>
+
+        <div class="help-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+                <h4>Consulter ses paiements</h4>
+                <p>Le membre peut également consulter les paiements enregistrés pour ses participations.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== 12. FIN DU CYCLE ===== -->
+<div class="card-modern mb-3 mb-md-4" id="fin">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-flag-checkered me-2" style="color: #4f46e5;"></i>
+            12. Fin du cycle
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <p class="help-text">
+            Lorsqu'un cycle de Likelemba arrive à son terme et que
+            les différents tours ont été effectués, le groupe peut
+            être considéré comme terminé.
+        </p>
+        <p class="help-text">
+            L'administrateur doit vérifier que les membres, les tours
+            et les paiements ont été correctement suivis avant de
+            considérer le cycle comme terminé.
+        </p>
+
+        <div class="warning-box">
+            <strong>
+                <i class="fas fa-exclamation-triangle me-2" style="color: #d97706;"></i>
+                À retenir
+            </strong>
+            <p class="mb-0 mt-2">
+                Avant de terminer un cycle, assurez-vous que les informations
+                enregistrées dans le groupe sont correctes et que les paiements
+                et tours ont été correctement suivis.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== RÉSUMÉ ===== -->
+<div class="card-modern mb-3 mb-md-4">
+    <div class="card-modern-header">
+        <span class="card-modern-title">
+            <i class="fas fa-route me-2" style="color: #4f46e5;"></i>
+            Le fonctionnement de Likelemba en résumé
+        </span>
+    </div>
+    <div class="card-modern-body">
+        <div class="row g-3">
+            <div class="col-6 col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background: rgba(79, 70, 229, 0.1); color: #4f46e5;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>1. Créer</h4>
+                    <p>Créez et configurez votre groupe.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background: rgba(124, 58, 237, 0.1); color: #7c3aed;">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h4>2. Ajouter</h4>
+                    <p>Ajoutez les membres ou acceptez leurs demandes.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background: rgba(217, 119, 6, 0.1); color: #d97706;">
+                        <i class="fas fa-sort-numeric-down"></i>
+                    </div>
+                    <h4>3. Organiser</h4>
+                    <p>Définissez l'ordre de réception.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h4>4. Générer</h4>
+                    <p>Générez les tours du groupe.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background: rgba(37, 99, 235, 0.1); color: #2563eb;">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <h4>5. Suivre</h4>
+                    <p>Enregistrez et consultez les paiements.</p>
+                </div>
+            </div>
+
+            <div class="col-6 col-md-4">
+                <div class="feature-card text-center">
+                    <div class="feature-icon mx-auto" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h4>6. Administrer</h4>
+                    <p>Consultez les notifications et gérez votre groupe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MESSAGE FINAL ===== -->
+<div class="card-modern mb-3 mb-md-4">
+    <div class="card-modern-body text-center py-5">
+        <div style="width: 72px; height: 72px; background: rgba(79, 70, 229, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+            <i class="fas fa-life-ring" style="font-size: 2rem; color: #4f46e5;"></i>
+        </div>
+        <h3 class="fw-bold mb-2" style="color: #0f172a; font-size: 1.3rem;">
+            Besoin d'aide ?
+        </h3>
+        <p class="text-muted mb-0" style="max-width: 400px; margin: 0 auto;">
+            Consultez les différentes sections de ce guide pour comprendre
+            les étapes de fonctionnement de Likelemba.
+        </p>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== HELPERS ===== */
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+/* ===== GROUP AVATAR LARGE ===== */
+.group-avatar-large {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+    .group-avatar-large {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (min-width: 768px) {
+    .group-avatar-large {
+        width: 56px;
+        height: 56px;
+        font-size: 1.4rem;
+    }
+}
+
+/* ===== BOUTONS ===== */
+.btn-primary-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-primary-modern {
+        padding: 10px 24px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-outline-modern {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #0f172a;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .btn-outline-modern {
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+}
+
+.btn-outline-modern:hover {
+    border-color: #4f46e5;
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.04);
+    text-decoration: none;
+}
+
+/* ===== CARD MODERN ===== */
+.card-modern {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    border: 1px solid #f1f5f9;
+    transition: all 0.3s ease;
+    scroll-margin-top: 100px;
+}
+
+.card-modern:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-modern-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-header {
+        padding: 16px 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-header {
+        padding: 18px 24px;
+    }
+}
+
+.card-modern-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .card-modern-title {
+        font-size: 1rem;
+    }
+}
+
+.card-modern-body {
+    padding: 16px;
+}
+
+@media (min-width: 576px) {
+    .card-modern-body {
+        padding: 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .card-modern-body {
+        padding: 24px;
+    }
+}
+
+/* ===== SOMMAIRE ===== */
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+}
+
+@media (min-width: 576px) {
+    .summary-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+}
+
+@media (min-width: 992px) {
+    .summary-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.summary-item:hover {
+    background: #f0f4ff;
+    border-color: #4f46e5;
+    text-decoration: none;
+    transform: translateX(4px);
+}
+
+.summary-number {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.summary-text {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+/* ===== HELP TEXT ===== */
+.help-text {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+
+@media (min-width: 768px) {
+    .help-text {
+        font-size: 0.95rem;
+    }
+}
+
+.help-subtitle {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .help-subtitle {
+        font-size: 1.05rem;
+    }
+}
+
+.help-list {
+    padding-left: 20px;
+    margin-bottom: 0;
+}
+
+.help-list li {
+    font-size: 0.9rem;
+    color: #475569;
+    padding: 2px 0;
+}
+
+/* ===== HELP STEP ===== */
+.help-step {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+}
+
+.help-step:hover {
+    background: #f0f4ff;
+}
+
+@media (min-width: 768px) {
+    .help-step {
+        gap: 16px;
+        margin-bottom: 20px;
+        padding: 16px 20px;
+    }
+}
+
+.step-number {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+    .step-number {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+}
+
+.step-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.step-content h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+@media (min-width: 768px) {
+    .step-content h4 {
+        font-size: 1rem;
+    }
+}
+
+.step-content p {
+    font-size: 0.85rem;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .step-content p {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== BOXES ===== */
+.info-box {
+    background: #f0f4ff;
+    border-left: 4px solid #4f46e5;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.warning-box {
+    background: #fffbeb;
+    border-left: 4px solid #d97706;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+.success-box {
+    background: #ecfdf5;
+    border-left: 4px solid #059669;
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: #334155;
+    line-height: 1.6;
+}
+
+/* ===== FEATURE CARD ===== */
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+    padding: 18px;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    border-color: #e2e8f0;
+}
+
+.feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+}
+
+.feature-card h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 6px;
+}
+
+.feature-card p {
+    color: #64748b;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.feature-card.text-center {
+    text-align: center;
+}
+
+.feature-card.text-center .feature-icon {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ===== HELP TABLE ===== */
+.help-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.help-table thead {
+    background: #f8fafc;
+}
+
+.help-table thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.help-table tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.help-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.order-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== RESPONSIVE GLOBAL ===== */
+@media (max-width: 575.98px) {
+    .container-fluid {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+    
+    .row {
+        margin-left: -6px !important;
+        margin-right: -6px !important;
+    }
+    
+    .col-6 {
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+    }
+    
+    .g-3 {
+        --bs-gutter-y: 0.5rem !important;
+        --bs-gutter-x: 0.5rem !important;
+    }
+    
+    .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .mb-4 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .gap-3 {
+        gap: 0.75rem !important;
+    }
+    
+    .gap-2 {
+        gap: 0.5rem !important;
+    }
+    
+    .flex-1 {
+        flex: 1 !important;
+    }
+    
+    .help-step {
+        padding: 12px;
+        gap: 10px;
+    }
+    
+    .step-number {
+        min-width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .container-fluid {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+}
+</style>
+{% endblock %}

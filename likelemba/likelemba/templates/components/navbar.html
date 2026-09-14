@@ -73,15 +73,11 @@
                 aria-labelledby="userDropdown" 
                 style="border-radius: 12px; padding: 6px; min-width: 200px; margin-top: 8px;">
                 
-                <a class="dropdown-item" href="#" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
-                    <i class="fas fa-user fa-sm fa-fw me-2 text-primary"></i>
-                    Mon Profil
+                <a class="dropdown-item" href="{% url 'liste_demandes_adhesion' %}" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
+                    <i class="fas fa-bell fa-sm fa-fw me-2 text-warning"></i>
+                    Notifications
                 </a>
-                <a class="dropdown-item" href="#" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
-                    <i class="fas fa-cogs fa-sm fa-fw me-2 text-warning"></i>
-                    Paramètres
-                </a>
-                <a class="dropdown-item" href="#" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
+                <a class="dropdown-item" href="{% url 'aide_admin' %}" style="border-radius: 8px; padding: 8px 14px; font-size: 0.85rem;">
                     <i class="fas fa-life-ring fa-sm fa-fw me-2 text-info"></i>
                     Aide
                 </a>
