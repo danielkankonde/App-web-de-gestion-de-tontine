@@ -22,13 +22,23 @@
     <!-- ===== NAVBAR RIGHT ===== -->
     <ul class="navbar-nav ml-auto align-items-center" style="flex-direction: row; gap: 2px;">
 
-        <!-- Notifications -->
-        <li class="nav-item">
-            <a class="nav-link" href="#" role="button" style="position: relative;">
-                <i class="fas fa-bell fa-fw" style="font-size: 1.1rem;"></i>
-                <span class="badge-dot"></span>
-            </a>
-        </li>
+    <!-- Notifications -->
+    <li class="nav-item">
+        <a class="nav-link"
+        href="{% url 'liste_demandes_adhesion' %}"
+        role="button"
+        style="position: relative;">
+
+            <i class="fas fa-bell fa-fw" style="font-size: 1.1rem;"></i>
+
+            {% if notifications_non_lues > 0 %}
+                <span class="notification-badge">
+                    {{ notifications_non_lues }}
+                </span>
+            {% endif %}
+
+        </a>
+    </li>
 
         <!-- Messages -->
         <li class="nav-item">
@@ -88,3 +98,28 @@
     </ul>
 
 </nav>
+<style>
+   .notification-badge {
+    position: absolute;
+    top: 12px;
+    right: 0px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+
+    background-color: #e74a3b;
+    color: white;
+
+    border-radius: 10px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+    border: 2px solid white;
+}
+</style>

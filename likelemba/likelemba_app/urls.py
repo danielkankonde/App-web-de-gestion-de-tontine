@@ -26,6 +26,11 @@ urlpatterns = [
     path('groupes/<int:groupe_id>/tours/', liste_tours_view, name='liste_tours'),
     path('groupes/<int:groupe_id>/tours/generer/', lancer_tours, name='lancer_tours'),
 
+    # URLs Admin : demandes d'adhésion
+    path('demandes-adhesion/', liste_demandes_adhesion, name='liste_demandes_adhesion'),
+    path('demandes-adhesion/<int:demande_id>/accepter/', accepter_demande_adhesion, name='accepter_demande_adhesion'),
+    path('demandes-adhesion/<int:demande_id>/refuser/', refuser_demande_adhesion, name='refuser_demande_adhesion'),
+
     # URLs pour les membres
     path('groupes/membre/', groupes_membre_integrer_view, name='liste_groupes_membre'),
     path('groupes/explorer/', groupes_membre_view, name='explorer_groupes'),

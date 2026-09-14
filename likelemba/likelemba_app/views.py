@@ -2,10 +2,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Q, Count, Sum
+from django.db.models import Q, Count, Sum, Max
 from django.db.models.functions import TruncMonth
 from .forms import GroupeForm, MembreGroupeForm, OrdreMembreForm, PaiementForm
 from .models import Groupe, Paiement, Tour
+from django.db import transaction
 from datetime import timedelta
 from django.utils import timezone
 
@@ -889,8 +890,7 @@ def liste_tours_groupes_view(request):
         'total_attente': total_attente,
     })
 
-from datetime import timedelta
-
+# Views generer tours
 def generer_tours(groupe):
 
     membres = MembreGroupe.objects.filter(
@@ -976,6 +976,255 @@ def liste_tours_view(request, groupe_id):
         'tours': tours,
     })
 
+# ============================================================
+# VUES ADMIN : DEMANDES D'ADHÉSION
+# ============================================================
+
+@login_required(login_url="login")
+def liste_demandes_adhesion(request):
+    """
+    Affiche uniquement les demandes d'adhésion
+    concernant les groupes de l'administrateur connecté.
+    """
+
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    demandes = DemandeAdhesion.objects.filter(
+        groupe__admin=request.user,
+        statut='EN_ATTENTE'
+    ).select_related(
+        'membre',
+        'groupe'
+    ).order_by('-date_demande')
+
+    return render(
+        request,
+        'demandes/liste_demandes_adhesion.html',
+        {
+            'demandes': demandes
+        }
+    )
+
+@login_required(login_url="login")
+def accepter_demande_adhesion(request, demande_id):
+    """
+    Accepte une demande d'adhésion.
+
+    L'administrateur doit fournir lui-même
+    l'ordre de réception du nouveau membre.
+    """
+
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    if request.method != 'POST':
+        return redirect('liste_demandes_adhesion')
+
+    with transaction.atomic():
+
+        demande = get_object_or_404(
+            DemandeAdhesion.objects.select_for_update(),
+            id=demande_id,
+            groupe__admin=request.user,
+            statut='EN_ATTENTE'
+        )
+
+        # Récupérer l'ordre choisi par l'administrateur
+        ordre_reception = request.POST.get('ordre_reception')
+
+        # Vérifier que l'ordre a été fourni
+        if not ordre_reception:
+            messages.error(
+                request,
+                "Veuillez renseigner l'ordre de réception."
+            )
+            return redirect('liste_demandes_adhesion')
+
+        # Vérifier que l'ordre est bien un nombre entier
+        try:
+            ordre_reception = int(ordre_reception)
+        except (TypeError, ValueError):
+            messages.error(
+                request,
+                "L'ordre de réception doit être un nombre entier."
+            )
+            return redirect('liste_demandes_adhesion')
+
+        # Vérifier que l'ordre est positif
+        if ordre_reception < 1:
+            messages.error(
+                request,
+                "L'ordre de réception doit être supérieur ou égal à 1."
+            )
+            return redirect('liste_demandes_adhesion')
+
+        # Vérifier que cet ordre n'est pas déjà utilisé
+        ordre_deja_utilise = MembreGroupe.objects.filter(
+            groupe=demande.groupe,
+            ordre_reception=ordre_reception
+        ).exists()
+
+        if ordre_deja_utilise:
+            messages.error(
+                request,
+                f"L'ordre de réception {ordre_reception} "
+                f"est déjà utilisé dans ce groupe."
+            )
+            return redirect('liste_demandes_adhesion')
+
+        # Vérifier si le membre n'a pas déjà été ajouté
+        # entre-temps par l'administrateur
+        membre_existant = MembreGroupe.objects.filter(
+            utilisateur=demande.membre,
+            groupe=demande.groupe
+        ).first()
+
+        if membre_existant:
+            messages.warning(
+                request,
+                "Ce membre appartient déjà à ce groupe."
+            )
+
+            demande.statut = 'ACCEPTEE'
+            demande.date_traitement = timezone.now()
+            demande.traitee_par = request.user
+            demande.save(
+                update_fields=[
+                    'statut',
+                    'date_traitement',
+                    'traitee_par'
+                ]
+            )
+
+            Notification.objects.create(
+                destinataire=demande.membre,
+                demande=demande,
+                type='DEMANDE_ACCEPTEE',
+                titre="Demande d'adhésion acceptée",
+                message=(
+                    f"Votre demande pour rejoindre "
+                    f"le groupe « {demande.groupe.nom} » "
+                    f"a été acceptée."
+                )
+            )
+
+            return redirect('liste_demandes_adhesion')
+
+        # Créer le membre dans le groupe
+        MembreGroupe.objects.create(
+            utilisateur=demande.membre,
+            groupe=demande.groupe,
+            nom='',
+            telephone=demande.membre.telephone,
+            ordre_reception=ordre_reception
+        )
+
+        # Mettre à jour la demande
+        demande.statut = 'ACCEPTEE'
+        demande.date_traitement = timezone.now()
+        demande.traitee_par = request.user
+        demande.save(
+            update_fields=[
+                'statut',
+                'date_traitement',
+                'traitee_par'
+            ]
+        )
+
+        # Marquer la notification initiale de l'admin comme lue
+        Notification.objects.filter(
+            demande=demande,
+            destinataire=request.user,
+            type='DEMANDE_ADHESION'
+        ).update(lu=True)
+
+        # Notification envoyée au membre
+        Notification.objects.create(
+            destinataire=demande.membre,
+            demande=demande,
+            type='DEMANDE_ACCEPTEE',
+            titre="Demande d'adhésion acceptée",
+            message=(
+                f"Votre demande pour rejoindre "
+                f"le groupe « {demande.groupe.nom} » "
+                f"a été acceptée. "
+                f"Votre ordre de réception est "
+                f"{ordre_reception}."
+            )
+        )
+
+    messages.success(
+        request,
+        f"La demande de {demande.membre.username} "
+        f"a été acceptée avec l'ordre de réception "
+        f"{ordre_reception}."
+    )
+
+    return redirect('liste_demandes_adhesion')
+
+# Vues pour la demande d'adhésion
+@login_required(login_url="login")
+def refuser_demande_adhesion(request, demande_id):
+    """
+    Refuse une demande d'adhésion.
+    """
+
+    if request.user.role != 'ADMIN':
+        return redirect('dashboard_membre')
+
+    if request.method != 'POST':
+        return redirect('liste_demandes_adhesion')
+
+    with transaction.atomic():
+
+        demande = get_object_or_404(
+            DemandeAdhesion.objects.select_for_update(),
+            id=demande_id,
+            groupe__admin=request.user,
+            statut='EN_ATTENTE'
+        )
+
+        # Refuser la demande
+        demande.statut = 'REFUSEE'
+        demande.date_traitement = timezone.now()
+        demande.traitee_par = request.user
+
+        demande.save(
+            update_fields=[
+                'statut',
+                'date_traitement',
+                'traitee_par'
+            ]
+        )
+
+        # Marquer la notification initiale comme lue
+        Notification.objects.filter(
+            demande=demande,
+            destinataire=request.user,
+            type='DEMANDE_ADHESION'
+        ).update(lu=True)
+
+        # Notification envoyée au membre
+        Notification.objects.create(
+            destinataire=demande.membre,
+            demande=demande,
+            type='DEMANDE_REFUSEE',
+            titre="Demande d'adhésion refusée",
+            message=(
+                f"Votre demande pour rejoindre "
+                f"le groupe « {demande.groupe.nom} » "
+                f"a été refusée."
+            )
+        )
+
+    messages.success(
+        request,
+        f"La demande de {demande.membre.username} "
+        f"a été refusée."
+    )
+
+    return redirect('liste_demandes_adhesion')
 
 # VUES POUR LES UTILISATEURS MEMBRES
 @login_required
@@ -990,7 +1239,7 @@ def groupes_membre_integrer_view(request):
     context = {
         'groupes': groupes
     }
-    return render(request, 'groupes/membres/liste_groupes_membre.html', context)
+    return render(request, 'groupes/membres/liste_groupes_membre_integrer.html', context)
 
 # Vues pour voir les paiements des membres 
 @login_required(login_url='login')
@@ -1010,7 +1259,7 @@ def paiements_membre_view(request):
         'total_encaisse': total_encaisse,
         'nombre_paiements': nombre_paiements,
     }
-    return render(request, 'paiements/liste_paiements_membre.html', context)
+    return render(request, 'paiements/membres/liste_paiements_membre.html', context)
 
 # Vues pour voir les groupes disponibles pour les membres
 @login_required(login_url="login")

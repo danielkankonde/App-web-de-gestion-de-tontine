@@ -74,7 +74,7 @@
     <div class="row">
 
         <!-- Effectuer Paiement -->
-        <div class="col-lg-6 mb-4">
+        <div class="col-lg-4 mb-4">
             <div class="card shadow">
                 <div class="card-header bg-warning">
                     <i class="fas fa-credit-card"></i> Effectuer un Paiement
@@ -93,7 +93,7 @@
         </div>
 
         <!-- Historique -->
-        <div class="col-lg-6 mb-4">
+        <div class="col-lg-4 mb-4">
             <div class="card shadow">
                 <div class="card-header bg-secondary text-white">
                     <i class="fas fa-history"></i> Mon Historique
@@ -106,6 +106,24 @@
                 <div class="card-footer">
                     <a href="#" class="btn btn-secondary btn-block">
                         Voir l'historique
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Historique -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users"></i> Groupes disponibles
+                </div>
+
+                <div class="card-body">
+                    Consultez les groupes disponibles pour y intégrer.
+                </div>
+
+                <div class="card-footer">
+                    <a href="{% url "explorer_groupes" %}" class="btn btn-primary btn-block">
+                        Explorer ces groupes
                     </a>
                 </div>
             </div>

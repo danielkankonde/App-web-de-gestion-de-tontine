@@ -1,0 +1,1855 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<!-- ===== EN-TÊTE ===== -->
+
+<div class="page-header mb-3 mb-md-4">
+
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3">
+
+        <div class="d-flex align-items-center gap-3 w-100 w-sm-auto">
+
+            <div class="group-avatar-large"
+                 style="background: linear-gradient(135deg, #4f46e5, #7c3aed); flex-shrink: 0;">
+                <i class="fas fa-user-clock"></i>
+            </div>
+
+            <div class="min-width-0">
+
+                <h1 class="h4 h-md-3 mb-1 fw-bold" style="color: #0f172a;">
+                    Demandes d'adhésion
+                </h1>
+
+                <p class="text-muted small mb-0">
+                    <i class="fas fa-user-plus me-1" style="color: #4f46e5;"></i>
+                    Demandes en attente de traitement
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+
+            <a href="{% url 'liste_membres' %}"
+               class="btn btn-outline-modern flex-1">
+
+                <i class="fas fa-arrow-left me-1"></i>
+
+                <span class="d-none d-sm-inline">
+                    Tous les groupes
+                </span>
+
+                <span class="d-sm-none">
+                    Retour
+                </span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===== STATISTIQUES RAPIDES ===== -->
+
+<div class="row g-2 g-md-3 mb-3 mb-md-4">
+
+    <!-- DEMANDES EN ATTENTE -->
+
+    <div class="col-6 col-md-3">
+
+        <div class="stat-mini">
+
+            <div class="stat-mini-body">
+
+                <div class="stat-mini-icon orange">
+                    <i class="fas fa-clock"></i>
+                </div>
+
+                <div class="stat-mini-content">
+
+                    <span class="stat-mini-label">
+                        En attente
+                    </span>
+
+                    <h5 class="stat-mini-value">
+                        {{ demandes|length }}
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEMBRES À EXAMINER -->
+
+    <div class="col-6 col-md-3">
+
+        <div class="stat-mini">
+
+            <div class="stat-mini-body">
+
+                <div class="stat-mini-icon purple">
+                    <i class="fas fa-users"></i>
+                </div>
+
+                <div class="stat-mini-content">
+
+                    <span class="stat-mini-label">
+                        À examiner
+                    </span>
+
+                    <h5 class="stat-mini-value">
+                        {{ demandes|length }}
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ACTION -->
+
+    <div class="col-6 col-md-3">
+
+        <div class="stat-mini">
+
+            <div class="stat-mini-body">
+
+                <div class="stat-mini-icon green">
+                    <i class="fas fa-user-check"></i>
+                </div>
+
+                <div class="stat-mini-content">
+
+                    <span class="stat-mini-label">
+                        Action
+                    </span>
+
+                    <h5 class="stat-mini-value">
+                        À traiter
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STATUT -->
+
+    <div class="col-6 col-md-3">
+
+        <div class="stat-mini">
+
+            <div class="stat-mini-body">
+
+                <div class="stat-mini-icon red">
+                    <i class="fas fa-bell"></i>
+                </div>
+
+                <div class="stat-mini-content">
+
+                    <span class="stat-mini-label">
+                        Statut
+                    </span>
+
+                    <h5 class="stat-mini-value">
+                        Actif
+                    </h5>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===== MESSAGES ===== -->
+
+{% include "partials/messages.html" %}
+
+
+<!-- ===== TABLEAU ===== -->
+
+<div class="card-modern">
+
+    <!-- HEADER -->
+
+    <div class="card-modern-header d-flex flex-column flex-sm-row justify-content-between align-items-stretch align-items-sm-center gap-2">
+
+        <span class="card-modern-title">
+
+            <i class="fas fa-user-clock me-2"
+               style="color: #4f46e5;"></i>
+
+            Liste des demandes
+
+        </span>
+
+
+        <div class="d-flex gap-2 w-100 w-sm-auto">
+
+            <div class="search-wrapper flex-grow-1 flex-sm-grow-0">
+
+                <i class="fas fa-search search-icon"></i>
+
+                <input type="text"
+                    class="search-input"
+                    placeholder="Rechercher..."
+                    id="tableSearch">
+
+            </div>
+
+
+            <button class="btn-filter-table"
+                    onclick="window.location.reload();"
+                    title="Actualiser">
+
+                <i class="fas fa-sync-alt"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- BODY -->
+
+    <div class="card-modern-body p-0">
+
+        <div class="table-responsive">
+
+            <table class="table-modern"
+                   id="requestTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Membre
+                        </th>
+
+                        <th class="d-none d-sm-table-cell">
+                            Téléphone
+                        </th>
+
+                        <th>
+                            Groupe
+                        </th>
+
+                        <th class="d-none d-md-table-cell">
+                            Date demande
+                        </th>
+
+                        <th class="text-center"
+                            style="min-width: 120px;">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for demande in demandes %}
+
+                    <tr>
+
+                        <!-- ===== MEMBRE ===== -->
+
+                        <td>
+
+                            <div class="d-flex align-items-center gap-2">
+
+                                <div class="member-avatar"
+                                     style="background: linear-gradient(135deg,
+                                     {% cycle '#4f46e5' '#7c3aed' '#059669' '#d97706' '#2563eb' '#dc2626' %},
+                                     {% cycle '#7c3aed' '#6d28d9' '#047857' '#b45309' '#1d4ed8' '#b91c1c' %});">
+
+                                    {{ demande.membre.username|make_list|first|upper }}
+
+                                </div>
+
+
+                                <div class="min-width-0">
+
+                                    <span class="fw-semibold d-block text-truncate"
+                                          style="color: #0f172a; max-width: 140px;">
+
+                                        {{ demande.membre.username }}
+
+                                    </span>
+
+
+                                    <span class="d-sm-none text-muted"
+                                          style="font-size: 0.65rem;">
+
+                                        <i class="fas fa-phone me-1"></i>
+
+                                        {{ demande.membre.telephone|default:"—" }}
+
+                                    </span>
+
+
+                                    <small class="d-none d-sm-block text-muted"
+                                           style="font-size: 0.6rem;">
+
+                                        <i class="fas fa-envelope me-1"></i>
+
+                                        {{ demande.membre.email|default:"—" }}
+
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- ===== TELEPHONE ===== -->
+
+                        <td class="d-none d-sm-table-cell">
+
+                            <span style="color: #64748b; font-size: 0.85rem;">
+
+                                <i class="fas fa-phone me-1"></i>
+
+                                {{ demande.membre.telephone|default:"—" }}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ===== GROUPE ===== -->
+
+                        <td>
+
+                            <div class="d-flex align-items-center gap-2">
+
+                                <div class="group-mini-avatar">
+
+                                    {{ demande.groupe.nom|make_list|first|upper }}
+
+                                </div>
+
+                                <span class="fw-semibold text-truncate"
+                                    style="color: #334155; max-width: 150px;">
+
+                                    {{ demande.groupe.nom }}
+
+                                </span>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- ===== DATE ===== -->
+
+                        <td class="d-none d-md-table-cell">
+
+                            <span style="color: #64748b; font-size: 0.8rem;">
+
+                                <i class="fas fa-calendar-alt me-1"></i>
+
+                                {{ demande.date_demande|date:"d/m/Y" }}
+
+                            </span>
+
+                            <br>
+
+                            <small class="text-muted"
+                                   style="font-size: 0.65rem;">
+
+                                {{ demande.date_demande|date:"H:i" }}
+
+                            </small>
+
+                        </td>
+
+
+                        <!-- ===== ACTIONS ===== -->
+
+                        <td>
+
+                            <div class="d-flex justify-content-center gap-1">
+
+
+                                <!-- ACCEPTER -->
+
+                                <button type="button"
+                                        class="btn-action accept"
+                                        title="Accepter la demande"
+                                        onclick="openAcceptModal(
+                                            '{{ demande.id }}',
+                                            '{{ demande.membre.username|escapejs }}',
+                                            '{{ demande.groupe.nom|escapejs }}'
+                                        )">
+
+                                    <i class="fas fa-check"></i>
+
+                                </button>
+
+
+                                <!-- REFUSER -->
+
+                                <button type="button"
+                                        class="btn-action reject"
+                                        title="Refuser la demande"
+                                        onclick="openRejectModal(
+                                            '{{ demande.id }}',
+                                            '{{ demande.membre.username|escapejs }}',
+                                            '{{ demande.groupe.nom|escapejs }}'
+                                        )">
+
+                                    <i class="fas fa-times"></i>
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+
+                    {% empty %}
+
+                    <tr>
+
+                        <td colspan="5"
+                            class="empty-state">
+
+                            <div class="empty-state-content">
+
+                                <i class="fas fa-user-check empty-icon"></i>
+
+                                <h5>
+                                    Aucune demande en attente
+                                </h5>
+
+                                <p class="text-muted">
+
+                                    Vous n'avez actuellement aucune demande
+                                    d'adhésion à traiter.
+
+                                </p>
+
+                                <a href="{% url 'liste_membres' %}"
+                                   class="btn btn-primary-modern mt-2">
+
+                                    <i class="fas fa-users me-1"></i>
+
+                                    Voir les groupes
+
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="card-modern-footer d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+
+        <span class="text-muted small">
+
+            <i class="fas fa-info-circle me-1"></i>
+
+            {{ demandes|length }}
+            demande{{ demandes|length|pluralize }}
+            en attente
+
+        </span>
+
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    // =====================================================
+    // RECHERCHE
+    // =====================================================
+
+    const searchInput = document.getElementById('tableSearch');
+    const table = document.getElementById('requestTable');
+
+    if (!table) {
+        return;
+    }
+
+    const rows = table.querySelectorAll(
+        'tbody tr:not(.empty-state)'
+    );
+
+    if (searchInput) {
+
+        searchInput.addEventListener('keyup', function() {
+
+            const query = this.value.toLowerCase().trim();
+
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+
+                const text =
+                    row.textContent.toLowerCase();
+
+                if (text.includes(query)) {
+
+                    row.style.display = '';
+
+                    visibleCount++;
+
+                } else {
+
+                    row.style.display = 'none';
+
+                }
+
+            });
+
+            let emptyMsg =
+                table.querySelector('.no-results');
+
+            if (visibleCount === 0 && rows.length > 0) {
+
+                if (!emptyMsg) {
+
+                    emptyMsg = document.createElement('tr');
+
+                    emptyMsg.className = 'no-results';
+
+                    emptyMsg.innerHTML = `
+                        <td colspan="5" class="empty-state">
+
+                            <div class="empty-state-content">
+
+                                <i class="fas fa-search empty-icon"></i>
+
+                                <h5>Aucun résultat</h5>
+
+                                <p class="text-muted">
+                                    Aucune demande ne correspond
+                                    à votre recherche
+                                </p>
+
+                            </div>
+
+                        </td>
+                    `;
+
+                    table
+                        .querySelector('tbody')
+                        .appendChild(emptyMsg);
+                }
+
+                emptyMsg.style.display = '';
+
+            } else if (emptyMsg) {
+
+                emptyMsg.style.display = 'none';
+            }
+
+        });
+    }
+
+
+    // =====================================================
+    // ANIMATION DES LIGNES
+    // =====================================================
+
+    rows.forEach((row, index) => {
+
+        row.style.opacity = '0';
+
+        row.style.transform = 'translateX(-10px)';
+
+        row.style.transition =
+            'all 0.3s ease';
+
+        setTimeout(() => {
+
+            row.style.opacity = '1';
+
+            row.style.transform = 'translateX(0)';
+
+        }, 100 + (index * 30));
+
+    });
+
+
+    // =====================================================
+    // VALIDATION ORDRE DE RECEPTION
+    // =====================================================
+
+    const acceptForm =
+        document.getElementById('acceptForm');
+
+    if (acceptForm) {
+
+        acceptForm.addEventListener('submit', function(event) {
+
+            const ordreInput =
+                document.getElementById('ordreReception');
+
+            const ordreHidden =
+                document.getElementById('ordreReceptionHidden');
+
+            const ordre =
+                ordreInput.value.trim();
+
+
+            if (!ordre) {
+
+                event.preventDefault();
+
+                alert(
+                    "Veuillez renseigner l'ordre de réception."
+                );
+
+                ordreInput.focus();
+
+                return;
+            }
+
+
+            if (
+                !Number.isInteger(Number(ordre)) ||
+                Number(ordre) < 1
+            ) {
+
+                event.preventDefault();
+
+                alert(
+                    "L'ordre de réception doit être un nombre entier supérieur ou égal à 1."
+                );
+
+                ordreInput.focus();
+
+                return;
+            }
+
+
+            ordreHidden.value = ordre;
+
+        });
+
+    }
+
+});
+
+
+// =====================================================
+// OUVRIR MODAL ACCEPTER
+// =====================================================
+
+function openAcceptModal(
+    demandeId,
+    membreNom,
+    groupeNom
+) {
+
+    document.getElementById('acceptMemberName')
+        .textContent = membreNom;
+
+    document.getElementById('acceptGroupName')
+        .textContent = groupeNom;
+
+    document.getElementById('ordreReception')
+        .value = '';
+
+    document.getElementById('ordreReceptionHidden')
+        .value = '';
+
+
+    const form =
+        document.getElementById('acceptForm');
+
+
+    form.action =
+        "{% url 'accepter_demande_adhesion' 0 %}"
+        .replace('/0/', '/' + demandeId + '/');
+
+
+    $('#acceptModal').modal('show');
+}
+
+
+// =====================================================
+// OUVRIR MODAL REFUSER
+// =====================================================
+
+function openRejectModal(
+    demandeId,
+    membreNom,
+    groupeNom
+) {
+
+    document.getElementById('rejectMemberName')
+        .textContent = membreNom;
+
+    document.getElementById('rejectGroupName')
+        .textContent = groupeNom;
+
+
+    const form =
+        document.getElementById('rejectForm');
+
+
+    form.action =
+        "{% url 'refuser_demande_adhesion' 0 %}"
+        .replace('/0/', '/' + demandeId + '/');
+
+
+    $('#rejectModal').modal('show');
+}
+
+</script>
+
+{% endblock %}
+
+
+{% block extra_css %}
+
+<style>
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+.min-width-0 {
+    min-width: 0;
+}
+
+.flex-1 {
+    flex: 1;
+}
+
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.page-header {
+    animation: fadeInUp 0.5s ease;
+}
+
+
+/* =====================================================
+   AVATAR PRINCIPAL
+===================================================== */
+
+.group-avatar-large {
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 14px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+
+    font-weight: 700;
+
+    font-size: 1.2rem;
+
+    flex-shrink: 0;
+}
+
+@media (min-width: 576px) {
+
+    .group-avatar-large {
+
+        width: 52px;
+        height: 52px;
+
+        font-size: 1.3rem;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .group-avatar-large {
+
+        width: 56px;
+        height: 56px;
+
+        font-size: 1.4rem;
+    }
+
+}
+
+
+/* =====================================================
+   BOUTON PRINCIPAL
+===================================================== */
+
+.btn-primary-modern {
+
+    padding: 8px 16px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    font-size: 0.8rem;
+
+    border: none;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5 0%,
+            #7c3aed 100%
+        );
+
+    color: #fff;
+
+    box-shadow:
+        0 4px 12px rgba(79, 70, 229, 0.25);
+
+    transition: all 0.3s ease;
+
+    text-decoration: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+}
+
+.btn-primary-modern:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 24px rgba(79, 70, 229, 0.35);
+
+    color: #fff;
+
+    text-decoration: none;
+}
+
+
+/* =====================================================
+   BOUTON OUTLINE
+===================================================== */
+
+.btn-outline-modern {
+
+    padding: 8px 16px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    font-size: 0.8rem;
+
+    border: 1px solid #e2e8f0;
+
+    background: #fff;
+
+    color: #0f172a;
+
+    transition: all 0.3s ease;
+
+    text-decoration: none;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+}
+
+.btn-outline-modern:hover {
+
+    border-color: #4f46e5;
+
+    color: #4f46e5;
+
+    background: rgba(79, 70, 229, 0.04);
+
+    text-decoration: none;
+}
+
+
+/* =====================================================
+   STATISTIQUES
+===================================================== */
+
+.stat-mini {
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    border: 1px solid #f1f5f9;
+
+    transition: all 0.3s ease;
+
+    height: 100%;
+}
+
+.stat-mini:hover {
+
+    border-color: #e2e8f0;
+
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.stat-mini-body {
+
+    padding: 12px 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+@media (min-width: 576px) {
+
+    .stat-mini-body {
+
+        padding: 14px 18px;
+
+        gap: 14px;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .stat-mini-body {
+
+        padding: 16px 20px;
+
+        gap: 16px;
+    }
+
+}
+
+.stat-mini-icon {
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    font-size: 0.9rem;
+}
+
+.stat-mini-icon.purple {
+
+    background: rgba(79, 70, 229, 0.1);
+
+    color: #4f46e5;
+}
+
+.stat-mini-icon.green {
+
+    background: rgba(5, 150, 105, 0.1);
+
+    color: #059669;
+}
+
+.stat-mini-icon.orange {
+
+    background: rgba(217, 119, 6, 0.1);
+
+    color: #d97706;
+}
+
+.stat-mini-icon.red {
+
+    background: rgba(239, 68, 68, 0.1);
+
+    color: #ef4444;
+}
+
+.stat-mini-content {
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+.stat-mini-label {
+
+    font-size: 0.6rem;
+
+    font-weight: 500;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    color: #94a3b8;
+
+    display: block;
+}
+
+.stat-mini-value {
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    color: #0f172a;
+
+    margin: 0;
+}
+
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card-modern {
+
+    background: #ffffff;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06);
+
+    border: 1px solid #f1f5f9;
+}
+
+.card-modern-header {
+
+    padding: 14px 16px;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+@media (min-width: 576px) {
+
+    .card-modern-header {
+
+        padding: 16px 20px;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .card-modern-header {
+
+        padding: 18px 24px;
+    }
+
+}
+
+.card-modern-title {
+
+    font-weight: 600;
+
+    font-size: 0.85rem;
+
+    color: #0f172a;
+}
+
+@media (min-width: 768px) {
+
+    .card-modern-title {
+
+        font-size: 0.95rem;
+    }
+
+}
+
+.card-modern-body {
+    padding: 0;
+}
+
+.card-modern-footer {
+
+    padding: 12px 16px;
+
+    border-top: 1px solid #f1f5f9;
+}
+
+
+/* =====================================================
+   RECHERCHE
+===================================================== */
+
+.search-wrapper {
+
+    position: relative;
+
+    display: inline-block;
+
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+
+    .search-wrapper {
+
+        width: auto;
+    }
+
+}
+
+.search-wrapper .search-icon {
+
+    position: absolute;
+
+    left: 10px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    color: #94a3b8;
+
+    font-size: 0.75rem;
+}
+
+.search-input {
+
+    padding: 6px 10px 6px 30px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 8px;
+
+    font-size: 0.75rem;
+
+    background: #f8fafc;
+
+    color: #0f172a;
+
+    width: 100%;
+}
+
+@media (min-width: 576px) {
+
+    .search-input {
+
+        padding: 6px 12px 6px 36px;
+
+        font-size: 0.8rem;
+
+        min-width: 160px;
+
+        width: auto;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .search-input {
+
+        min-width: 200px;
+    }
+
+}
+
+.search-input:focus {
+
+    outline: none;
+
+    border-color: #4f46e5;
+
+    background: #fff;
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+
+/* =====================================================
+   BOUTON ACTUALISER
+===================================================== */
+
+.btn-filter-table {
+
+    padding: 6px 10px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 8px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    transition: all 0.2s ease;
+
+    cursor: pointer;
+}
+
+.btn-filter-table:hover {
+
+    border-color: #4f46e5;
+
+    color: #4f46e5;
+
+    background: #fff;
+}
+
+
+/* =====================================================
+   TABLE
+===================================================== */
+
+.table-modern {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 0.8rem;
+}
+
+.table-modern thead {
+
+    background: #f8fafc;
+}
+
+.table-modern thead th {
+
+    padding: 10px 12px;
+
+    text-align: left;
+
+    font-weight: 600;
+
+    font-size: 0.65rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    color: #64748b;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+@media (min-width: 576px) {
+
+    .table-modern thead th {
+
+        padding: 12px 16px;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .table-modern thead th {
+
+        padding: 12px 20px;
+    }
+
+}
+
+.table-modern tbody td {
+
+    padding: 10px 12px;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    vertical-align: middle;
+
+    color: #334155;
+}
+
+@media (min-width: 576px) {
+
+    .table-modern tbody td {
+
+        padding: 12px 16px;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .table-modern tbody td {
+
+        padding: 14px 20px;
+    }
+
+}
+
+.table-modern tbody tr {
+
+    transition: background 0.2s ease;
+}
+
+.table-modern tbody tr:hover {
+
+    background: #f8fafc;
+}
+
+.table-modern tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+/* =====================================================
+   AVATAR MEMBRE
+===================================================== */
+
+.member-avatar {
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+
+    font-weight: 600;
+
+    font-size: 0.75rem;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   AVATAR GROUPE
+===================================================== */
+
+.group-mini-avatar {
+
+    width: 30px;
+    height: 30px;
+
+    border-radius: 8px;
+
+    background: rgba(79, 70, 229, 0.1);
+
+    color: #4f46e5;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.75rem;
+
+    font-weight: 700;
+
+    flex-shrink: 0;
+}
+
+
+/* =====================================================
+   BOUTONS ACTION
+===================================================== */
+
+.btn-action {
+
+    width: 30px;
+    height: 30px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transition: all 0.2s ease;
+
+    cursor: pointer;
+
+    font-size: 0.75rem;
+}
+
+
+/* ACCEPTER */
+
+.btn-action.accept {
+
+    background: rgba(5, 150, 105, 0.08);
+
+    color: #059669;
+}
+
+.btn-action.accept:hover {
+
+    background: #059669;
+
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+
+/* REFUSER */
+
+.btn-action.reject {
+
+    background: rgba(239, 68, 68, 0.08);
+
+    color: #ef4444;
+}
+
+.btn-action.reject:hover {
+
+    background: #ef4444;
+
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+.modal-modern {
+
+    border-radius: 16px;
+
+    border: none;
+
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.15);
+}
+
+.modal-modern-header {
+
+    padding: 16px 24px;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-modern-body {
+
+    padding: 20px 24px;
+}
+
+.modal-modern-footer {
+
+    padding: 0 24px 20px;
+
+    border-top: none;
+}
+
+.modal-close {
+
+    background: none;
+
+    border: none;
+
+    font-size: 1.5rem;
+
+    color: #94a3b8;
+
+    cursor: pointer;
+
+    line-height: 1;
+}
+
+.modal-close:hover {
+
+    color: #0f172a;
+}
+
+
+/* =====================================================
+   BOX INFORMATIONS
+===================================================== */
+
+.request-info-box {
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background: #f8fafc;
+
+    border: 1px solid #f1f5f9;
+}
+
+.modal-avatar {
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #7c3aed
+        );
+}
+
+
+/* =====================================================
+   INPUT MODERNE
+===================================================== */
+
+.modern-input {
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 8px;
+
+    font-size: 0.85rem;
+
+    padding: 9px 12px;
+}
+
+.modern-input:focus {
+
+    border-color: #4f46e5;
+
+    box-shadow:
+        0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+
+/* =====================================================
+   BOUTON ACCEPTER MODAL
+===================================================== */
+
+.btn-accept-modern {
+
+    padding: 7px 18px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #059669;
+
+    color: #fff;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.btn-accept-modern:hover {
+
+    background: #047857;
+
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   BOUTON REFUSER MODAL
+===================================================== */
+
+.btn-reject-modern {
+
+    padding: 7px 18px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #ef4444;
+
+    color: #fff;
+
+    font-size: 0.8rem;
+
+    font-weight: 600;
+
+    transition: all 0.2s ease;
+}
+
+.btn-reject-modern:hover {
+
+    background: #dc2626;
+
+    color: #fff;
+
+    transform: translateY(-1px);
+}
+
+
+/* =====================================================
+   ICONE REFUS
+===================================================== */
+
+.reject-icon {
+
+    width: 55px;
+    height: 55px;
+
+    margin: 0 auto;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(239, 68, 68, 0.1);
+
+    color: #ef4444;
+
+    font-size: 1.3rem;
+}
+
+
+/* =====================================================
+   BOUTON ANNULER
+===================================================== */
+
+.btn-cancel {
+
+    padding: 7px 18px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 9px;
+
+    background: #fff;
+
+    color: #64748b;
+
+    font-weight: 600;
+
+    font-size: 0.8rem;
+}
+
+.btn-cancel:hover {
+
+    background: #f8fafc;
+
+    color: #0f172a;
+}
+
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.empty-state {
+
+    text-align: center;
+
+    padding: 50px 20px !important;
+}
+
+.empty-state-content {
+
+    max-width: 300px;
+
+    margin: 0 auto;
+}
+
+.empty-icon {
+
+    font-size: 3rem;
+
+    color: #e2e8f0;
+
+    display: block;
+
+    margin-bottom: 16px;
+}
+
+.empty-state-content h5 {
+
+    color: #0f172a;
+
+    font-weight: 600;
+
+    font-size: 1rem;
+
+    margin-bottom: 4px;
+}
+
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+@keyframes fadeInUp {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateY(20px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 575.98px) {
+
+    .container-fluid {
+
+        padding-left: 12px !important;
+
+        padding-right: 12px !important;
+    }
+
+    .row {
+
+        margin-left: -6px !important;
+
+        margin-right: -6px !important;
+    }
+
+    .col-6 {
+
+        padding-left: 6px !important;
+
+        padding-right: 6px !important;
+    }
+
+    .table-modern td,
+    .table-modern th {
+
+        padding: 6px 8px !important;
+
+        font-size: 0.7rem !important;
+    }
+
+    .btn-action {
+
+        width: 24px !important;
+        height: 24px !important;
+
+        font-size: 0.6rem !important;
+    }
+
+    .btn-primary-modern,
+    .btn-outline-modern {
+
+        font-size: 0.7rem !important;
+
+        padding: 6px 10px !important;
+    }
+
+}
+
+
+@media (max-width: 767.98px) {
+
+    .table-modern thead th:not(:first-child):not(:last-child) {
+
+        display: none !important;
+    }
+
+    .table-modern tbody td:not(:first-child):not(:last-child) {
+
+        display: none !important;
+    }
+
+}
+
+</style>
+
+{% endblock %}
