@@ -1,0 +1,309 @@
+{% extends 'base_membre.html' %}
+
+{% block title %}Mes paiements{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- En-tête -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+        <div>
+            <h1 class="h3 mb-1 text-gray-800">
+                <i class="fas fa-money-bill-wave text-success mr-2"></i>
+                Mes paiements
+            </h1>
+
+            <p class="text-muted mb-0">
+                Consultez l'historique de vos cotisations et paiements.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Statistiques -->
+    <div class="row">
+
+        <!-- Total payé -->
+        <div class="col-xl-6 col-md-6 mb-4">
+
+            <div class="card border-left-success shadow h-100 py-2">
+
+                <div class="card-body">
+
+                    <div class="row no-gutters align-items-center">
+
+                        <div class="col mr-2">
+
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total payé
+                            </div>
+
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">
+                                {{ total_encaisse }}
+                            </div>
+
+                        </div>
+
+                        <div class="col-auto">
+
+                            <i class="fas fa-coins fa-2x text-gray-300"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Nombre de paiements -->
+        <div class="col-xl-6 col-md-6 mb-4">
+
+            <div class="card border-left-primary shadow h-100 py-2">
+
+                <div class="card-body">
+
+                    <div class="row no-gutters align-items-center">
+
+                        <div class="col mr-2">
+
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Nombre de paiements
+                            </div>
+
+                            <div class="h4 mb-0 font-weight-bold text-gray-800">
+                                {{ nombre_paiements }}
+                            </div>
+
+                        </div>
+
+                        <div class="col-auto">
+
+                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Liste des paiements -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+
+            <h6 class="m-0 font-weight-bold text-success">
+                <i class="fas fa-history mr-2"></i>
+                Historique de mes paiements
+            </h6>
+
+            <span class="badge badge-success">
+                {{ nombre_paiements }} paiement{{ nombre_paiements|pluralize }}
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            {% if paiements %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead class="thead-light">
+
+                            <tr>
+
+                                <th>#</th>
+
+                                <th>Groupe</th>
+
+                                <th>Tour</th>
+
+                                <th>Montant</th>
+
+                                <th>Date du paiement</th>
+
+                                <th>Statut</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for paiement in paiements %}
+
+                                <tr>
+
+                                    <!-- Numéro -->
+                                    <td>
+                                        {{ forloop.counter }}
+                                    </td>
+
+
+                                    <!-- Groupe -->
+                                    <td>
+
+                                        <strong>
+                                            {{ paiement.membre.groupe.nom }}
+                                        </strong>
+
+                                    </td>
+
+
+                                    <!-- Tour -->
+                                    <td>
+
+                                        {% if paiement.tour %}
+
+                                            Tour du
+                                            {{ paiement.tour.date_tour|date:"d/m/Y" }}
+
+                                        {% else %}
+
+                                            <span class="text-muted">
+                                                Non associé
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+
+                                    <!-- Montant -->
+                                    <td>
+
+                                        <strong class="text-success">
+                                            {{ paiement.montant }}
+                                        </strong>
+
+                                    </td>
+
+
+                                    <!-- Date -->
+                                    <td>
+
+                                        {{ paiement.date_paiement|date:"d/m/Y" }}
+
+                                    </td>
+
+
+                                    <!-- Statut -->
+                                    <td>
+
+                                        {% if paiement.statut == 'PAYE' %}
+
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check-circle mr-1"></i>
+                                                Payé
+                                            </span>
+
+                                        {% elif paiement.statut == 'NON_PAYE' %}
+
+                                            <span class="badge badge-danger">
+                                                <i class="fas fa-times-circle mr-1"></i>
+                                                Non payé
+                                            </span>
+
+                                        {% else %}
+
+                                            <span class="badge badge-secondary">
+                                                {{ paiement.get_statut_display }}
+                                            </span>
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <!-- Aucun paiement -->
+                <div class="text-center py-5">
+
+                    <div class="mb-3">
+
+                        <i class="fas fa-receipt fa-4x text-gray-300"></i>
+
+                    </div>
+
+                    <h5 class="font-weight-bold text-gray-600">
+                        Aucun paiement enregistré
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Vous n'avez encore aucun paiement enregistré
+                        dans vos groupes.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Information -->
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex align-items-start">
+
+                <div class="mr-3">
+
+                    <i class="fas fa-info-circle fa-lg text-info"></i>
+
+                </div>
+
+                <div>
+
+                    <h6 class="font-weight-bold text-gray-800">
+                        À propos de vos paiements
+                    </h6>
+
+                    <p class="text-muted mb-0">
+                        Cette page vous permet de consulter les paiements
+                        enregistrés par l'administrateur pour votre participation
+                        aux différents groupes de Likelemba.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
