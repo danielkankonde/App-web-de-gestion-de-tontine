@@ -111,7 +111,7 @@
             transition: var(--transition-smooth);
             color: rgba(255, 255, 255, 0.7) !important;
             font-weight: 500;
-            font-size: 0.85rem;
+            font-size: 1rem;
             display: flex !important;
             align-items: center !important;
             gap: 10px;
@@ -132,7 +132,7 @@
         .sidebar .nav-item .nav-link i {
             width: 20px;
             text-align: center;
-            font-size: 1rem;
+            font-size: 1.1rem;
             flex-shrink: 0;
         }
 
@@ -967,6 +967,88 @@
                 color 0.25s ease,
                 border-color 0.25s ease;
         }
+
+        @media (max-width: 991.98px) {
+
+            .sidebar {
+                width: 250px !important;
+                min-width: 260px !important;
+                max-width: 260px !important;
+
+                margin-left: -260px !important;
+                transform: none !important;
+
+                visibility: visible !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                height: 100vh !important;
+
+                z-index: 1040 !important;
+
+                transition: margin-left 0.3s ease !important;
+            }
+
+            .sidebar.toggled {
+                width: 260px !important;
+                min-width: 260px !important;
+                max-width: 260px !important;
+
+                margin-left: 0 !important;
+                transform: none !important;
+                visibility: visible !important;
+            }
+
+            #content-wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+        }
+
+    .sidebar-close-btn {
+        display: none;
+        position: absolute !important;
+        top: 15px !important;
+        right: 30px !important;
+
+        width: 34px;
+        height: 34px;
+
+        border: none;
+        border-radius: 50%;
+
+        background: rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.9);
+
+        cursor: pointer;
+
+        align-items: center;
+        justify-content: center;
+
+        font-size: 0.95rem;
+
+        z-index: 1050;
+
+        transition: all 0.2s ease;
+    }
+
+    .sidebar-close-btn:hover {
+        background: rgba(255, 255, 255, 0.22);
+        color: #ffffff;
+        transform: rotate(90deg);
+    }
+
+    @media (max-width: 991.98px) {
+
+        .sidebar .sidebar-close-btn {
+            display: none !important;
+        }
+
+        .sidebar.toggled .sidebar-close-btn {
+            display: flex !important;
+        }
+
+    }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -1847,35 +1929,75 @@
             // Ouvrir le modal
             $('#deleteModal').modal('show');
         }
-
+        
+        // =====================================================
+            // SIDEBAR MOBILE
+            // =====================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Toggle sidebar on mobile
+
             const toggleBtn = document.getElementById('sidebarToggleTop');
             const sidebar = document.querySelector('.sidebar');
+            const closeBtn = document.getElementById('sidebarClose');
+
             if (toggleBtn && sidebar) {
+
                 toggleBtn.addEventListener('click', function(e) {
+
                     e.preventDefault();
+                    e.stopImmediatePropagation();
+
                     sidebar.classList.toggle('toggled');
+
                 });
+
+            }
+            if (closeBtn && sidebar) {
+
+                closeBtn.addEventListener('click', function(e) {
+
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    sidebar.classList.remove('toggled');
+
+                });
+
             }
 
-            // Active link highlight
+
+            // =====================================================
+            // ACTIVE LINK
+            // =====================================================
+
             const currentPath = window.location.pathname;
+
             document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+
                 const href = link.getAttribute('href');
+
                 if (href && href !== '#' && currentPath.includes(href)) {
                     link.classList.add('active');
                 }
+
             });
 
-            // Close sidebar on mobile when clicking a link
+
+            // =====================================================
+            // FERMER LA SIDEBAR APRÈS UN CLIC SUR UN LIEN
+            // =====================================================
+
             document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+
                 link.addEventListener('click', function() {
+
                     if (window.innerWidth < 992) {
                         sidebar.classList.remove('toggled');
                     }
+
                 });
+
             });
+
         });
             // =====================================================
             // MODE SOMBRE / MODE CLAIR - GLOBAL
