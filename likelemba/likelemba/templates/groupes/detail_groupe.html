@@ -677,6 +677,7 @@
 }
 
 /* ===== ACTION GRID ===== */
+
 .action-grid {
     display: flex;
     flex-direction: column;
@@ -691,7 +692,8 @@
     border-radius: 10px;
     text-decoration: none;
     transition: all 0.2s ease;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
 }
 
 @media (min-width: 576px) {
@@ -713,7 +715,7 @@
 }
 
 .action-card:hover {
-    background: #f8fafc;
+    background: var(--bg-card-secondary);
     text-decoration: none;
 }
 
@@ -752,7 +754,7 @@
 .action-label {
     font-size: 0.8rem;
     font-weight: 500;
-    color: #0f172a;
+    color: var(--text-primary);
     display: block;
 }
 
@@ -765,19 +767,18 @@
 .action-count {
     font-size: 0.7rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--text-secondary);
     display: block;
 }
 
-@media (min-width: 768px) {
-    .action-count {
-        font-size: 0.75rem;
-    }
+.action-arrow {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
 }
 
-.action-arrow {
-    color: #94a3b8;
-    font-size: 0.6rem;
+.action-card:hover .action-arrow {
+    transform: translateX(3px);
 }
 
 @media (min-width: 768px) {

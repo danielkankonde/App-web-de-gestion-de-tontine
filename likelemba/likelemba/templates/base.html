@@ -14,6 +14,14 @@
     
     <!-- CSS -->
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+
+    <script>
+        (function () {
+            if (localStorage.getItem('likelembaDarkMode') === 'enabled') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     
     <style>
         :root {
@@ -507,6 +515,458 @@
         .btn-close-modern:hover {
             color: #1e293b;
         }
+
+        /* =========================================================
+        LIKELEMBA — MODE SOMBRE GLOBAL
+        ========================================================= */
+
+        :root {
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-secondary: #f8fafc;
+            --bg-navbar: #ffffff;
+
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+
+            --border-color: #e2e8f0;
+            --border-light: #f1f5f9;
+
+            --input-bg: #ffffff;
+            --input-border: #e2e8f0;
+
+            --table-hover: #f8fafc;
+
+            --shadow-dark:
+                0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+
+        /* =========================================================
+        THEME SOMBRE
+        ========================================================= */
+
+        html[data-theme="dark"] {
+
+            --bg-body: #0f172a;
+            --bg-card: #111827;
+            --bg-card-secondary: #1e293b;
+            --bg-navbar: #111827;
+
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+
+            --border-color: #334155;
+            --border-light: #1e293b;
+
+            --input-bg: #1e293b;
+            --input-border: #334155;
+
+            --table-hover: #1e293b;
+        }
+
+
+        /* =========================================================
+        PAGE
+        ========================================================= */
+
+        html[data-theme="dark"] body {
+            background-color: var(--bg-body) !important;
+            color: var(--text-primary) !important;
+        }
+
+
+        /* =========================================================
+        CONTENU PRINCIPAL
+        ========================================================= */
+
+        html[data-theme="dark"] .content-wrapper,
+        html[data-theme="dark"] #content-wrapper,
+        html[data-theme="dark"] .container-fluid {
+            background-color: var(--bg-body) !important;
+        }
+
+
+        /* =========================================================
+        NAVBAR
+        ========================================================= */
+
+        html[data-theme="dark"] .navbar,
+        html[data-theme="dark"] .topbar {
+            background-color: var(--bg-navbar) !important;
+            border-bottom: 1px solid var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .navbar .nav-link,
+        html[data-theme="dark"] .navbar .navbar-brand {
+            color: var(--text-secondary) !important;
+        }
+
+        html[data-theme="dark"] .navbar .nav-link:hover {
+            color: #ffffff !important;
+        }
+
+
+        /* =========================================================
+        SIDEBAR
+        ========================================================= */
+
+        html[data-theme="dark"] .sidebar {
+            background: linear-gradient(
+                180deg,
+                #111827 0%,
+                #1e1b4b 100%
+            ) !important;
+
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.35);
+        }
+
+        html[data-theme="dark"] .sidebar .sidebar-brand {
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        html[data-theme="dark"] .sidebar .nav-item .nav-link {
+            color: #cbd5e1 !important;
+        }
+
+        html[data-theme="dark"] .sidebar .nav-item .nav-link:hover {
+            color: #ffffff !important;
+            background: rgba(255,255,255,0.08);
+        }
+
+        html[data-theme="dark"] .sidebar .nav-item.active .nav-link {
+            color: #ffffff !important;
+            background: rgba(79,70,229,0.35);
+        }
+
+
+        /* =========================================================
+        CARTES
+        ========================================================= */
+
+        html[data-theme="dark"] .card,
+        html[data-theme="dark"] .card-modern,
+        html[data-theme="dark"] .stat-mini,
+        html[data-theme="dark"] .group-card,
+        html[data-theme="dark"] .empty-state-full {
+            background-color: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+            box-shadow: var(--shadow-dark);
+        }
+
+        html[data-theme="dark"] .card-modern-header {
+            background-color: var(--bg-card) !important;
+            border-bottom-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .card-modern-body {
+            background-color: var(--bg-card) !important;
+        }
+
+        html[data-theme="dark"] .card-modern-title {
+            color: var(--text-primary) !important;
+        }
+
+
+        /* =========================================================
+        TEXTES
+        ========================================================= */
+
+        html[data-theme="dark"] .text-dark,
+        html[data-theme="dark"] .text-gray-800,
+        html[data-theme="dark"] .text-gray-700,
+        html[data-theme="dark"] h1,
+        html[data-theme="dark"] h2,
+        html[data-theme="dark"] h3,
+        html[data-theme="dark"] h4,
+        html[data-theme="dark"] h5,
+        html[data-theme="dark"] h6 {
+            color: var(--text-primary) !important;
+        }
+
+        html[data-theme="dark"] .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        html[data-theme="dark"] p,
+        html[data-theme="dark"] span,
+        html[data-theme="dark"] label {
+            /* Ne force pas les éléments colorés */
+        }
+
+
+        /* =========================================================
+        STATISTIQUES
+        ========================================================= */
+
+        html[data-theme="dark"] .stat-mini-label {
+            color: var(--text-secondary) !important;
+        }
+
+        html[data-theme="dark"] .stat-mini-value {
+            color: var(--text-primary) !important;
+        }
+
+
+        /* =========================================================
+        TABLEAUX
+        ========================================================= */
+
+        html[data-theme="dark"] .table,
+        html[data-theme="dark"] .table-modern {
+            color: var(--text-secondary) !important;
+            background-color: var(--bg-card) !important;
+        }
+
+        html[data-theme="dark"] .table thead th,
+        html[data-theme="dark"] .table-modern thead th {
+            background-color: var(--bg-card-secondary) !important;
+            color: var(--text-secondary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .table tbody td,
+        html[data-theme="dark"] .table-modern tbody td {
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .table tbody tr:hover,
+        html[data-theme="dark"] .table-modern tbody tr:hover {
+            background-color: var(--table-hover) !important;
+        }
+
+
+        /* =========================================================
+        FORMULAIRES
+        ========================================================= */
+
+        html[data-theme="dark"] .form-control,
+        html[data-theme="dark"] .custom-select,
+        html[data-theme="dark"] select,
+        html[data-theme="dark"] textarea,
+        html[data-theme="dark"] input {
+            background-color: var(--input-bg) !important;
+            border-color: var(--input-border) !important;
+            color: var(--text-primary) !important;
+        }
+
+        html[data-theme="dark"] .form-control::placeholder,
+        html[data-theme="dark"] input::placeholder,
+        html[data-theme="dark"] textarea::placeholder {
+            color: #64748b !important;
+        }
+
+        html[data-theme="dark"] .input-group-text {
+            background-color: var(--bg-card-secondary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-secondary) !important;
+        }
+
+
+        /* =========================================================
+        DROPDOWN
+        ========================================================= */
+
+        html[data-theme="dark"] .dropdown-menu {
+            background-color: #111827 !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,.35) !important;
+        }
+
+        html[data-theme="dark"] .dropdown-item {
+            color: #cbd5e1 !important;
+        }
+
+        html[data-theme="dark"] .dropdown-item:hover {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+        }
+
+        html[data-theme="dark"] .dropdown-divider {
+            border-color: var(--border-color) !important;
+        }
+
+
+        /* =========================================================
+        MODALES
+        ========================================================= */
+
+        html[data-theme="dark"] .modal-content {
+            background-color: #111827 !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .modal-header,
+        html[data-theme="dark"] .modal-footer {
+            border-color: var(--border-color) !important;
+        }
+
+        html[data-theme="dark"] .modal .close {
+            color: #ffffff !important;
+        }
+
+
+        /* =========================================================
+        BOUTONS LIGHT
+        ========================================================= */
+
+        html[data-theme="dark"] .btn-light {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #e2e8f0 !important;
+        }
+
+        html[data-theme="dark"] .btn-light:hover {
+            background-color: #334155 !important;
+        }
+
+
+        /* =========================================================
+        LIST GROUP
+        ========================================================= */
+
+        html[data-theme="dark"] .list-group-item {
+            background-color: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+
+        /* =========================================================
+        BORDURES BOOTSTRAP
+        ========================================================= */
+
+        html[data-theme="dark"] .border,
+        html[data-theme="dark"] .border-top,
+        html[data-theme="dark"] .border-bottom,
+        html[data-theme="dark"] .border-left,
+        html[data-theme="dark"] .border-right {
+            border-color: var(--border-color) !important;
+        }
+
+
+        /* =========================================================
+        BG-WHITE / BG-LIGHT
+        ========================================================= */
+
+        html[data-theme="dark"] .bg-white {
+            background-color: var(--bg-card) !important;
+        }
+
+        html[data-theme="dark"] .bg-light {
+            background-color: var(--bg-card-secondary) !important;
+        }
+
+
+        /* =========================================================
+        INLINE COLORS LES PLUS FRÉQUENTS
+        ========================================================= */
+
+        html[data-theme="dark"] [style*="#0f172a"] {
+            color: #f8fafc !important;
+        }
+
+        html[data-theme="dark"] [style*="#1e293b"] {
+            color: #f1f5f9 !important;
+        }
+
+        html[data-theme="dark"] [style*="#64748b"] {
+            color: #94a3b8 !important;
+        }
+
+        html[data-theme="dark"] [style*="background: #fff"] {
+            background-color: #111827 !important;
+        }
+
+        html[data-theme="dark"] [style*="background:#fff"] {
+            background-color: #111827 !important;
+        }
+
+        /* =========================================================
+        FOOTER
+        ========================================================= */
+
+        html[data-theme="dark"] footer,
+        html[data-theme="dark"] .sticky-footer {
+            background-color: #111827 !important;
+            border-top-color: var(--border-color) !important;
+            color: var(--text-muted) !important;
+        }
+
+
+        /* =========================================================
+        ACTIONS RAPIDES
+        ========================================================= */
+
+        html[data-theme="dark"] .action-card {
+            background-color: #172033 !important;
+            border-color: #334155 !important;
+        }
+
+        html[data-theme="dark"] .action-card:hover {
+            background-color: #1e293b !important;
+            border-color: #4f46e5 !important;
+        }
+
+        html[data-theme="dark"] .action-label {
+            color: #f8fafc !important;
+        }
+
+        html[data-theme="dark"] .action-count {
+            color: #94a3b8 !important;
+        }
+
+        html[data-theme="dark"] .action-arrow {
+            color: #64748b !important;
+        }
+
+
+        /* =========================================================
+        RECHERCHE
+        ========================================================= */
+
+        html[data-theme="dark"] .search-wrapper {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+        }
+
+        html[data-theme="dark"] .search-input,
+        html[data-theme="dark"] .search-wrapper input {
+            background-color: transparent !important;
+            color: #f8fafc !important;
+        }
+
+        html[data-theme="dark"] .search-icon {
+            color: #94a3b8 !important;
+        }
+
+
+        /* =========================================================
+        TRANSITION
+        ========================================================= */
+
+        body,
+        .navbar,
+        .sidebar,
+        .card,
+        .card-modern,
+        .stat-mini,
+        .group-card,
+        .modal-content,
+        .dropdown-menu,
+        .form-control,
+        .table,
+        .action-card {
+            transition:
+                background-color 0.25s ease,
+                color 0.25s ease,
+                border-color 0.25s ease;
+        }
     </style>
 
     {% block extra_css %}{% endblock %}
@@ -988,11 +1448,11 @@
         // DONNÉES DJANGO
         // =====================================================
 
-        const labelsMois = {{ cotisations_labels|safe }};
-        const donneesMois = {{ cotisations_mois|safe }};
+        const labelsMois = {{ cotisations_labels|default:"[]"|safe }};
+        const donneesMois = {{ cotisations_mois|default:"[]"|safe }};
 
-        const labelsSemaine = {{ cotisations_semaine_labels|safe }};
-        const donneesSemaine = {{ cotisations_semaine|safe }};
+        const labelsSemaine = {{ cotisations_semaine_labels|default:"[]"|safe }};
+        const donneesSemaine = {{ cotisations_semaine|default:"[]"|safe }};
 
 
         // =====================================================
@@ -1417,6 +1877,111 @@
                 });
             });
         });
+            // =====================================================
+            // MODE SOMBRE / MODE CLAIR - GLOBAL
+            // =====================================================
+
+            (function () {
+
+                const STORAGE_KEY = 'likelembaDarkMode';
+
+                function appliquerTheme() {
+                    const theme = localStorage.getItem(STORAGE_KEY);
+
+                    if (theme === 'enabled') {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                    } else {
+                        document.documentElement.removeAttribute('data-theme');
+                    }
+                }
+
+                function mettreAJourBouton() {
+
+                    const darkModeToggle =
+                        document.getElementById('darkModeToggle');
+
+                    const darkModeIcon =
+                        document.getElementById('darkModeIcon');
+
+                    if (!darkModeToggle || !darkModeIcon) {
+                        return;
+                    }
+
+                    const modeSombre =
+                        document.documentElement.getAttribute('data-theme') === 'dark';
+
+                    if (modeSombre) {
+
+                        darkModeIcon.classList.remove('fa-moon');
+                        darkModeIcon.classList.add('fa-sun');
+
+                        darkModeToggle.setAttribute(
+                            'title',
+                            'Désactiver le mode sombre'
+                        );
+
+                    } else {
+
+                        darkModeIcon.classList.remove('fa-sun');
+                        darkModeIcon.classList.add('fa-moon');
+
+                        darkModeToggle.setAttribute(
+                            'title',
+                            'Activer le mode sombre'
+                        );
+                    }
+                }
+
+                // Appliquer immédiatement le thème sauvegardé
+                appliquerTheme();
+
+                // Lorsque toute la page est chargée
+                document.addEventListener('DOMContentLoaded', function () {
+
+                    mettreAJourBouton();
+
+                    // Utilisation de la délégation d'événement
+                    document.addEventListener('click', function (event) {
+
+                        const bouton =
+                            event.target.closest('#darkModeToggle');
+
+                        if (!bouton) {
+                            return;
+                        }
+
+                        event.preventDefault();
+
+                        const modeSombre =
+                            document.documentElement.getAttribute('data-theme') === 'dark';
+
+                        if (modeSombre) {
+
+                            document.documentElement.removeAttribute('data-theme');
+
+                            localStorage.setItem(
+                                STORAGE_KEY,
+                                'disabled'
+                            );
+
+                        } else {
+
+                            document.documentElement.setAttribute(
+                                'data-theme',
+                                'dark'
+                            );
+
+                            localStorage.setItem(
+                                STORAGE_KEY,
+                                'enabled'
+                            );
+                        }
+
+                        mettreAJourBouton();
+                    });
+                });
+
+            })();
     </script>
 
     {% block extra_js %}
