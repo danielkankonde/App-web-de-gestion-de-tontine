@@ -1,0 +1,1246 @@
+{% extends 'base_membre.html' %}
+
+{% block title %}{{ groupe.nom }}{% endblock %}
+
+{% block content %}
+
+<style>
+
+    /* =========================================================
+       DETAIL GROUPE INTÉGRÉ - LIKELEMBA
+    ========================================================= */
+
+    .group-detail-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 10px 10px 40px;
+    }
+
+
+    /* =========================================================
+       HERO
+    ========================================================= */
+
+    .group-hero {
+        background: linear-gradient(
+            135deg,
+            #1e3a8a 0%,
+            #2563eb 55%,
+            #3b82f6 100%
+        );
+
+        border-radius: 16px;
+        padding: 30px 32px;
+        color: white;
+        margin-bottom: 25px;
+
+        box-shadow: 0 8px 24px rgba(30, 58, 138, 0.15);
+    }
+
+    .group-hero-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .group-hero-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .group-hero-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 15px;
+
+        background: rgba(255, 255, 255, 0.15);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .group-hero-icon i {
+        font-size: 1.7rem;
+    }
+
+    .group-hero h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+        font-weight: 700;
+    }
+
+    .group-hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.95rem;
+    }
+
+    .group-hero p strong {
+        color: white;
+    }
+
+
+    /* =========================================================
+       BOUTON RETOUR
+    ========================================================= */
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.14);
+        color: white !important;
+
+        border: 1px solid rgba(255, 255, 255, 0.28);
+
+        border-radius: 9px;
+        padding: 10px 16px;
+
+        font-weight: 600;
+        white-space: nowrap;
+
+        transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+        background: white;
+        color: #2563eb !important;
+        border-color: white;
+    }
+
+
+    /* =========================================================
+       CARTES
+    ========================================================= */
+
+    .group-card {
+        background: #ffffff;
+
+        border: 1px solid #e5eaf1;
+        border-radius: 15px;
+
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+
+        margin-bottom: 22px;
+
+        overflow: hidden;
+    }
+
+    .group-card-header {
+        padding: 17px 22px;
+
+        border-bottom: 1px solid #edf0f4;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 15px;
+    }
+
+    .group-card-title {
+        display: flex;
+        align-items: center;
+
+        gap: 10px;
+        margin: 0;
+
+        color: #1e293b;
+
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .group-card-title-icon {
+        width: 36px;
+        height: 36px;
+
+        border-radius: 9px;
+
+        background: #eff6ff;
+        color: #2563eb;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .group-card-body {
+        padding: 22px;
+    }
+
+
+    /* =========================================================
+       INFORMATIONS
+    ========================================================= */
+
+    .info-item {
+        height: 100%;
+
+        padding: 16px;
+
+        border: 1px solid #edf0f4;
+        border-radius: 11px;
+
+        background: #fafcff;
+    }
+
+    .info-label {
+        display: block;
+
+        color: #64748b;
+
+        font-size: 0.78rem;
+        font-weight: 600;
+
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+
+        margin-bottom: 6px;
+    }
+
+    .info-value {
+        margin: 0;
+
+        color: #1e293b;
+
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .info-value.amount {
+        color: #16a34a;
+    }
+
+
+    /* =========================================================
+       STATUT MEMBRE
+    ========================================================= */
+
+    .member-status {
+        display: flex;
+        align-items: center;
+
+        gap: 15px;
+
+        padding: 17px;
+
+        border-radius: 11px;
+
+        background: #ecfdf5;
+        border: 1px solid #bbf7d0;
+    }
+
+    .member-status-icon {
+        width: 46px;
+        height: 46px;
+
+        border-radius: 11px;
+
+        background: #dcfce7;
+        color: #16a34a;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .member-status-icon i {
+        font-size: 1.2rem;
+    }
+
+    .member-status-title {
+        color: #166534;
+
+        font-size: 0.95rem;
+        font-weight: 800;
+
+        margin-bottom: 3px;
+    }
+
+    .member-status-text {
+        color: #15803d;
+
+        font-size: 0.84rem;
+
+        margin: 0;
+    }
+
+
+    /* =========================================================
+       ORDRE DE RÉCEPTION
+    ========================================================= */
+
+    .order-card {
+        display: flex;
+
+        align-items: center;
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+    .order-left {
+        display: flex;
+        align-items: center;
+
+        gap: 15px;
+    }
+
+    .order-icon {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 12px;
+
+        background: #eff6ff;
+        color: #2563eb;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .order-title {
+        color: #1e293b;
+
+        font-size: 1rem;
+        font-weight: 700;
+
+        margin-bottom: 4px;
+    }
+
+    .order-description {
+        color: #64748b;
+
+        font-size: 0.9rem;
+
+        margin: 0;
+    }
+
+    .order-number {
+        min-width: 58px;
+        height: 58px;
+
+        padding: 0 15px;
+
+        border-radius: 12px;
+
+        background: #eff6ff;
+        color: #2563eb;
+
+        border: 1px solid #dbeafe;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 1.35rem;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       STATISTIQUES
+    ========================================================= */
+
+    .stat-card {
+        height: 100%;
+
+        padding: 20px;
+
+        border: 1px solid #edf0f4;
+        border-radius: 12px;
+
+        background: #fafcff;
+
+        display: flex;
+        align-items: center;
+
+        gap: 15px;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+
+        border-radius: 12px;
+
+        background: #eff6ff;
+        color: #2563eb;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .stat-icon i {
+        font-size: 1.1rem;
+    }
+
+    .stat-label {
+        display: block;
+
+        color: #64748b;
+
+        font-size: 0.78rem;
+        font-weight: 600;
+
+        margin-bottom: 3px;
+    }
+
+    .stat-value {
+        margin: 0;
+
+        color: #1e293b;
+
+        font-size: 1.25rem;
+        font-weight: 800;
+    }
+
+
+    /* =========================================================
+       ACTIONS
+    ========================================================= */
+
+    .action-card {
+        display: flex;
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+
+        padding: 18px 20px;
+
+        border: 1px solid #edf0f4;
+        border-radius: 12px;
+
+        background: #fafcff;
+    }
+
+    .action-left {
+        display: flex;
+        align-items: center;
+
+        gap: 14px;
+    }
+
+    .action-icon {
+        width: 42px;
+        height: 42px;
+
+        border-radius: 10px;
+
+        background: #eff6ff;
+        color: #2563eb;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .action-title {
+        color: #1e293b;
+
+        font-size: 0.95rem;
+        font-weight: 700;
+
+        margin-bottom: 3px;
+    }
+
+    .action-description {
+        color: #64748b;
+
+        font-size: 0.82rem;
+
+        margin: 0;
+    }
+
+    .action-btn {
+        white-space: nowrap;
+    }
+
+
+    /* =========================================================
+       INFORMATION
+    ========================================================= */
+
+    .information-box {
+        display: flex;
+        align-items: flex-start;
+
+        gap: 14px;
+
+        padding: 17px;
+
+        border-radius: 11px;
+
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+    }
+
+    .information-icon {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 9px;
+
+        background: #dbeafe;
+        color: #2563eb;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex-shrink: 0;
+    }
+
+    .information-title {
+        color: #1e293b;
+
+        font-weight: 700;
+
+        margin-bottom: 5px;
+    }
+
+    .information-text {
+        color: #64748b;
+
+        font-size: 0.9rem;
+        line-height: 1.6;
+
+        margin: 0;
+    }
+
+    .information-text strong {
+        color: #334155;
+    }
+
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 767px) {
+
+        .group-detail-page {
+            padding: 5px 5px 30px;
+        }
+
+        .group-hero {
+            padding: 23px 20px;
+        }
+
+        .group-hero-content {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .group-hero-left {
+            align-items: flex-start;
+        }
+
+        .group-hero h1 {
+            font-size: 1.4rem;
+        }
+
+        .btn-back {
+            width: 100%;
+            text-align: center;
+        }
+
+        .group-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .group-card-body {
+            padding: 17px;
+        }
+
+        .order-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .order-number {
+            align-self: flex-start;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+        }
+
+        .stat-card {
+            margin-bottom: 10px;
+        }
+
+        .action-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+
+        .information-box {
+            padding: 15px;
+        }
+    }
+
+</style>
+
+
+<div class="group-detail-page">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <div class="group-hero">
+
+        <div class="group-hero-content">
+
+            <div class="group-hero-left">
+
+                <div class="group-hero-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+
+                <div>
+
+                    <h1>
+                        {{ groupe.nom }}
+                    </h1>
+
+                    <p>
+                        Bienvenue dans votre groupe.
+                        Vous êtes actuellement
+                        <strong>membre</strong> de ce groupe.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <a href="{% url 'liste_groupes_membre' %}"
+               class="btn btn-back">
+
+                <i class="fas fa-arrow-left mr-2"></i>
+
+                Mes groupes
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STATUT DU MEMBRE
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-body">
+
+            <div class="member-status">
+
+                <div class="member-status-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <div>
+
+                    <div class="member-status-title">
+                        Vous êtes membre de ce groupe
+                    </div>
+
+                    <p class="member-status-text">
+                        Votre participation à
+                        <strong>{{ groupe.nom }}</strong>
+                        est active.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INFORMATIONS DU GROUPE
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-header">
+
+            <h6 class="group-card-title">
+
+                <span class="group-card-title-icon">
+                    <i class="fas fa-users"></i>
+                </span>
+
+                Informations du groupe
+
+            </h6>
+
+        </div>
+
+
+        <div class="group-card-body">
+
+            <div class="row">
+
+                <!-- GROUPE -->
+
+                <div class="col-md-4 mb-3 mb-md-0">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Groupe
+                        </span>
+
+                        <p class="info-value">
+                            {{ groupe.nom }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- COTISATION -->
+
+                <div class="col-md-4 mb-3 mb-md-0">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Montant de cotisation
+                        </span>
+
+                        <p class="info-value amount">
+                            {{ groupe.montant_cotisation }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- FRÉQUENCE -->
+
+                <div class="col-md-4">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Fréquence
+                        </span>
+
+                        <p class="info-value">
+                            {{ groupe.get_frequence_display }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="row mt-3">
+
+                <!-- DATE DE DÉBUT -->
+
+                <div class="col-md-4 mb-3 mb-md-0">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Date de début
+                        </span>
+
+                        <p class="info-value">
+
+                            <i class="far fa-calendar-alt text-primary mr-1"></i>
+
+                            {{ groupe.date_debut|date:"d/m/Y" }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ADMINISTRATEUR -->
+
+                <div class="col-md-4 mb-3 mb-md-0">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Administrateur
+                        </span>
+
+                        <p class="info-value">
+
+                            <i class="fas fa-user-shield text-primary mr-1"></i>
+
+                            {{ groupe.admin.username }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- STATUT -->
+
+                <div class="col-md-4">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Statut du groupe
+                        </span>
+
+                        <p class="info-value text-success">
+
+                            <i class="fas fa-circle mr-1"
+                               style="font-size: 8px;"></i>
+
+                            Actif
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MES INFORMATIONS DANS LE GROUPE
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-header">
+
+            <h6 class="group-card-title">
+
+                <span class="group-card-title-icon">
+                    <i class="fas fa-user"></i>
+                </span>
+
+                Mes informations dans le groupe
+
+            </h6>
+
+        </div>
+
+
+        <div class="group-card-body">
+
+            <div class="row">
+
+                <!-- NOM -->
+
+                <div class="col-md-4 mb-3 mb-md-0">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Nom
+                        </span>
+
+                        <p class="info-value">
+                            {{ membre.nom_affiche }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- TÉLÉPHONE -->
+
+                <div class="col-md-4 mb-3 mb-md-0">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Téléphone
+                        </span>
+
+                        <p class="info-value">
+
+                            {% if membre.telephone %}
+
+                                <i class="fas fa-phone text-primary mr-1"></i>
+
+                                {{ membre.telephone }}
+
+                            {% else %}
+
+                                Non renseigné
+
+                            {% endif %}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- DATE INSCRIPTION -->
+
+                <div class="col-md-4">
+
+                    <div class="info-item">
+
+                        <span class="info-label">
+                            Date d'inscription
+                        </span>
+
+                        <p class="info-value">
+
+                            <i class="far fa-calendar-plus text-primary mr-1"></i>
+
+                            {{ membre.date_inscription|date:"d/m/Y" }}
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MON ORDRE DE RÉCEPTION
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-body">
+
+            <div class="order-card">
+
+                <div class="order-left">
+
+                    <div class="order-icon">
+
+                        <i class="fas fa-sort-numeric-down"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="order-title">
+                            Mon ordre de réception
+                        </div>
+
+                        <p class="order-description">
+                            Votre position dans l'ordre de réception
+                            du groupe.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-number">
+
+                    {{ membre.ordre_reception }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         RÉSUMÉ
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-header">
+
+            <h6 class="group-card-title">
+
+                <span class="group-card-title-icon">
+                    <i class="fas fa-chart-line"></i>
+                </span>
+
+                Résumé de ma participation
+
+            </h6>
+
+        </div>
+
+
+        <div class="group-card-body">
+
+            <div class="row">
+
+                <!-- TOURS -->
+
+                <div class="col-md-6 mb-3 mb-md-0">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+
+                            <i class="fas fa-calendar-check"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span class="stat-label">
+                                Mes tours
+                            </span>
+
+                            <p class="stat-value">
+                                {{ tours|length }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- PAIEMENTS -->
+
+                <div class="col-md-6">
+
+                    <div class="stat-card">
+
+                        <div class="stat-icon">
+
+                            <i class="fas fa-money-check-alt"></i>
+
+                        </div>
+
+                        <div>
+
+                            <span class="stat-label">
+                                Mes paiements
+                            </span>
+
+                            <p class="stat-value">
+                                {{ paiements|length }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACTIONS
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-header">
+
+            <h6 class="group-card-title">
+
+                <span class="group-card-title-icon">
+                    <i class="fas fa-compass"></i>
+                </span>
+
+                Accès rapides
+
+            </h6>
+
+        </div>
+
+
+        <div class="group-card-body">
+
+
+            <!-- MES TOURS -->
+
+            <div class="action-card mb-3">
+
+                <div class="action-left">
+
+                    <div class="action-icon">
+
+                        <i class="fas fa-calendar-alt"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="action-title">
+                            Mes tours
+                        </div>
+
+                        <p class="action-description">
+                            Consultez les dates et le statut de vos tours
+                            dans ce groupe.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <a href="{% url 'mes_tours_groupe' groupe.id %}"
+                   class="btn btn-primary action-btn">
+
+                    <i class="fas fa-arrow-right mr-1"></i>
+
+                    Voir mes tours
+
+                </a>
+
+            </div>
+
+
+            <!-- MES PAIEMENTS -->
+
+            <div class="action-card">
+
+                <div class="action-left">
+
+                    <div class="action-icon">
+
+                        <i class="fas fa-money-bill-wave"></i>
+
+                    </div>
+
+                    <div>
+
+                        <div class="action-title">
+                            Mes paiements
+                        </div>
+
+                        <p class="action-description">
+                            Consultez l'historique de vos paiements
+                            effectués dans Likelemba.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <a href="{% url 'liste_paiements_membre' %}"
+                   class="btn btn-primary action-btn">
+
+                    <i class="fas fa-arrow-right mr-1"></i>
+
+                    Voir mes paiements
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         INFORMATION
+    ====================================================== -->
+
+    <div class="group-card">
+
+        <div class="group-card-body">
+
+            <div class="information-box">
+
+                <div class="information-icon">
+
+                    <i class="fas fa-info"></i>
+
+                </div>
+
+                <div>
+
+                    <div class="information-title">
+                        À propos de votre groupe
+                    </div>
+
+                    <p class="information-text">
+
+                        Vous êtes actuellement membre du groupe
+                        <strong>{{ groupe.nom }}</strong>.
+
+                        Votre ordre de réception est le
+                        <strong>{{ membre.ordre_reception }}</strong>.
+
+                        Vous pouvez consulter vos tours ainsi que
+                        vos paiements à tout moment depuis cette page.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

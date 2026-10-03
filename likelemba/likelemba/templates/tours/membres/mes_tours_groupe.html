@@ -4,127 +4,541 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<style>
+    .tours-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 10px 10px 40px;
+    }
 
-    <!-- En-tête -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    /* HERO */
+    .tours-hero {
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
+        border-radius: 16px;
+        padding: 30px 32px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 24px rgba(30, 58, 138, 0.15);
+    }
 
-        <div>
+    .tours-hero-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
 
-            <h1 class="h3 mb-1 text-gray-800">
-                <i class="fas fa-calendar-check text-info mr-2"></i>
-                Mes tours
-            </h1>
+    .tours-hero-left {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
 
-            <p class="text-muted mb-0">
-                Consultez vos tours dans le groupe
-                <strong>{{ groupe.nom }}</strong>.
-            </p>
+    .tours-hero-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .tours-hero-icon i {
+        font-size: 1.7rem;
+    }
+
+    .tours-hero h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+        font-weight: 700;
+    }
+
+    .tours-hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.95rem;
+    }
+
+    .tours-hero p strong {
+        color: white;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.14);
+        color: white !important;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-radius: 9px;
+        padding: 10px 16px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: all 0.2s ease;
+    }
+
+    .btn-back:hover {
+        background: white;
+        color: #2563eb !important;
+        border-color: white;
+    }
+
+    /* CARTES */
+    .tour-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 15px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+
+    .tour-card-header {
+        padding: 17px 22px;
+        border-bottom: 1px solid #edf0f4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .tour-card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .tour-card-title-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tour-card-body {
+        padding: 22px;
+    }
+
+    /* INFORMATIONS */
+    .info-item {
+        height: 100%;
+        padding: 16px;
+        border: 1px solid #edf0f4;
+        border-radius: 11px;
+        background: #fafcff;
+    }
+
+    .info-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 6px;
+    }
+
+    .info-value {
+        margin: 0;
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .info-value.amount {
+        color: #16a34a;
+    }
+
+    /* ORDRE */
+    .order-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .order-left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .order-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .order-title {
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .order-description {
+        color: #64748b;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .order-number {
+        min-width: 58px;
+        height: 58px;
+        padding: 0 15px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.35rem;
+        font-weight: 800;
+    }
+
+    /* BADGE */
+    .tour-count {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* TABLEAU */
+    .tour-table {
+        margin-bottom: 0;
+    }
+
+    .tour-table thead th {
+        background: #f8fafc;
+        border-top: none;
+        border-bottom: 1px solid #e2e8f0;
+        color: #475569;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        padding: 14px 16px;
+        vertical-align: middle;
+    }
+
+    .tour-table tbody td {
+        padding: 15px 16px;
+        border-color: #edf0f4;
+        color: #334155;
+        vertical-align: middle;
+    }
+
+    .tour-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .tour-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .tour-number {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .date-cell {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .date-icon {
+        color: #2563eb;
+        margin-right: 8px;
+    }
+
+    .status-paid {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #ecfdf5;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .status-pending {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #fffbeb;
+        color: #b45309;
+        border: 1px solid #fde68a;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    /* ÉTAT VIDE */
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px;
+    }
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+    .empty-icon i {
+        font-size: 1.8rem;
+    }
+
+    .empty-state h5 {
+        color: #334155;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* INFORMATION */
+    .information-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 17px;
+        border-radius: 11px;
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+    }
+
+    .information-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        background: #dbeafe;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .information-title {
+        color: #1e293b;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .information-text {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .information-text strong {
+        color: #334155;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 767px) {
+
+        .tours-page {
+            padding: 5px 5px 30px;
+        }
+
+        .tours-hero {
+            padding: 23px 20px;
+        }
+
+        .tours-hero-content {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .tours-hero-left {
+            align-items: flex-start;
+        }
+
+        .tours-hero h1 {
+            font-size: 1.4rem;
+        }
+
+        .btn-back {
+            width: 100%;
+            text-align: center;
+        }
+
+        .tour-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .tour-card-body {
+            padding: 17px;
+        }
+
+        .order-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .order-number {
+            align-self: flex-start;
+        }
+
+        .info-item {
+            margin-bottom: 10px;
+        }
+
+        .tour-table thead th,
+        .tour-table tbody td {
+            padding: 12px 10px;
+            font-size: 0.82rem;
+        }
+
+        .information-box {
+            padding: 15px;
+        }
+    }
+</style>
+
+
+<div class="tours-page">
+
+    <!-- HERO -->
+    <div class="tours-hero">
+
+        <div class="tours-hero-content">
+
+            <div class="tours-hero-left">
+
+                <div class="tours-hero-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+
+                <div>
+                    <h1>Mes tours</h1>
+
+                    <p>
+                        Consultez vos tours dans le groupe
+                        <strong>{{ groupe.nom }}</strong>.
+                    </p>
+                </div>
+
+            </div>
+
+            <a href="{% url 'liste_groupes_membre' %}"
+               class="btn btn-back">
+
+                <i class="fas fa-arrow-left mr-2"></i>
+                Mes groupes
+
+            </a>
 
         </div>
-
-        <a href="{% url 'liste_groupes_membre' %}"
-           class="btn btn-secondary">
-
-            <i class="fas fa-arrow-left mr-1"></i>
-            Mes groupes
-
-        </a>
 
     </div>
 
 
-    <!-- Informations du groupe -->
-    <div class="card shadow mb-4">
+    <!-- INFORMATIONS DU GROUPE -->
+    <div class="tour-card">
 
-        <div class="card-header bg-info text-white">
+        <div class="tour-card-header">
 
-            <i class="fas fa-users mr-2"></i>
-            Informations du groupe
+            <h6 class="tour-card-title">
+
+                <span class="tour-card-title-icon">
+                    <i class="fas fa-users"></i>
+                </span>
+
+                Informations du groupe
+
+            </h6>
 
         </div>
 
-        <div class="card-body">
+        <div class="tour-card-body">
 
             <div class="row">
 
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3 mb-md-0">
 
-                    <small class="text-muted">
-                        Groupe
-                    </small>
+                    <div class="info-item">
 
-                    <h5 class="font-weight-bold">
-                        {{ groupe.nom }}
-                    </h5>
+                        <span class="info-label">
+                            Groupe
+                        </span>
 
-                </div>
+                        <p class="info-value">
+                            {{ groupe.nom }}
+                        </p>
 
-
-                <div class="col-md-4 mb-3">
-
-                    <small class="text-muted">
-                        Montant de cotisation
-                    </small>
-
-                    <h5 class="font-weight-bold text-success">
-                        {{ groupe.montant_cotisation }}
-                    </h5>
+                    </div>
 
                 </div>
 
 
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3 mb-md-0">
 
-                    <small class="text-muted">
-                        Fréquence
-                    </small>
+                    <div class="info-item">
 
-                    <h5 class="font-weight-bold">
-                        {{ groupe.get_frequence_display }}
-                    </h5>
+                        <span class="info-label">
+                            Montant de cotisation
+                        </span>
 
-                </div>
+                        <p class="info-value amount">
+                            {{ groupe.montant_cotisation }}
+                        </p>
 
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Mon ordre -->
-    <div class="card shadow mb-4">
-
-        <div class="card-body">
-
-            <div class="row align-items-center">
-
-                <div class="col-md-8">
-
-                    <h5 class="font-weight-bold text-gray-800 mb-2">
-
-                        <i class="fas fa-sort-numeric-down text-info mr-2"></i>
-
-                        Mon ordre de réception
-
-                    </h5>
-
-                    <p class="text-muted mb-0">
-                        Votre position dans l'ordre de réception
-                        du groupe.
-                    </p>
+                    </div>
 
                 </div>
 
-                <div class="col-md-4 text-md-right mt-3 mt-md-0">
 
-                    <span class="badge badge-info"
-                          style="font-size: 18px; padding: 10px 15px;">
+                <div class="col-md-4">
 
-                        {{ membre.ordre_reception }}
+                    <div class="info-item">
 
-                    </span>
+                        <span class="info-label">
+                            Fréquence
+                        </span>
+
+                        <p class="info-value">
+                            {{ groupe.get_frequence_display }}
+                        </p>
+
+                    </div>
 
                 </div>
 
@@ -135,37 +549,78 @@
     </div>
 
 
-    <!-- Liste des tours -->
-    <div class="card shadow mb-4">
+    <!-- MON ORDRE -->
+    <div class="tour-card">
 
-        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <div class="tour-card-body">
 
-            <h6 class="m-0 font-weight-bold text-info">
+            <div class="order-card">
 
-                <i class="fas fa-calendar-alt mr-2"></i>
+                <div class="order-left">
+
+                    <div class="order-icon">
+                        <i class="fas fa-sort-numeric-down"></i>
+                    </div>
+
+                    <div>
+
+                        <div class="order-title">
+                            Mon ordre de réception
+                        </div>
+
+                        <p class="order-description">
+                            Votre position dans l'ordre de réception
+                            du groupe.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="order-number">
+                    {{ membre.ordre_reception }}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- LISTE DES TOURS -->
+    <div class="tour-card">
+
+        <div class="tour-card-header">
+
+            <h6 class="tour-card-title">
+
+                <span class="tour-card-title-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
 
                 Liste de mes tours
 
             </h6>
 
-            <span class="badge badge-info">
-
-                {{ tours|length }} tour{{ tours|length|pluralize }}
-
+            <span class="tour-count">
+                {{ tours|length }}
+                tour{{ tours|length|pluralize }}
             </span>
 
         </div>
 
 
-        <div class="card-body">
+        <div class="tour-card-body">
 
             {% if tours %}
 
                 <div class="table-responsive">
 
-                    <table class="table table-bordered table-hover">
+                    <table class="table tour-table">
 
-                        <thead class="thead-light">
+                        <thead>
 
                             <tr>
 
@@ -186,19 +641,16 @@
 
                                 <tr>
 
-                                    <td>
+                                    <td class="tour-number">
                                         {{ forloop.counter }}
                                     </td>
 
 
-                                    <td>
+                                    <td class="date-cell">
 
-                                        <strong>
-                                            <i class="far fa-calendar-alt text-info mr-2"></i>
+                                        <i class="far fa-calendar-alt date-icon"></i>
 
-                                            {{ tour.date_tour|date:"d/m/Y" }}
-
-                                        </strong>
+                                        {{ tour.date_tour|date:"d/m/Y" }}
 
                                     </td>
 
@@ -207,20 +659,18 @@
 
                                         {% if tour.statut == 'PAYE' %}
 
-                                            <span class="badge badge-success">
+                                            <span class="status-paid">
 
-                                                <i class="fas fa-check-circle mr-1"></i>
-
+                                                <i class="fas fa-check-circle"></i>
                                                 Payé
 
                                             </span>
 
                                         {% else %}
 
-                                            <span class="badge badge-warning">
+                                            <span class="status-pending">
 
-                                                <i class="fas fa-clock mr-1"></i>
-
+                                                <i class="fas fa-clock"></i>
                                                 En attente
 
                                             </span>
@@ -241,23 +691,23 @@
 
             {% else %}
 
-                <!-- Aucun tour -->
+                <!-- AUCUN TOUR -->
 
-                <div class="text-center py-5">
+                <div class="empty-state">
 
-                    <i class="fas fa-calendar-times fa-4x text-gray-300 mb-3"></i>
+                    <div class="empty-icon">
 
-                    <h5 class="font-weight-bold text-gray-600">
+                        <i class="fas fa-calendar-times"></i>
 
+                    </div>
+
+                    <h5>
                         Aucun tour disponible
-
                     </h5>
 
-                    <p class="text-muted mb-0">
-
+                    <p>
                         Aucun tour n'a encore été généré pour vous
                         dans ce groupe.
-
                     </p>
 
                 </div>
@@ -269,29 +719,26 @@
     </div>
 
 
-    <!-- Information -->
+    <!-- INFORMATION -->
+    <div class="tour-card">
 
-    <div class="card shadow mb-4">
+        <div class="tour-card-body">
 
-        <div class="card-body">
+            <div class="information-box">
 
-            <div class="d-flex align-items-start">
+                <div class="information-icon">
 
-                <div class="mr-3">
-
-                    <i class="fas fa-info-circle fa-lg text-info"></i>
+                    <i class="fas fa-info"></i>
 
                 </div>
 
                 <div>
 
-                    <h6 class="font-weight-bold text-gray-800">
-
+                    <div class="information-title">
                         À propos de vos tours
+                    </div>
 
-                    </h6>
-
-                    <p class="text-muted mb-0">
+                    <p class="information-text">
 
                         Les dates affichées correspondent aux tours
                         qui vous sont attribués dans le groupe

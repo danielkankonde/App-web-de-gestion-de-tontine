@@ -2,169 +2,1055 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<style>
 
-    <h1 class="h3 mb-4 text-gray-800">
-        <i class="fas fa-user"></i> <strong>Bonjour ! {{ request.user.username }}</strong> 
-    </h1>
+/* =========================================================
+   DASHBOARD MEMBRE - LIKELEMBA
+========================================================= */
 
-    <div class="row">
+.member-dashboard {
+    max-width: 1280px;
+    margin: 0 auto;
+}
 
-        <!-- Mes Groupes -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header bg-primary text-white">
-                    <i class="fas fa-users"></i> Mes Groupes
-                </div>
 
-                <div class="card-body">
-                    <p>Consultez tous les groupes auxquels vous participez.</p>
-                </div>
+/* =========================================================
+   HERO / BIENVENUE
+========================================================= */
 
-                <div class="card-footer bg-white">
-                    <a href="{% url 'liste_groupes_membre' %}" class="btn btn-primary btn-block">
-                        Voir mes groupes
-                    </a>
-                </div>
+.dashboard-welcome {
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(
+        135deg,
+        #1e3a8a 0%,
+        #2563eb 60%,
+        #3b82f6 100%
+    );
+
+    border-radius: 18px;
+
+    padding: 28px 30px;
+
+    margin-bottom: 24px;
+
+    color: white;
+
+    box-shadow:
+        0 8px 25px rgba(30, 58, 138, 0.16);
+}
+
+
+.dashboard-welcome::after {
+    content: "";
+    position: absolute;
+
+    width: 230px;
+    height: 230px;
+
+    right: -80px;
+    top: -110px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.07);
+}
+
+
+.dashboard-welcome::before {
+    content: "";
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    right: 120px;
+    bottom: -100px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.05);
+}
+
+
+.dashboard-welcome-content {
+    position: relative;
+    z-index: 2;
+}
+
+
+.dashboard-welcome-label {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 0.75rem;
+
+    font-weight: 600;
+
+    color: rgba(255,255,255,0.78);
+
+    margin-bottom: 8px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.7px;
+}
+
+
+.dashboard-welcome-label i {
+    font-size: 0.72rem;
+}
+
+
+.dashboard-welcome h1 {
+    margin: 0 0 8px;
+
+    font-size: 1.55rem;
+
+    font-weight: 800;
+
+    letter-spacing: -0.3px;
+}
+
+
+.dashboard-welcome p {
+    margin: 0;
+
+    max-width: 650px;
+
+    color: rgba(255,255,255,0.82);
+
+    font-size: 0.84rem;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   TITRE SECTION
+========================================================= */
+
+.dashboard-section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+}
+
+
+.dashboard-section-title .section-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 0.8rem;
+}
+
+
+.dashboard-section-title h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 0.98rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CARTES PRINCIPALES
+========================================================= */
+
+.dashboard-card {
+    height: 100%;
+
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(15,23,42,0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #cbdaf8;
+
+    box-shadow:
+        0 9px 25px rgba(30,58,138,0.10);
+}
+
+
+/* =========================================================
+   CARTE HEADER
+========================================================= */
+
+.dashboard-card-header {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 16px 18px;
+
+    border-bottom: 1px solid #edf1f6;
+
+    background: #ffffff;
+}
+
+
+.dashboard-card-icon {
+    width: 40px;
+    height: 40px;
+
+    min-width: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 0.95rem;
+}
+
+
+.dashboard-card-header h3 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 0.88rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CORPS CARTE
+========================================================= */
+
+.dashboard-card-body {
+    padding: 18px;
+
+    min-height: 90px;
+}
+
+
+.dashboard-card-body p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 0.79rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   FOOTER CARTE
+========================================================= */
+
+.dashboard-card-footer {
+    padding: 13px 18px;
+
+    background: #fafcff;
+
+    border-top: 1px solid #edf1f6;
+}
+
+
+/* =========================================================
+   BOUTONS CARTES
+========================================================= */
+
+.dashboard-action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    width: 100%;
+
+    padding: 9px 13px;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    border: 1px solid #2563eb;
+
+    color: #ffffff !important;
+
+    font-size: 0.78rem;
+
+    font-weight: 700;
+
+    text-decoration: none !important;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.dashboard-action:hover {
+    background: #1e3a8a;
+
+    border-color: #1e3a8a;
+
+    color: #ffffff !important;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(37,99,235,0.20);
+}
+
+
+.dashboard-action i {
+    font-size: 0.72rem;
+}
+
+
+/* =========================================================
+   SECTION ACTIVITÉS
+========================================================= */
+
+.dashboard-activity {
+    margin-top: 26px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(15,23,42,0.05);
+}
+
+
+.activity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 17px 20px;
+
+    border-bottom: 1px solid #edf1f6;
+
+    background: #ffffff;
+}
+
+
+.activity-title {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.activity-title-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 0.8rem;
+}
+
+
+.activity-title h3 {
+    margin: 0;
+
+    font-size: 0.9rem;
+
+    color: #172033;
+
+    font-weight: 700;
+}
+
+
+.activity-status {
+    font-size: 0.68rem;
+
+    color: #64748b;
+
+    background: #f8fafc;
+
+    border: 1px solid #e5eaf1;
+
+    border-radius: 20px;
+
+    padding: 5px 9px;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.activity-table-wrapper {
+    overflow-x: auto;
+}
+
+
+.activity-table {
+    width: 100%;
+
+    margin: 0;
+
+    border-collapse: collapse;
+}
+
+
+.activity-table thead th {
+    padding: 12px 18px;
+
+    background: #f8fafc;
+
+    color: #64748b;
+
+    border-bottom: 1px solid #e5eaf1;
+
+    font-size: 0.68rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+
+    white-space: nowrap;
+}
+
+
+.activity-table tbody td {
+    padding: 14px 18px;
+
+    color: #475569;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    font-size: 0.76rem;
+
+    vertical-align: middle;
+}
+
+
+.activity-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+.activity-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+
+.activity-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+
+/* =========================================================
+   BADGES ACTIVITÉS
+========================================================= */
+
+.activity-badge {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 0.65rem;
+
+    font-weight: 700;
+}
+
+
+.activity-badge.payment {
+    color: #1d4ed8;
+
+    background: #eff6ff;
+}
+
+
+.activity-badge.tour {
+    color: #047857;
+
+    background: #ecfdf5;
+}
+
+
+.activity-badge i {
+    font-size: 0.58rem;
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.activity-date {
+    color: #64748b;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   EMPTY / INFORMATION
+========================================================= */
+
+.dashboard-info {
+    margin-top: 20px;
+
+    padding: 14px 16px;
+
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    border-radius: 11px;
+
+    background: #eff6ff;
+
+    border: 1px solid #dbeafe;
+
+    color: #475569;
+
+    font-size: 0.75rem;
+
+    line-height: 1.6;
+}
+
+
+.dashboard-info i {
+    color: #2563eb;
+
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .dashboard-welcome {
+        padding: 24px;
+    }
+
+    .dashboard-welcome h1 {
+        font-size: 1.35rem;
+    }
+
+}
+
+
+@media (max-width: 767.98px) {
+
+    .member-dashboard {
+        width: 100%;
+    }
+
+
+    .dashboard-welcome {
+        padding: 21px;
+
+        border-radius: 14px;
+    }
+
+
+    .dashboard-welcome h1 {
+        font-size: 1.2rem;
+    }
+
+
+    .dashboard-welcome p {
+        font-size: 0.77rem;
+    }
+
+
+    .dashboard-card {
+        margin-bottom: 15px;
+    }
+
+
+    .dashboard-card-body {
+        min-height: auto;
+    }
+
+
+    .activity-header {
+        padding: 15px;
+    }
+
+
+    .activity-table thead th,
+    .activity-table tbody td {
+        padding: 11px 13px;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .dashboard-welcome {
+        padding: 19px;
+    }
+
+
+    .dashboard-welcome h1 {
+        font-size: 1.08rem;
+    }
+
+
+    .dashboard-section-title h2 {
+        font-size: 0.9rem;
+    }
+
+
+    .activity-status {
+        display: none;
+    }
+
+}
+
+</style>
+
+
+<div class="member-dashboard">
+
+
+    <!-- =====================================================
+         BIENVENUE
+    ====================================================== -->
+
+    <div class="dashboard-welcome">
+
+        <div class="dashboard-welcome-content">
+
+            <div class="dashboard-welcome-label">
+
+                <i class="fas fa-hand-wave"></i>
+
+                Espace membre
+
             </div>
+
+
+            <h1>
+                Bonjour, {{ request.user.username }} !
+            </h1>
+
+
+            <p>
+                Bienvenue dans votre espace Likelemba.
+                Suivez vos groupes, vos cotisations et vos activités
+                depuis un seul endroit.
+            </p>
+
         </div>
-
-        <!-- Paiements -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header bg-success text-white">
-                    <i class="fas fa-money-bill-wave"></i> Mes Paiements
-                </div>
-
-                <div class="card-body">
-                    <p>Consultez vos cotisations et paiements effectués.</p>
-                </div>
-
-                <div class="card-footer bg-white">
-                    <a href="{% url 'liste_paiements_membre' %}" class="btn btn-success btn-block">
-                        Voir les paiements
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mon Tour -->
-        {% comment %} <div class="col-lg-4 mb-4">
-            <div class="card shadow h-100">
-                <div class="card-header bg-info text-white">
-                    <i class="fas fa-calendar-check"></i> Mon Tour
-                </div>
-
-                <div class="card-body">
-                    <p>Consultez la date prévue pour recevoir votre tour.</p>
-                </div>
-
-                <div class="card-footer bg-white">
-                    <a href="{% url 'mes_tours_groupe' groupe.id %}" class="btn btn-info btn-block">
-                        Voir mon tour
-                    </a>
-                </div>
-            </div>
-        </div> {% endcomment %}
 
     </div>
 
-    <!-- Deuxième ligne -->
 
-    <div class="row">
+    <!-- =====================================================
+         MES SERVICES
+    ====================================================== -->
 
-        <!-- Effectuer Paiement -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-warning">
-                    <i class="fas fa-credit-card"></i> Effectuer un Paiement
-                </div>
+    <div class="dashboard-section-title">
 
-                <div class="card-body">
-                    Enregistrez une nouvelle cotisation pour votre groupe.
-                </div>
-
-                <div class="card-footer">
-                    <a href="#" class="btn btn-warning btn-block">
-                        Payer maintenant
-                    </a>
-                </div>
-            </div>
+        <div class="section-icon">
+            <i class="fas fa-th-large"></i>
         </div>
 
-        <!-- Historique -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-secondary text-white">
-                    <i class="fas fa-history"></i> Mon Historique
-                </div>
-
-                <div class="card-body">
-                    Consultez l'historique complet de vos opérations.
-                </div>
-
-                <div class="card-footer">
-                    <a href="#" class="btn btn-secondary btn-block">
-                        Voir l'historique
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- Historique -->
-        <div class="col-lg-4 mb-4">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <i class="fas fa-users"></i> Groupes disponibles
-                </div>
-
-                <div class="card-body">
-                    Consultez les groupes disponibles pour y intégrer.
-                </div>
-
-                <div class="card-footer">
-                    <a href="{% url "explorer_groupes" %}" class="btn btn-primary btn-block">
-                        Explorer ces groupes
-                    </a>
-                </div>
-            </div>
-        </div>
+        <h2>
+            Mon espace
+        </h2>
 
     </div>
 
-    <!-- Activités récentes -->
 
-    <div class="card shadow mb-4">
-        <div class="card-header">
-            <h6 class="m-0 font-weight-bold text-primary">
-                Activités Récentes
-            </h6>
+    <div class="row">
+
+
+        <!-- =================================================
+             MES GROUPES
+        ================================================== -->
+
+        <div class="col-lg-4 col-md-6 mb-4">
+
+            <div class="dashboard-card">
+
+
+                <div class="dashboard-card-header">
+
+                    <div class="dashboard-card-icon">
+
+                        <i class="fas fa-users"></i>
+
+                    </div>
+
+                    <h3>
+                        Mes groupes
+                    </h3>
+
+                </div>
+
+
+                <div class="dashboard-card-body">
+
+                    <p>
+                        Consultez les groupes auxquels vous participez
+                        et retrouvez les informations liées à votre
+                        participation.
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card-footer">
+
+                    <a href="{% url 'liste_groupes_membre' %}"
+                       class="dashboard-action">
+
+                        <span>
+                            Voir mes groupes
+                        </span>
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
         </div>
 
-        <div class="card-body">
-            <table class="table table-bordered">
+
+        <!-- =================================================
+             MES PAIEMENTS
+        ================================================== -->
+
+        <div class="col-lg-4 col-md-6 mb-4">
+
+            <div class="dashboard-card">
+
+
+                <div class="dashboard-card-header">
+
+                    <div class="dashboard-card-icon">
+
+                        <i class="fas fa-money-bill-wave"></i>
+
+                    </div>
+
+                    <h3>
+                        Mes paiements
+                    </h3>
+
+                </div>
+
+
+                <div class="dashboard-card-body">
+
+                    <p>
+                        Consultez vos cotisations et retrouvez
+                        l'historique de vos paiements enregistrés.
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card-footer">
+
+                    <a href="{% url 'liste_paiements_membre' %}"
+                       class="dashboard-action">
+
+                        <span>
+                            Voir les paiements
+                        </span>
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             GROUPES DISPONIBLES
+        ================================================== -->
+
+        <div class="col-lg-4 col-md-6 mb-4">
+
+            <div class="dashboard-card">
+
+
+                <div class="dashboard-card-header">
+
+                    <div class="dashboard-card-icon">
+
+                        <i class="fas fa-compass"></i>
+
+                    </div>
+
+                    <h3>
+                        Groupes disponibles
+                    </h3>
+
+                </div>
+
+
+                <div class="dashboard-card-body">
+
+                    <p>
+                        Explorez les groupes disponibles et découvrez
+                        ceux que vous pouvez rejoindre.
+                    </p>
+
+                </div>
+
+
+                <div class="dashboard-card-footer">
+
+                    <a href="{% url 'explorer_groupes' %}"
+                       class="dashboard-action">
+
+                        <span>
+                            Explorer les groupes
+                        </span>
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+{% comment %} 
+    <!-- =====================================================
+         ACTIVITÉS RÉCENTES
+    ====================================================== -->
+
+    <div class="dashboard-activity">
+
+
+        <div class="activity-header">
+
+
+            <div class="activity-title">
+
+                <div class="activity-title-icon">
+
+                    <i class="fas fa-history"></i>
+
+                </div>
+
+                <h3>
+                    Activités récentes
+                </h3>
+
+            </div>
+
+
+            <span class="activity-status">
+
+                Dernières activités
+
+            </span>
+
+
+        </div>
+
+
+        <div class="activity-table-wrapper">
+
+            <table class="activity-table">
+
+
                 <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>12/06/2026</td>
-                        <td>Cotisation</td>
-                        <td>Paiement enregistré</td>
-                    </tr>
 
                     <tr>
-                        <td>10/06/2026</td>
-                        <td>Tour</td>
-                        <td>Consultation du tour</td>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
                     </tr>
+
+                </thead>
+
+
+                <tbody>
+
+
+                    <!-- ACTIVITÉ 1 -->
+
+                    <tr>
+
+                        <td class="activity-date">
+                            12/06/2026
+                        </td>
+
+
+                        <td>
+
+                            <span class="activity-badge payment">
+
+                                <i class="fas fa-money-bill-wave"></i>
+
+                                Cotisation
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Paiement enregistré
+                        </td>
+
+                    </tr>
+
+
+                    <!-- ACTIVITÉ 2 -->
+
+                    <tr>
+
+                        <td class="activity-date">
+                            10/06/2026
+                        </td>
+
+
+                        <td>
+
+                            <span class="activity-badge tour">
+
+                                <i class="fas fa-sync-alt"></i>
+
+                                Tour
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+                            Consultation du tour
+                        </td>
+
+                    </tr>
+
+
                 </tbody>
+
+
             </table>
+
         </div>
+
+
     </div>
+ {% endcomment %}
+
+    <!-- =====================================================
+         INFORMATION
+    ====================================================== -->
+
+    <div class="dashboard-info">
+
+        <i class="fas fa-info-circle"></i>
+
+        <div>
+
+            Utilisez les différentes sections de votre espace membre
+            pour suivre vos groupes, vos cotisations et vos activités
+            sur Likelemba.
+
+        </div>
+
+    </div>
+
 
 </div>
 

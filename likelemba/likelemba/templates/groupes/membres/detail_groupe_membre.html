@@ -1,100 +1,580 @@
 {% extends 'base_membre.html' %}
 {% load static %}
 
+{% block title %}Détail du groupe{% endblock %}
+
 {% block content %}
 
-<div class="container-fluid px-4">
+<style>
+    .group-detail-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 10px 10px 40px;
+    }
 
-    <!-- Retour -->
-    <div class="mb-4">
-        <a href="{% url 'explorer_groupes' %}"
-           class="btn btn-outline-secondary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i>
-            Retour aux groupes
-        </a>
-    </div>
+    /* BOUTON RETOUR */
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #475569;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 9px 14px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        text-decoration: none !important;
+        transition: all 0.2s ease;
+        margin-bottom: 20px;
+    }
+
+    .back-link:hover {
+        color: #2563eb;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+    }
+
+    /* ALERTES DJANGO */
+    .message-alert {
+        border-radius: 10px;
+        border: none;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+    }
+
+    /* HERO GROUPE */
+    .group-hero {
+        background: linear-gradient(
+            135deg,
+            #1e3a8a 0%,
+            #2563eb 55%,
+            #3b82f6 100%
+        );
+        border-radius: 16px;
+        padding: 28px 30px;
+        color: white;
+        margin-bottom: 22px;
+        box-shadow: 0 8px 24px rgba(30, 58, 138, 0.15);
+    }
+
+    .group-hero-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .group-hero-left {
+        display: flex;
+        align-items: center;
+        gap: 17px;
+    }
+
+    .group-hero-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .group-hero-icon i {
+        font-size: 1.65rem;
+    }
+
+    .group-hero h1 {
+        margin: 0 0 5px;
+        font-size: 1.6rem;
+        font-weight: 700;
+    }
+
+    .group-hero-subtitle {
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .active-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        color: white;
+        border-radius: 20px;
+        padding: 8px 13px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* CARTES */
+    .group-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 15px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+        margin-bottom: 22px;
+    }
+
+    .group-card-header {
+        padding: 17px 22px;
+        border-bottom: 1px solid #edf0f4;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .group-card-header-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .group-card-header h5,
+    .group-card-header h6 {
+        margin: 0;
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+    .group-card-body {
+        padding: 22px;
+    }
+
+    /* INFORMATIONS */
+    .info-box {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 100%;
+        padding: 16px;
+        background: #fafcff;
+        border: 1px solid #edf0f4;
+        border-radius: 11px;
+    }
+
+    .info-icon {
+        width: 45px;
+        height: 45px;
+        min-width: 45px;
+        border-radius: 11px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .info-icon i {
+        font-size: 1rem;
+    }
+
+    .info-label {
+        display: block;
+        color: #64748b;
+        font-size: 0.76rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.25px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        display: block;
+        color: #1e293b;
+        font-size: 0.98rem;
+        font-weight: 700;
+    }
+
+    .info-value.amount {
+        color: #2563eb;
+        font-size: 1.05rem;
+    }
+
+    /* EXPLICATION */
+    .explanation-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 13px;
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+        border-radius: 11px;
+        padding: 16px;
+    }
+
+    .explanation-icon {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        border-radius: 9px;
+        background: #dbeafe;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .explanation-title {
+        color: #1e293b;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .explanation-text {
+        color: #64748b;
+        font-size: 0.88rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* ADHÉSION */
+    .adhesion-card {
+        height: 100%;
+    }
+
+    .adhesion-body {
+        padding: 28px 22px;
+        text-align: center;
+    }
+
+    .status-icon {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        margin: 0 auto 17px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.55rem;
+    }
+
+    .status-primary {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .status-success {
+        background: #ecfdf5;
+        color: #16a34a;
+    }
+
+    .status-warning {
+        background: #fffbeb;
+        color: #d97706;
+    }
+
+    .status-danger {
+        background: #fef2f2;
+        color: #dc2626;
+    }
+
+    .adhesion-title {
+        color: #1e293b;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .adhesion-title.success {
+        color: #16a34a;
+    }
+
+    .adhesion-title.warning {
+        color: #d97706;
+    }
+
+    .adhesion-title.danger {
+        color: #dc2626;
+    }
+
+    .adhesion-description {
+        color: #64748b;
+        font-size: 0.88rem;
+        line-height: 1.55;
+        margin-bottom: 18px;
+    }
+
+    .adhesion-btn {
+        width: 100%;
+        border-radius: 9px;
+        padding: 10px 15px;
+        font-weight: 600;
+    }
+
+    .btn-primary-custom {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white;
+    }
+
+    .btn-primary-custom:hover {
+        background: #1d4ed8;
+        border-color: #1d4ed8;
+        color: white;
+    }
+
+    .btn-success-custom {
+        background: #16a34a;
+        border-color: #16a34a;
+        color: white;
+    }
+
+    .btn-success-custom:hover {
+        background: #15803d;
+        border-color: #15803d;
+        color: white;
+    }
+
+    .pending-btn {
+        background: #fef3c7;
+        border-color: #fde68a;
+        color: #b45309;
+        opacity: 1 !important;
+    }
+
+    .request-date {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.78rem;
+        margin-top: 14px;
+    }
+
+    .security-note {
+        display: block;
+        color: #94a3b8;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        margin-top: 14px;
+    }
+
+    /* RÉSUMÉ */
+    .summary-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf0f4;
+        font-size: 0.88rem;
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-label {
+        color: #64748b;
+    }
+
+    .summary-value {
+        color: #1e293b;
+        font-weight: 700;
+        text-align: right;
+    }
+
+    .summary-value.primary {
+        color: #2563eb;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 991px) {
+        .group-hero-content {
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 767px) {
+
+        .group-detail-page {
+            padding: 5px 5px 30px;
+        }
+
+        .group-hero {
+            padding: 23px 20px;
+        }
+
+        .group-hero-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .group-hero h1 {
+            font-size: 1.4rem;
+        }
+
+        .active-badge {
+            margin-left: 77px;
+            margin-top: -5px;
+        }
+
+        .group-card-body {
+            padding: 17px;
+        }
+
+        .info-box {
+            padding: 14px;
+        }
+
+        .adhesion-body {
+            padding: 24px 17px;
+        }
+    }
+
+    @media (max-width: 480px) {
+
+        .group-hero-left {
+            align-items: flex-start;
+        }
+
+        .group-hero-icon {
+            width: 52px;
+            height: 52px;
+        }
+
+        .active-badge {
+            margin-left: 0;
+        }
+    }
+</style>
 
 
-    <!-- Message Django -->
+<div class="group-detail-page">
+
+    <!-- RETOUR -->
+    <a href="{% url 'explorer_groupes' %}"
+       class="back-link">
+
+        <i class="fas fa-arrow-left"></i>
+        Retour aux groupes
+
+    </a>
+
+
+    <!-- MESSAGES DJANGO -->
     {% if messages %}
+
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show message-alert"
                  role="alert">
+
                 {{ message }}
+
                 <button type="button"
                         class="close"
                         data-dismiss="alert"
                         aria-label="Fermer">
+
                     <span aria-hidden="true">&times;</span>
+
                 </button>
+
             </div>
+
         {% endfor %}
+
     {% endif %}
 
 
-    <div class="row g-4">
+    <div class="row">
 
-        <!-- Informations du groupe -->
+        <!-- COLONNE PRINCIPALE -->
         <div class="col-lg-8">
 
-            <div class="card shadow-sm border-0 h-100">
+            <!-- HERO DU GROUPE -->
+            <div class="group-hero">
 
-                <!-- En-tête -->
-                <div class="card-header bg-gradient-primary text-white border-0 py-4">
+                <div class="group-hero-content">
 
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div class="group-hero-left">
 
-                        <div>
-                            <h4 class="mb-1 fw-bold">
-                                <i class="fas fa-users me-2"></i>
-                                {{ groupe.nom }}
-                            </h4>
-
-                            <small class="opacity-75">
-                                Groupe actif
-                            </small>
+                        <div class="group-hero-icon">
+                            <i class="fas fa-users"></i>
                         </div>
 
-                        <span class="badge bg-light text-primary rounded-pill px-3 py-2">
-                            <i class="fas fa-check-circle me-1"></i>
-                            Actif
-                        </span>
+                        <div>
+
+                            <h1>
+                                {{ groupe.nom }}
+                            </h1>
+
+                            <p class="group-hero-subtitle">
+                                Groupe actif
+                            </p>
+
+                        </div>
 
                     </div>
+
+                    <span class="active-badge">
+
+                        <i class="fas fa-check-circle"></i>
+                        Actif
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- INFORMATIONS DU GROUPE -->
+            <div class="group-card">
+
+                <div class="group-card-header">
+
+                    <div class="group-card-header-icon">
+
+                        <i class="fas fa-info-circle"></i>
+
+                    </div>
+
+                    <h5>
+                        Informations du groupe
+                    </h5>
 
                 </div>
 
 
-                <!-- Corps -->
-                <div class="card-body p-4">
+                <div class="group-card-body">
 
-                    <h5 class="text-gray-800 mb-4">
-                        <i class="fas fa-info-circle text-primary me-2"></i>
-                        Informations du groupe
-                    </h5>
+                    <div class="row">
 
-
-                    <!-- Informations -->
-                    <div class="row g-3">
-
-                        <!-- Cotisation -->
-                        <div class="col-md-6">
+                        <!-- COTISATION -->
+                        <div class="col-md-6 mb-3">
 
                             <div class="info-box">
 
-                                <div class="icon-box bg-primary">
+                                <div class="info-icon">
+
                                     <i class="fas fa-money-bill-wave"></i>
+
                                 </div>
 
                                 <div>
-                                    <small class="text-muted d-block">
-                                        Cotisation
-                                    </small>
 
-                                    <strong class="text-primary fs-5">
+                                    <span class="info-label">
+                                        Cotisation
+                                    </span>
+
+                                    <span class="info-value amount">
+
                                         {{ groupe.montant_cotisation|floatformat:0 }}
                                         FCFA
-                                    </strong>
+
+                                    </span>
+
                                 </div>
 
                             </div>
@@ -102,23 +582,29 @@
                         </div>
 
 
-                        <!-- Fréquence -->
-                        <div class="col-md-6">
+                        <!-- FRÉQUENCE -->
+                        <div class="col-md-6 mb-3">
 
                             <div class="info-box">
 
-                                <div class="icon-box bg-info">
+                                <div class="info-icon">
+
                                     <i class="fas fa-sync-alt"></i>
+
                                 </div>
 
                                 <div>
-                                    <small class="text-muted d-block">
+
+                                    <span class="info-label">
                                         Fréquence
-                                    </small>
+                                    </span>
 
-                                    <strong class="text-gray-800">
+                                    <span class="info-value">
+
                                         {{ groupe.get_frequence_display }}
-                                    </strong>
+
+                                    </span>
+
                                 </div>
 
                             </div>
@@ -126,23 +612,29 @@
                         </div>
 
 
-                        <!-- Date de début -->
-                        <div class="col-md-6">
+                        <!-- DATE DE DÉBUT -->
+                        <div class="col-md-6 mb-3 mb-md-0">
 
                             <div class="info-box">
 
-                                <div class="icon-box bg-success">
+                                <div class="info-icon">
+
                                     <i class="far fa-calendar-alt"></i>
+
                                 </div>
 
                                 <div>
-                                    <small class="text-muted d-block">
-                                        Date de début
-                                    </small>
 
-                                    <strong class="text-gray-800">
+                                    <span class="info-label">
+                                        Date de début
+                                    </span>
+
+                                    <span class="info-value">
+
                                         {{ groupe.date_debut|date:"d/m/Y" }}
-                                    </strong>
+
+                                    </span>
+
                                 </div>
 
                             </div>
@@ -150,24 +642,30 @@
                         </div>
 
 
-                        <!-- Nombre de membres -->
+                        <!-- MEMBRES -->
                         <div class="col-md-6">
 
                             <div class="info-box">
 
-                                <div class="icon-box bg-warning">
+                                <div class="info-icon">
+
                                     <i class="fas fa-users"></i>
+
                                 </div>
 
                                 <div>
-                                    <small class="text-muted d-block">
-                                        Membres
-                                    </small>
 
-                                    <strong class="text-gray-800">
+                                    <span class="info-label">
+                                        Membres
+                                    </span>
+
+                                    <span class="info-value">
+
                                         {{ groupe.membregroupe_set.count }}
                                         membre(s)
-                                    </strong>
+
+                                    </span>
+
                                 </div>
 
                             </div>
@@ -177,30 +675,32 @@
                     </div>
 
 
-                    <!-- Séparateur -->
-                    <hr class="my-4">
+                    <!-- SÉPARATEUR -->
+                    <hr style="border-color: #edf0f4; margin: 22px 0;">
 
 
-                    <!-- Explication -->
-                    <div class="alert alert-light border">
+                    <!-- COMMENT ÇA FONCTIONNE -->
+                    <div class="explanation-box">
 
-                        <div class="d-flex">
+                        <div class="explanation-icon">
 
-                            <i class="fas fa-info-circle text-primary mt-1 me-3"></i>
+                            <i class="fas fa-info"></i>
 
-                            <div>
+                        </div>
 
-                                <strong class="text-gray-800">
-                                    Comment ça fonctionne ?
-                                </strong>
+                        <div>
 
-                                <p class="small text-muted mb-0 mt-1">
-                                    Envoyez une demande pour rejoindre ce groupe.
-                                    L'administrateur devra accepter votre demande
-                                    avant que vous soyez officiellement membre du groupe.
-                                </p>
-
+                            <div class="explanation-title">
+                                Comment ça fonctionne ?
                             </div>
+
+                            <p class="explanation-text">
+
+                                Envoyez une demande pour rejoindre ce groupe.
+                                L'administrateur devra accepter votre demande
+                                avant que vous soyez officiellement membre du groupe.
+
+                            </p>
 
                         </div>
 
@@ -213,44 +713,52 @@
         </div>
 
 
-        <!-- Action d'adhésion -->
+        <!-- COLONNE DROITE -->
         <div class="col-lg-4">
 
-            <div class="card shadow-sm border-0">
+            <!-- ADHÉSION -->
+            <div class="group-card adhesion-card">
 
-                <div class="card-header bg-light border-0 py-3">
+                <div class="group-card-header">
 
-                    <h6 class="m-0 fw-bold text-gray-800">
-                        <i class="fas fa-user-plus text-primary me-2"></i>
+                    <div class="group-card-header-icon">
+
+                        <i class="fas fa-user-plus"></i>
+
+                    </div>
+
+                    <h6>
                         Adhésion
                     </h6>
 
                 </div>
 
 
-                <div class="card-body p-4 text-center">
+                <div class="adhesion-body">
 
 
                     {% if deja_membre %}
 
-                        <!-- Déjà membre -->
+                        <!-- DÉJÀ MEMBRE -->
 
-                        <div class="status-icon status-success mb-3">
+                        <div class="status-icon status-success">
+
                             <i class="fas fa-check"></i>
+
                         </div>
 
-                        <h5 class="text-success">
+                        <h5 class="adhesion-title success">
                             Vous êtes déjà membre
                         </h5>
 
-                        <p class="text-muted small">
+                        <p class="adhesion-description">
                             Vous participez déjà à ce groupe.
                         </p>
 
                         <a href="{% url 'liste_groupes_membre' %}"
-                           class="btn btn-success w-100">
+                           class="btn adhesion-btn btn-success-custom">
 
-                            <i class="fas fa-users me-1"></i>
+                            <i class="fas fa-users mr-1"></i>
                             Voir mes groupes
 
                         </a>
@@ -258,54 +766,58 @@
 
                     {% elif demande and demande.statut == 'EN_ATTENTE' %}
 
-                        <!-- Demande en attente -->
+                        <!-- DEMANDE EN ATTENTE -->
 
-                        <div class="status-icon status-warning mb-3">
+                        <div class="status-icon status-warning">
+
                             <i class="fas fa-clock"></i>
+
                         </div>
 
-                        <h5 class="text-warning">
+                        <h5 class="adhesion-title warning">
                             Demande en attente
                         </h5>
 
-                        <p class="text-muted small">
+                        <p class="adhesion-description">
                             Votre demande a bien été envoyée.
                             L'administrateur doit encore la traiter.
                         </p>
 
                         <button type="button"
-                                class="btn btn-warning w-100"
+                                class="btn adhesion-btn pending-btn"
                                 disabled>
 
-                            <i class="fas fa-hourglass-half me-1"></i>
+                            <i class="fas fa-hourglass-half mr-1"></i>
                             En attente de validation
 
                         </button>
 
+                        <small class="request-date">
 
-                        <small class="text-muted d-block mt-3">
                             Demande envoyée le
                             {{ demande.date_demande|date:"d/m/Y à H:i" }}
+
                         </small>
 
 
                     {% elif demande and demande.statut == 'REFUSEE' %}
 
-                        <!-- Demande refusée -->
+                        <!-- DEMANDE REFUSÉE -->
 
-                        <div class="status-icon status-danger mb-3">
+                        <div class="status-icon status-danger">
+
                             <i class="fas fa-times"></i>
+
                         </div>
 
-                        <h5 class="text-danger">
+                        <h5 class="adhesion-title danger">
                             Demande refusée
                         </h5>
 
-                        <p class="text-muted small">
+                        <p class="adhesion-description">
                             Votre précédente demande a été refusée.
                             Vous pouvez envoyer une nouvelle demande.
                         </p>
-
 
                         <form method="POST"
                               action="{% url 'demander_adhesion' groupe.id %}">
@@ -313,9 +825,9 @@
                             {% csrf_token %}
 
                             <button type="submit"
-                                    class="btn btn-primary w-100">
+                                    class="btn adhesion-btn btn-primary-custom">
 
-                                <i class="fas fa-paper-plane me-1"></i>
+                                <i class="fas fa-paper-plane mr-1"></i>
                                 Envoyer une nouvelle demande
 
                             </button>
@@ -325,21 +837,22 @@
 
                     {% else %}
 
-                        <!-- Aucune demande -->
+                        <!-- AUCUNE DEMANDE -->
 
-                        <div class="status-icon status-primary mb-3">
+                        <div class="status-icon status-primary">
+
                             <i class="fas fa-user-plus"></i>
+
                         </div>
 
-                        <h5 class="text-gray-800">
+                        <h5 class="adhesion-title">
                             Rejoindre ce groupe
                         </h5>
 
-                        <p class="text-muted small">
+                        <p class="adhesion-description">
                             Vous souhaitez participer à ce groupe ?
                             Envoyez votre demande à l'administrateur.
                         </p>
-
 
                         <form method="POST"
                               action="{% url 'demander_adhesion' groupe.id %}">
@@ -347,79 +860,25 @@
                             {% csrf_token %}
 
                             <button type="submit"
-                                    class="btn btn-primary w-100"
+                                    class="btn adhesion-btn btn-primary-custom"
                                     id="btnDemande">
 
-                                <i class="fas fa-paper-plane me-1"></i>
+                                <i class="fas fa-paper-plane mr-1"></i>
                                 Demander à rejoindre
 
                             </button>
 
                         </form>
 
+                        <small class="security-note">
 
-                        <small class="text-muted d-block mt-3">
-                            <i class="fas fa-shield-alt me-1"></i>
-                            Votre demande devra être validée par l'administrateur.
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Votre demande devra être validée par
+                            l'administrateur.
+
                         </small>
 
                     {% endif %}
-
-                </div>
-
-            </div>
-
-
-            <!-- Résumé -->
-            <div class="card shadow-sm border-0 mt-4">
-
-                <div class="card-body">
-
-                    <h6 class="fw-bold text-gray-800 mb-3">
-                        <i class="fas fa-clipboard-list text-primary me-2"></i>
-                        Résumé
-                    </h6>
-
-                    <div class="summary-item">
-                        <span class="text-muted">
-                            Cotisation
-                        </span>
-
-                        <strong>
-                            {{ groupe.montant_cotisation|floatformat:0 }}
-                            FCFA
-                        </strong>
-                    </div>
-
-                    <div class="summary-item">
-                        <span class="text-muted">
-                            Fréquence
-                        </span>
-
-                        <strong>
-                            {{ groupe.get_frequence_display }}
-                        </strong>
-                    </div>
-
-                    <div class="summary-item">
-                        <span class="text-muted">
-                            Début
-                        </span>
-
-                        <strong>
-                            {{ groupe.date_debut|date:"d/m/Y" }}
-                        </strong>
-                    </div>
-
-                    <div class="summary-item border-0">
-                        <span class="text-muted">
-                            Membres
-                        </span>
-
-                        <strong>
-                            {{ groupe.membregroupe_set.count }}
-                        </strong>
-                    </div>
 
                 </div>
 
@@ -432,125 +891,7 @@
 </div>
 
 
-<!-- Styles -->
-<style>
-
-    .bg-gradient-primary {
-        background: linear-gradient(
-            135deg,
-            #4e73df 0%,
-            #224abe 100%
-        );
-    }
-
-
-    .info-box {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-
-        background: #f8f9fc;
-        border-radius: 0.5rem;
-
-        padding: 1rem;
-
-        height: 100%;
-    }
-
-
-    .icon-box {
-        width: 45px;
-        height: 45px;
-
-        min-width: 45px;
-
-        border-radius: 10px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        color: white;
-    }
-
-
-    .status-icon {
-        width: 70px;
-        height: 70px;
-
-        margin-left: auto;
-        margin-right: auto;
-
-        border-radius: 50%;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        font-size: 1.7rem;
-    }
-
-
-    .status-primary {
-        background: rgba(78, 115, 223, 0.1);
-        color: #4e73df;
-    }
-
-
-    .status-success {
-        background: rgba(28, 200, 138, 0.1);
-        color: #1cc88a;
-    }
-
-
-    .status-warning {
-        background: rgba(246, 194, 62, 0.15);
-        color: #f6c23e;
-    }
-
-
-    .status-danger {
-        background: rgba(231, 74, 59, 0.1);
-        color: #e74a3b;
-    }
-
-
-    .summary-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        padding: 0.75rem 0;
-
-        border-bottom: 1px solid #eaecf4;
-
-        font-size: 0.9rem;
-    }
-
-
-    .summary-item strong {
-        color: #3a3b45;
-    }
-
-
-    .card {
-        border-radius: 0.5rem;
-    }
-
-
-    @media (max-width: 768px) {
-
-        .container-fluid {
-            padding-left: 1rem;
-            padding-right: 1rem;
-        }
-
-    }
-
-</style>
-
-
-<!-- Protection contre double clic -->
+<!-- PROTECTION CONTRE DOUBLE CLIC -->
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -559,14 +900,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (btnDemande) {
 
-        btnDemande.closest('form').addEventListener('submit', function () {
+        const form = btnDemande.closest('form');
 
-            btnDemande.disabled = true;
+        if (form) {
 
-            btnDemande.innerHTML =
-                '<i class="fas fa-spinner fa-spin me-1"></i> Envoi en cours...';
+            form.addEventListener('submit', function () {
 
-        });
+                btnDemande.disabled = true;
+
+                btnDemande.innerHTML =
+                    '<i class="fas fa-spinner fa-spin mr-1"></i> Envoi en cours...';
+
+            });
+
+        }
 
     }
 

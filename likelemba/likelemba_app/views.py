@@ -1238,18 +1238,33 @@ def aide_admin(request):
 # VUES POUR LES UTILISATEURS MEMBRES
 @login_required
 def groupes_membre_integrer_view(request):
-
     if request.user.role == 'ADMIN':
         return redirect('dashboard_admin')
 
-    # Récupérer tous les groupes auxquels l'utilisateur participe
-    groupes = MembreGroupe.objects.filter(utilisateur=request.user).select_related('groupe')
-    
-    context = {
-        'groupes': groupes
-    }
-    return render(request, 'groupes/membres/liste_groupes_membre_integrer.html', context)
+    groupes = MembreGroupe.objects.filter(
+        utilisateur=request.user
+    ).select_related('groupe')
 
+    statut = request.GET.get('statut', '').strip()
+    frequence = request.GET.get('frequence', '').strip()
+
+    if statut:
+        groupes = groupes.filter(groupe__statut=statut)
+
+    if frequence:
+        groupes = groupes.filter(groupe__frequence=frequence)
+
+    groupes = groupes.order_by('-groupe__date_creation')
+
+    return render(
+        request,
+        'groupes/membres/liste_groupes_membre_integrer.html',
+        {
+            'groupes': groupes,
+            'statuts': Groupe.STATUT_CHOICES,
+            'frequences': Groupe.FREQUENCE_CHOICES,
+        }
+    )
 # Vues pour voir les paiements des membres 
 @login_required(login_url='login')
 def paiements_membre_view(request):
@@ -1328,6 +1343,51 @@ def groupes_membre_view(request):
         'demandes': demandes,
         'demandes_en_attente': demandes_en_attente,
     })
+
+# VIEW POUR VOIR LE DETAIL DU GROUPE DEJA INTEGRER
+# Vue : détail d'un groupe auquel le membre appartient déjà
+@login_required(login_url="login")
+def detail_groupe_integrer(request, groupe_id):
+
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    # Récupérer le groupe
+    groupe = get_object_or_404(
+        Groupe,
+        id=groupe_id
+    )
+
+    # Vérifier que l'utilisateur appartient bien à ce groupe
+    membre = get_object_or_404(
+        MembreGroupe,
+        utilisateur=request.user,
+        groupe=groupe
+    )
+
+    # Récupérer les tours de ce membre dans ce groupe
+    tours = Tour.objects.filter(
+        groupe=groupe,
+        membre=membre
+    ).order_by('date_tour')
+
+    # Récupérer les paiements de ce membre dans ce groupe
+    paiements = Paiement.objects.filter(
+        membre=membre
+    ).order_by('-date_paiement', '-id')
+
+    context = {
+        'groupe': groupe,
+        'membre': membre,
+        'tours': tours,
+        'paiements': paiements,
+    }
+
+    return render(
+        request,
+        'groupes/membres/detail_groupe_integrer.html',
+        context
+    )
 
 # Vues pour voir le détail d'un groupe et demander l'adhésion
 @login_required(login_url="login")
@@ -1431,3 +1491,10 @@ def demander_adhesion(request, groupe_id):
         'detail_groupe_membre',
         groupe_id=groupe.id
     )
+# Freature : Aide et support
+@login_required(login_url="login")
+def aide_membre(request):
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    return render(request, 'pages/aide_membre.html')

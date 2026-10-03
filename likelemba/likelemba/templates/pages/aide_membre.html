@@ -1,0 +1,1152 @@
+{% extends 'base_membre.html' %}
+
+{% block content %}
+
+<style>
+
+/* =========================================================
+   PAGE AIDE MEMBRE - LIKELEMBA
+   Design cohérent avec le dashboard membre
+========================================================= */
+
+.member-help-page {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.help-hero {
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(
+        135deg,
+        #1e3a8a 0%,
+        #2563eb 60%,
+        #3b82f6 100%
+    );
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    margin-bottom: 26px;
+
+    color: white;
+
+    box-shadow:
+        0 8px 25px rgba(30, 58, 138, 0.16);
+}
+
+
+.help-hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: 100px;
+    bottom: -120px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.05);
+}
+
+
+.help-hero::after {
+    content: "?";
+
+    position: absolute;
+
+    right: 30px;
+    top: -35px;
+
+    font-size: 180px;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    color: rgba(255,255,255,0.07);
+}
+
+
+.help-hero-content {
+    position: relative;
+
+    z-index: 2;
+
+    max-width: 720px;
+}
+
+
+.help-hero-icon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: rgba(255,255,255,0.14);
+
+    margin-bottom: 16px;
+
+    font-size: 1rem;
+}
+
+
+.help-hero h1 {
+    margin: 0 0 9px;
+
+    font-size: 1.55rem;
+
+    font-weight: 800;
+
+    letter-spacing: -0.2px;
+}
+
+
+.help-hero p {
+    margin: 0;
+
+    color: rgba(255,255,255,0.82);
+
+    font-size: 0.82rem;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.help-section {
+    margin-bottom: 27px;
+}
+
+
+.help-section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 14px;
+}
+
+
+.help-section-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 0.8rem;
+}
+
+
+.help-section-title h2 {
+    margin: 0;
+
+    color: #172033;
+
+    font-size: 0.98rem;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CARTES ACCÈS RAPIDE
+========================================================= */
+
+.help-cards {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 15px;
+}
+
+
+.help-card {
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+
+    border-radius: 15px;
+
+    padding: 18px;
+
+    box-shadow:
+        0 3px 12px rgba(15,23,42,0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.help-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #cbdaf8;
+
+    box-shadow:
+        0 9px 25px rgba(30,58,138,0.10);
+}
+
+
+.help-card-icon {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    margin-bottom: 13px;
+
+    font-size: 0.9rem;
+}
+
+
+.help-card h3 {
+    margin: 0 0 7px;
+
+    color: #172033;
+
+    font-size: 0.86rem;
+
+    font-weight: 700;
+}
+
+
+.help-card p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 0.76rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   PARCOURS / ÉTAPES
+========================================================= */
+
+.help-steps {
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(15,23,42,0.05);
+}
+
+
+.help-step {
+    display: flex;
+
+    gap: 15px;
+
+    padding: 17px 19px;
+
+    border-bottom: 1px solid #edf1f6;
+
+    transition: background 0.2s ease;
+}
+
+
+.help-step:hover {
+    background: #f8fbff;
+}
+
+
+.help-step:last-child {
+    border-bottom: none;
+}
+
+
+.step-number {
+    width: 32px;
+    height: 32px;
+
+    min-width: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 0.74rem;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 3px 8px rgba(37,99,235,0.18);
+}
+
+
+.step-content {
+    padding-top: 1px;
+}
+
+
+.step-content h3 {
+    margin: 0 0 5px;
+
+    color: #172033;
+
+    font-size: 0.84rem;
+
+    font-weight: 700;
+}
+
+
+.step-content p {
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 0.76rem;
+
+    line-height: 1.65;
+}
+
+
+/* =========================================================
+   INFORMATION BOX
+========================================================= */
+
+.help-info {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 12px;
+
+    padding: 15px 17px;
+
+    background: #eff6ff;
+
+    border: 1px solid #dbeafe;
+
+    border-radius: 12px;
+}
+
+
+.help-info-icon {
+    width: 30px;
+    height: 30px;
+
+    min-width: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #2563eb;
+
+    font-size: 0.75rem;
+}
+
+
+.help-info p {
+    margin: 0;
+
+    color: #475569;
+
+    font-size: 0.76rem;
+
+    line-height: 1.7;
+}
+
+
+.help-info strong {
+    color: #172033;
+}
+
+
+/* =========================================================
+   FAQ
+========================================================= */
+
+.faq-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 9px;
+}
+
+
+.faq-item {
+    background: #ffffff;
+
+    border: 1px solid #e5eaf1;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 2px 8px rgba(15,23,42,0.03);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.faq-item:hover {
+    border-color: #cbdaf8;
+
+    box-shadow:
+        0 5px 15px rgba(30,58,138,0.06);
+}
+
+
+.faq-item summary {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 14px 17px;
+
+    cursor: pointer;
+
+    list-style: none;
+
+    color: #172033;
+
+    font-size: 0.79rem;
+
+    font-weight: 600;
+}
+
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+
+.faq-item summary::after {
+    content: "+";
+
+    width: 25px;
+    height: 25px;
+
+    min-width: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 0.9rem;
+
+    font-weight: 600;
+}
+
+
+.faq-item[open] summary::after {
+    content: "−";
+}
+
+
+.faq-answer {
+    padding: 0 17px 15px;
+
+    color: #64748b;
+
+    font-size: 0.75rem;
+
+    line-height: 1.7;
+}
+
+
+.faq-answer strong {
+    color: #172033;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .help-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 767.98px) {
+
+    .help-hero {
+        padding: 23px 20px;
+
+        border-radius: 15px;
+    }
+
+
+    .help-hero h1 {
+        font-size: 1.3rem;
+    }
+
+
+    .help-hero p {
+        font-size: 0.78rem;
+    }
+
+
+    .help-hero::after {
+        right: 5px;
+
+        font-size: 130px;
+    }
+
+
+    .help-cards {
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+    }
+
+
+    .help-card {
+        padding: 16px;
+    }
+
+
+    .help-step {
+        padding: 15px;
+    }
+
+
+    .step-number {
+        width: 30px;
+        height: 30px;
+
+        min-width: 30px;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .help-hero {
+        padding: 20px 18px;
+    }
+
+
+    .help-hero h1 {
+        font-size: 1.15rem;
+    }
+
+
+    .help-section-title h2 {
+        font-size: 0.9rem;
+    }
+
+
+    .help-info {
+        padding: 13px;
+    }
+
+}
+
+</style>
+
+
+<div class="member-help-page">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <div class="help-hero">
+
+        <div class="help-hero-content">
+
+            <div class="help-hero-icon">
+                <i class="fas fa-life-ring"></i>
+            </div>
+
+            <h1>
+                Comment pouvons-nous vous aider ?
+            </h1>
+
+            <p>
+                Bienvenue dans l'espace d'aide de Likelemba.
+                Retrouvez ici les informations essentielles pour utiliser
+                votre espace membre, rejoindre un groupe et suivre vos
+                cotisations.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACCÈS RAPIDE
+    ====================================================== -->
+
+    <div class="help-section">
+
+        <div class="help-section-title">
+
+            <div class="help-section-icon">
+                <i class="fas fa-compass"></i>
+            </div>
+
+            <h2>
+                Accès rapide
+            </h2>
+
+        </div>
+
+
+        <div class="help-cards">
+
+
+            <!-- MES GROUPES -->
+
+            <div class="help-card">
+
+                <div class="help-card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+
+                <h3>
+                    Mes groupes
+                </h3>
+
+                <p>
+                    Consultez les groupes auxquels vous appartenez,
+                    leurs informations et votre position dans chaque groupe.
+                </p>
+
+            </div>
+
+
+            <!-- EXPLORER -->
+
+            <div class="help-card">
+
+                <div class="help-card-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <h3>
+                    Explorer les groupes
+                </h3>
+
+                <p>
+                    Découvrez les groupes disponibles et envoyez une
+                    demande d'adhésion au groupe qui vous intéresse.
+                </p>
+
+            </div>
+
+
+            <!-- COTISATIONS -->
+
+            <div class="help-card">
+
+                <div class="help-card-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+
+                <h3>
+                    Mes cotisations
+                </h3>
+
+                <p>
+                    Consultez l'historique de vos cotisations et
+                    les paiements enregistrés dans Likelemba.
+                </p>
+
+            </div>
+
+
+            <!-- TOURS -->
+
+            <div class="help-card">
+
+                <div class="help-card-icon">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+
+                <h3>
+                    Mes tours
+                </h3>
+
+                <p>
+                    Consultez votre tour de réception dans les groupes
+                    auxquels vous participez.
+                </p>
+
+            </div>
+
+
+            <!-- NOTIFICATIONS -->
+
+            <div class="help-card">
+
+                <div class="help-card-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+
+                <h3>
+                    Notifications
+                </h3>
+
+                <p>
+                    Restez informé des événements concernant vos demandes
+                    d'adhésion et votre participation aux groupes.
+                </p>
+
+            </div>
+
+
+            <!-- PROFIL -->
+
+            <div class="help-card">
+
+                <div class="help-card-icon">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+
+                <h3>
+                    Mon profil
+                </h3>
+
+                <p>
+                    Consultez et gérez les informations personnelles
+                    associées à votre compte.
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PARCOURS
+    ====================================================== -->
+
+    <div class="help-section">
+
+        <div class="help-section-title">
+
+            <div class="help-section-icon">
+                <i class="fas fa-route"></i>
+            </div>
+
+            <h2>
+                Votre parcours sur Likelemba
+            </h2>
+
+        </div>
+
+
+        <div class="help-steps">
+
+
+            <div class="help-step">
+
+                <div class="step-number">
+                    1
+                </div>
+
+                <div class="step-content">
+
+                    <h3>
+                        Créer votre compte
+                    </h3>
+
+                    <p>
+                        Inscrivez-vous sur Likelemba avec vos informations
+                        personnelles afin de créer votre espace membre.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-step">
+
+                <div class="step-number">
+                    2
+                </div>
+
+                <div class="step-content">
+
+                    <h3>
+                        Explorer les groupes
+                    </h3>
+
+                    <p>
+                        Accédez à la section d'exploration pour consulter
+                        les groupes disponibles.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-step">
+
+                <div class="step-number">
+                    3
+                </div>
+
+                <div class="step-content">
+
+                    <h3>
+                        Envoyer une demande d'adhésion
+                    </h3>
+
+                    <p>
+                        Lorsque vous trouvez un groupe qui vous convient,
+                        ouvrez ses détails et envoyez votre demande
+                        d'adhésion.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-step">
+
+                <div class="step-number">
+                    4
+                </div>
+
+                <div class="step-content">
+
+                    <h3>
+                        Attendre la décision de l'administrateur
+                    </h3>
+
+                    <p>
+                        Votre demande doit être examinée par l'administrateur
+                        du groupe. Vous serez informé de sa décision.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-step">
+
+                <div class="step-number">
+                    5
+                </div>
+
+                <div class="step-content">
+
+                    <h3>
+                        Accéder à votre groupe
+                    </h3>
+
+                    <p>
+                        Une fois votre demande acceptée, le groupe apparaît
+                        dans votre espace « Mes Groupes ».
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="help-step">
+
+                <div class="step-number">
+                    6
+                </div>
+
+                <div class="step-content">
+
+                    <h3>
+                        Suivre vos tours et cotisations
+                    </h3>
+
+                    <p>
+                        Vous pouvez ensuite consulter votre tour de réception
+                        et suivre vos cotisations enregistrées.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         COMPRENDRE MON TOUR
+    ====================================================== -->
+
+    <div class="help-section">
+
+        <div class="help-section-title">
+
+            <div class="help-section-icon">
+                <i class="fas fa-sync-alt"></i>
+            </div>
+
+            <h2>
+                Comprendre votre tour
+            </h2>
+
+        </div>
+
+
+        <div class="help-info">
+
+            <div class="help-info-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+
+            <p>
+
+                <strong>Votre ordre de réception</strong>
+                correspond à votre position dans le cycle du groupe.
+                La date associée à votre tour indique la période prévue
+                pour votre réception selon l'organisation définie pour
+                le groupe.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         FAQ
+    ====================================================== -->
+
+    <div class="help-section">
+
+        <div class="help-section-title">
+
+            <div class="help-section-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+
+            <h2>
+                Questions fréquentes
+            </h2>
+
+        </div>
+
+
+        <div class="faq-list">
+
+
+            <details class="faq-item">
+
+                <summary>
+                    Comment rejoindre un groupe ?
+                </summary>
+
+                <div class="faq-answer">
+
+                    Allez dans la section permettant d'explorer les groupes,
+                    choisissez le groupe qui vous intéresse puis ouvrez
+                    sa page de détails. Vous pourrez alors envoyer une
+                    demande d'adhésion.
+
+                </div>
+
+            </details>
+
+
+            <details class="faq-item">
+
+                <summary>
+                    Que se passe-t-il après ma demande d'adhésion ?
+                </summary>
+
+                <div class="faq-answer">
+
+                    Votre demande est transmise à l'administrateur du groupe.
+                    Celui-ci peut l'accepter ou la refuser. Vous êtes ensuite
+                    informé de la décision.
+
+                </div>
+
+            </details>
+
+
+            <details class="faq-item">
+
+                <summary>
+                    Puis-je appartenir à plusieurs groupes ?
+                </summary>
+
+                <div class="faq-answer">
+
+                    Likelemba permet à un membre de participer à différents
+                    groupes, selon les groupes auxquels il est accepté.
+
+                </div>
+
+            </details>
+
+
+            <details class="faq-item">
+
+                <summary>
+                    Où puis-je consulter mes cotisations ?
+                </summary>
+
+                <div class="faq-answer">
+
+                    Utilisez la section
+                    <strong>Mes Cotisations</strong>
+                    de votre espace membre pour consulter les paiements
+                    enregistrés.
+
+                </div>
+
+            </details>
+
+
+            <details class="faq-item">
+
+                <summary>
+                    Où puis-je consulter mon tour ?
+                </summary>
+
+                <div class="faq-answer">
+
+                    Depuis votre groupe, vous pouvez accéder à la section
+                    consacrée à vos tours afin de consulter votre position
+                    et la date prévue.
+
+                </div>
+
+            </details>
+
+
+            <details class="faq-item">
+
+                <summary>
+                    Que faire si ma demande est refusée ?
+                </summary>
+
+                <div class="faq-answer">
+
+                    Une demande refusée signifie que l'administrateur
+                    n'a pas accepté votre adhésion au groupe. Vous pouvez
+                    consulter les informations disponibles sur le groupe
+                    et, si nécessaire, effectuer une nouvelle demande
+                    lorsque cela est possible.
+
+                </div>
+
+            </details>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         CONSEIL
+    ====================================================== -->
+
+    <div class="help-section">
+
+        <div class="help-info">
+
+            <div class="help-info-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+
+            <p>
+
+                <strong>Conseil :</strong>
+                consultez régulièrement votre espace membre afin de suivre
+                vos demandes, vos groupes, vos tours et vos cotisations.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+{% endblock %}

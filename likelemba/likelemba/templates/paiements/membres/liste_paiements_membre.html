@@ -4,54 +4,443 @@
 
 {% block content %}
 
-<div class="container-fluid">
+<style>
+    .payments-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 10px 10px 40px;
+    }
 
-    <!-- En-tête -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    /* HERO */
+    .payments-hero {
+        background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 55%, #3b82f6 100%);
+        border-radius: 16px;
+        padding: 30px 32px;
+        color: white;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 24px rgba(30, 58, 138, 0.15);
+    }
 
-        <div>
-            <h1 class="h3 mb-1 text-gray-800">
-                <i class="fas fa-money-bill-wave text-success mr-2"></i>
-                Mes paiements
-            </h1>
+    .payments-hero-content {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
 
-            <p class="text-muted mb-0">
-                Consultez l'historique de vos cotisations et paiements.
-            </p>
+    .payments-hero-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .payments-hero-icon i {
+        font-size: 1.7rem;
+    }
+
+    .payments-hero h1 {
+        margin: 0 0 6px;
+        font-size: 1.7rem;
+        font-weight: 700;
+    }
+
+    .payments-hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 0.95rem;
+    }
+
+    /* STATISTIQUES */
+    .payment-stat {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 15px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        padding: 22px;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .payment-stat:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .payment-stat-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .payment-stat-label {
+        color: #64748b;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        margin-bottom: 7px;
+    }
+
+    .payment-stat-value {
+        color: #1e293b;
+        font-size: 1.45rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .payment-stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .payment-stat-icon i {
+        font-size: 1.25rem;
+    }
+
+    .payment-stat:first-child .payment-stat-icon {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .payment-stat:nth-child(2) .payment-stat-icon {
+        background: #f0fdf4;
+        color: #16a34a;
+    }
+
+    /* CARTES */
+    .payment-card {
+        background: #ffffff;
+        border: 1px solid #e5eaf1;
+        border-radius: 15px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        margin-bottom: 22px;
+        overflow: hidden;
+    }
+
+    .payment-card-header {
+        padding: 17px 22px;
+        border-bottom: 1px solid #edf0f4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+    }
+
+    .payment-card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .payment-card-title-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .payment-card-body {
+        padding: 22px;
+    }
+
+    /* BADGE NOMBRE */
+    .payment-count {
+        background: #eff6ff;
+        color: #2563eb;
+        border: 1px solid #dbeafe;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* TABLEAU */
+    .payment-table {
+        margin-bottom: 0;
+    }
+
+    .payment-table thead th {
+        background: #f8fafc;
+        border-top: none;
+        border-bottom: 1px solid #e2e8f0;
+        color: #475569;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.25px;
+        padding: 14px 15px;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .payment-table tbody td {
+        padding: 15px;
+        border-color: #edf0f4;
+        color: #334155;
+        vertical-align: middle;
+    }
+
+    .payment-table tbody tr {
+        transition: background 0.15s ease;
+    }
+
+    .payment-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .payment-number {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .group-name {
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+    .tour-date {
+        color: #475569;
+        font-size: 0.88rem;
+    }
+
+    .tour-date i {
+        color: #2563eb;
+        margin-right: 6px;
+    }
+
+    .payment-amount {
+        color: #16a34a;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .payment-date {
+        color: #475569;
+        white-space: nowrap;
+    }
+
+    .payment-date i {
+        color: #64748b;
+        margin-right: 6px;
+    }
+
+    /* STATUTS */
+    .status-paid,
+    .status-unpaid,
+    .status-other {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 20px;
+        padding: 6px 11px;
+        font-size: 0.77rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .status-paid {
+        background: #ecfdf5;
+        color: #15803d;
+        border: 1px solid #bbf7d0;
+    }
+
+    .status-unpaid {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    .status-other {
+        background: #f1f5f9;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* ÉTAT VIDE */
+    .empty-state {
+        text-align: center;
+        padding: 55px 20px;
+    }
+
+    .empty-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+    .empty-icon i {
+        font-size: 1.8rem;
+    }
+
+    .empty-state h5 {
+        color: #334155;
+        font-weight: 700;
+        margin-bottom: 7px;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    /* INFORMATION */
+    .information-box {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 17px;
+        border-radius: 11px;
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+    }
+
+    .information-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        background: #dbeafe;
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .information-title {
+        color: #1e293b;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .information-text {
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 767px) {
+
+        .payments-page {
+            padding: 5px 5px 30px;
+        }
+
+        .payments-hero {
+            padding: 23px 20px;
+        }
+
+        .payments-hero h1 {
+            font-size: 1.4rem;
+        }
+
+        .payment-card-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .payment-card-body {
+            padding: 17px;
+        }
+
+        .payment-stat {
+            padding: 19px;
+        }
+
+        .payment-table thead th,
+        .payment-table tbody td {
+            padding: 12px 10px;
+            font-size: 0.82rem;
+        }
+
+        .information-box {
+            padding: 15px;
+        }
+    }
+</style>
+
+
+<div class="payments-page">
+
+    <!-- HERO -->
+    <div class="payments-hero">
+
+        <div class="payments-hero-content">
+
+            <div class="payments-hero-icon">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+
+            <div>
+
+                <h1>Mes paiements</h1>
+
+                <p>
+                    Consultez l'historique de vos cotisations et paiements.
+                </p>
+
+            </div>
+
         </div>
 
     </div>
 
 
-    <!-- Statistiques -->
+    <!-- STATISTIQUES -->
     <div class="row">
 
-        <!-- Total payé -->
+        <!-- TOTAL PAYÉ -->
         <div class="col-xl-6 col-md-6 mb-4">
 
-            <div class="card border-left-success shadow h-100 py-2">
+            <div class="payment-stat">
 
-                <div class="card-body">
+                <div class="payment-stat-content">
 
-                    <div class="row no-gutters align-items-center">
+                    <div>
 
-                        <div class="col mr-2">
-
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                Total payé
-                            </div>
-
-                            <div class="h4 mb-0 font-weight-bold text-gray-800">
-                                {{ total_encaisse }}
-                            </div>
-
+                        <div class="payment-stat-label">
+                            Total payé
                         </div>
 
-                        <div class="col-auto">
-
-                            <i class="fas fa-coins fa-2x text-gray-300"></i>
-
+                        <div class="payment-stat-value">
+                            {{ total_encaisse }}
                         </div>
+
+                    </div>
+
+                    <div class="payment-stat-icon">
+
+                        <i class="fas fa-coins"></i>
 
                     </div>
 
@@ -62,32 +451,28 @@
         </div>
 
 
-        <!-- Nombre de paiements -->
+        <!-- NOMBRE DE PAIEMENTS -->
         <div class="col-xl-6 col-md-6 mb-4">
 
-            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="payment-stat">
 
-                <div class="card-body">
+                <div class="payment-stat-content">
 
-                    <div class="row no-gutters align-items-center">
+                    <div>
 
-                        <div class="col mr-2">
-
-                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                Nombre de paiements
-                            </div>
-
-                            <div class="h4 mb-0 font-weight-bold text-gray-800">
-                                {{ nombre_paiements }}
-                            </div>
-
+                        <div class="payment-stat-label">
+                            Nombre de paiements
                         </div>
 
-                        <div class="col-auto">
-
-                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
-
+                        <div class="payment-stat-value">
+                            {{ nombre_paiements }}
                         </div>
+
+                    </div>
+
+                    <div class="payment-stat-icon">
+
+                        <i class="fas fa-receipt"></i>
 
                     </div>
 
@@ -100,32 +485,42 @@
     </div>
 
 
-    <!-- Liste des paiements -->
-    <div class="card shadow mb-4">
+    <!-- HISTORIQUE DES PAIEMENTS -->
+    <div class="payment-card">
 
-        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+        <div class="payment-card-header">
 
-            <h6 class="m-0 font-weight-bold text-success">
-                <i class="fas fa-history mr-2"></i>
+            <h6 class="payment-card-title">
+
+                <span class="payment-card-title-icon">
+
+                    <i class="fas fa-history"></i>
+
+                </span>
+
                 Historique de mes paiements
+
             </h6>
 
-            <span class="badge badge-success">
-                {{ nombre_paiements }} paiement{{ nombre_paiements|pluralize }}
+            <span class="payment-count">
+
+                {{ nombre_paiements }}
+                paiement{{ nombre_paiements|pluralize }}
+
             </span>
 
         </div>
 
 
-        <div class="card-body">
+        <div class="payment-card-body">
 
             {% if paiements %}
 
                 <div class="table-responsive">
 
-                    <table class="table table-bordered table-hover">
+                    <table class="table payment-table">
 
-                        <thead class="thead-light">
+                        <thead>
 
                             <tr>
 
@@ -152,34 +547,46 @@
 
                                 <tr>
 
-                                    <!-- Numéro -->
-                                    <td>
+                                    <!-- NUMÉRO -->
+                                    <td class="payment-number">
+
                                         {{ forloop.counter }}
+
                                     </td>
 
 
-                                    <!-- Groupe -->
+                                    <!-- GROUPE -->
                                     <td>
 
-                                        <strong>
+                                        <span class="group-name">
+
                                             {{ paiement.membre.groupe.nom }}
-                                        </strong>
+
+                                        </span>
 
                                     </td>
 
 
-                                    <!-- Tour -->
+                                    <!-- TOUR -->
                                     <td>
 
                                         {% if paiement.tour %}
 
-                                            Tour du
-                                            {{ paiement.tour.date_tour|date:"d/m/Y" }}
+                                            <span class="tour-date">
+
+                                                <i class="far fa-calendar-alt"></i>
+
+                                                Tour du
+                                                {{ paiement.tour.date_tour|date:"d/m/Y" }}
+
+                                            </span>
 
                                         {% else %}
 
                                             <span class="text-muted">
+
                                                 Non associé
+
                                             </span>
 
                                         {% endif %}
@@ -187,45 +594,61 @@
                                     </td>
 
 
-                                    <!-- Montant -->
+                                    <!-- MONTANT -->
                                     <td>
 
-                                        <strong class="text-success">
+                                        <span class="payment-amount">
+
                                             {{ paiement.montant }}
-                                        </strong>
+
+                                        </span>
 
                                     </td>
 
 
-                                    <!-- Date -->
+                                    <!-- DATE -->
                                     <td>
 
-                                        {{ paiement.date_paiement|date:"d/m/Y" }}
+                                        <span class="payment-date">
+
+                                            <i class="far fa-calendar-alt"></i>
+
+                                            {{ paiement.date_paiement|date:"d/m/Y" }}
+
+                                        </span>
 
                                     </td>
 
 
-                                    <!-- Statut -->
+                                    <!-- STATUT -->
                                     <td>
 
                                         {% if paiement.statut == 'PAYE' %}
 
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-check-circle mr-1"></i>
+                                            <span class="status-paid">
+
+                                                <i class="fas fa-check-circle"></i>
+
                                                 Payé
+
                                             </span>
 
                                         {% elif paiement.statut == 'NON_PAYE' %}
 
-                                            <span class="badge badge-danger">
-                                                <i class="fas fa-times-circle mr-1"></i>
+                                            <span class="status-unpaid">
+
+                                                <i class="fas fa-times-circle"></i>
+
                                                 Non payé
+
                                             </span>
 
                                         {% else %}
 
-                                            <span class="badge badge-secondary">
+                                            <span class="status-other">
+
                                                 {{ paiement.get_statut_display }}
+
                                             </span>
 
                                         {% endif %}
@@ -244,20 +667,20 @@
 
             {% else %}
 
-                <!-- Aucun paiement -->
-                <div class="text-center py-5">
+                <!-- AUCUN PAIEMENT -->
 
-                    <div class="mb-3">
+                <div class="empty-state">
 
-                        <i class="fas fa-receipt fa-4x text-gray-300"></i>
+                    <div class="empty-icon">
 
+                        <i class="fas fa-receipt"></i>
                     </div>
 
-                    <h5 class="font-weight-bold text-gray-600">
+                    <h5>
                         Aucun paiement enregistré
                     </h5>
 
-                    <p class="text-muted mb-0">
+                    <p>
                         Vous n'avez encore aucun paiement enregistré
                         dans vos groupes.
                     </p>
@@ -271,29 +694,31 @@
     </div>
 
 
-    <!-- Information -->
-    <div class="card shadow mb-4">
+    <!-- INFORMATION -->
+    <div class="payment-card">
 
-        <div class="card-body">
+        <div class="payment-card-body">
 
-            <div class="d-flex align-items-start">
+            <div class="information-box">
 
-                <div class="mr-3">
+                <div class="information-icon">
 
-                    <i class="fas fa-info-circle fa-lg text-info"></i>
+                    <i class="fas fa-info"></i>
 
                 </div>
 
                 <div>
 
-                    <h6 class="font-weight-bold text-gray-800">
+                    <div class="information-title">
                         À propos de vos paiements
-                    </h6>
+                    </div>
 
-                    <p class="text-muted mb-0">
+                    <p class="information-text">
+
                         Cette page vous permet de consulter les paiements
                         enregistrés par l'administrateur pour votre participation
                         aux différents groupes de Likelemba.
+
                     </p>
 
                 </div>

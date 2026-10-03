@@ -1,3 +1,4 @@
+{% load static %}
 <ul class="navbar-nav sidebar sidebar-dark accordion d-flex flex-column" style="min-height: 100vh; padding-bottom: 20px;">
 
     <!-- ===== BOUTON FERMER MOBILE ===== -->
@@ -8,11 +9,10 @@
         <i class="fas fa-times"></i>
     </button>
 
-    <!-- ===== BRAND ===== -->
+    <!-- ===== ICON ===== -->
     <li class="nav-item" style="list-style: none;">
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard_admin' %}">
-            <i class="fas fa-hand-holding-usd"></i>
-            <div class="sidebar-brand-text">Like<span>lemba</span></div>
+        <a class="navbar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard_admin' %}">
+            <img src="{% static 'img/likelemba-logo.svg' %}" alt="Likelemba" class="likelemba-logo-image">
         </a>
     </li>
 

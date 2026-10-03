@@ -35,6 +35,7 @@ urlpatterns = [
 
     # URLs pour les membres
     path('groupes/membre/', groupes_membre_integrer_view, name='liste_groupes_membre'),
+    path('groupes/membre/<int:groupe_id>/', detail_groupe_integrer, name='detail_groupe_integrer'),
 
     path('groupes/explorer/', groupes_membre_view, name='explorer_groupes'),
     path('groupes/explorer/<int:groupe_id>/', detail_groupe_membre, name='detail_groupe_membre'),
@@ -43,4 +44,6 @@ urlpatterns = [
     path('paiements/membre/', paiements_membre_view, name='liste_paiements_membre'),
 
     path('mes-tours/<int:groupe_id>/', mes_tours_groupe, name='mes_tours_groupe'),
+
+    path('aide/membre/', aide_membre, name='aide_membre'),
 ]
