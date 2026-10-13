@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Likelemba - Vérification OTP</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/likelemba-icon.svg' %}">
 
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -123,13 +124,30 @@
         }
 
         .brand-icon {
-            font-size: 4rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 25px;
+            width: 260px;
+            height: auto;
+            max-width: 100%;
+            margin-bottom: 20px;
             position: relative;
             z-index: 1;
-            display: inline-block;
+            display: block;
             animation: pulseIcon 3s ease-in-out infinite;
+        }
+
+        @media (max-width: 889px) {
+            .brand-icon {
+                width: 190px;
+                display: block;
+                margin: 0 auto 20px auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .brand-icon {
+                width: 190px;
+                display: block;
+                margin: 0 auto 20px auto;
+            }
         }
 
         @keyframes pulseIcon {
@@ -536,12 +554,9 @@
         <div class="verify-card">
 
             <div class="verify-branding">
-                <div class="brand-icon">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-                <h1 class="brand-title">Like<span>lemba</span></h1>
+                <img src="{% static 'img/likelemba-logo.svg' %}" alt="Logo Likelemba" class="brand-icon">
                 <p class="brand-subtitle">
-                    Sécurisez votre compte avec une vérification en deux étapes.
+                    Gérez vos cotisations et suivez vos groupes d'épargne en toute simplicité.
                 </p>
                 <div class="brand-features">
                     <div class="brand-feature">
