@@ -35,7 +35,7 @@
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: -50%;
             left: -50%;
             width: 200%;
@@ -44,6 +44,7 @@
                         radial-gradient(circle at 70% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
             animation: rotateBg 30s linear infinite;
             pointer-events: none;
+            z-index: 0;
         }
 
         @keyframes rotateBg {
@@ -52,12 +53,14 @@
             100% { transform: rotate(360deg) scale(1); }
         }
 
+        /* Floating particles */
         .particle {
-            position: absolute;
+            position: fixed; /* Fixe pour ne pas bouger avec le scroll */
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.08);
             pointer-events: none;
             animation: floatParticle 20s infinite ease-in-out;
+            z-index: 0;
         }
 
         .particle:nth-child(1) { width: 300px; height: 300px; top: -10%; right: -5%; animation-delay: 0s; }

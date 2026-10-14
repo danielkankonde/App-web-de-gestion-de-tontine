@@ -45,7 +45,7 @@
         /* ===== ANIMATED BACKGROUND ===== */
         body::before {
             content: '';
-            position: fixed; /* Fixe pour ne pas bouger avec le scroll */
+            position: fixed;       /* ✅ */
             top: -50%;
             left: -50%;
             width: 200%;
@@ -56,7 +56,6 @@
             pointer-events: none;
             z-index: 0;
         }
-
         @keyframes rotateBg {
             0% { transform: rotate(0deg) scale(1); }
             50% { transform: rotate(180deg) scale(1.1); }
