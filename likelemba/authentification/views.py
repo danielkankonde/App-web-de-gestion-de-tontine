@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
+from django.conf import settings
+
 from .models import Utilisateur, OTP
 from .models import ResetPasswordOTP
 from django.contrib import messages
@@ -88,7 +90,7 @@ def register_view(request):
         send_mail(
             'Code de vérification',
             f'Votre code est : {otp.code}',
-            'test@gmail.com',
+            settings.DEFAULT_FROM_EMAIL,
             [email],
         )
 
@@ -146,7 +148,7 @@ def forgot_password_view(request):
             send_mail(
                 'Réinitialisation mot de passe',
                 f'Votre code est : {otp.code}',
-                'test@gmail.com',
+                settings.DEFAULT_FROM_EMAIL,
                 [email],
             )
 
@@ -228,7 +230,7 @@ def resend_code_view(request):
     send_mail(
         'Nouveau code de vérification',
         f'Votre nouveau code est : {otp.code}',
-        'test@gmail.com',
+        settings.DEFAULT_FROM_EMAIL,
         [user.email],
     )
 
