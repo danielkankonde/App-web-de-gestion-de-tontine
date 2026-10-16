@@ -1,4 +1,3 @@
-from datetime import timezone
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -61,7 +60,7 @@ def register_view(request):
                 'error': "Nom d'utilisateur déjà utilisé"
             })
 
-        # Vérifier email déjà existant
+        #Vérifier email déjà existant
         if Utilisateur.objects.filter(email=email).exists():
             return render(request, 'register.html', {
                 'error': "Email déjà utilisé"

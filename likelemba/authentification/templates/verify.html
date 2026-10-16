@@ -15,24 +15,27 @@
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --shadow-card: 0 25px 80px rgba(102, 126, 234, 0.25);
+            --shadow-card: 0 25px 80px rgba(1, 1, 2, 0.25);
             --radius-premium: 24px;
             --transition-smooth: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
+        /* ===== RESET & BASE ===== */
         body {
             font-family: 'Inter', sans-serif;
             background: var(--primary-gradient);
             min-height: 100vh;
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0;
             padding: 20px;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
         }
 
+        /* ===== ANIMATED BACKGROUND ===== */
         body::before {
             content: '';
             position: fixed;
@@ -55,13 +58,14 @@
 
         /* Floating particles */
         .particle {
-            position: fixed; /* Fixe pour ne pas bouger avec le scroll */
+            position: fixed;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.08);
             pointer-events: none;
             animation: floatParticle 20s infinite ease-in-out;
             z-index: 0;
         }
+
         .particle:nth-child(1) { width: 300px; height: 300px; top: -10%; right: -5%; animation-delay: 0s; }
         .particle:nth-child(2) { width: 200px; height: 200px; bottom: -5%; left: -5%; animation-delay: -7s; }
         .particle:nth-child(3) { width: 150px; height: 150px; top: 30%; right: 10%; animation-delay: -14s; }
@@ -72,11 +76,13 @@
             66% { transform: translate(-20px, 20px) scale(0.8); opacity: 0.4; }
         }
 
+        /* ===== CARD PRINCIPALE ===== */
         .verify-wrapper {
             width: 100%;
             max-width: 1200px;
             position: relative;
             z-index: 2;
+            margin: 20px auto;
         }
 
         .verify-card {
@@ -91,22 +97,41 @@
             opacity: 0;
             transform: translateY(30px);
             animation: fadeUp 0.8s ease forwards;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Scrollbar personnalisée */
+        .verify-card::-webkit-scrollbar {
+            width: 6px;
+        }
+        .verify-card::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .verify-card::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+        .verify-card::-webkit-scrollbar-thumb:hover {
+            background: #5a67d8;
         }
 
         @keyframes fadeUp {
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* ===== PANEL GAUCHE - BRANDING ===== */
         .verify-branding {
             flex: 1 1 50%;
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
-            padding: 60px 50px;
+            padding: 50px 45px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             position: relative;
             overflow: hidden;
-            min-height: 500px;
+            min-height: 450px;
         }
 
         .verify-branding::after {
@@ -123,16 +148,6 @@
         @keyframes shineBrand {
             0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
             50% { transform: translate(-20px, -20px) scale(1.2); opacity: 1; }
-        }
-
-        .brand-subtitle {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 300;
-            line-height: 1.7;
-            position: relative;
-            z-index: 1;
-            max-width: 400px;
         }
 
         .brand-icon {
@@ -154,38 +169,23 @@
             }
         }
 
-        @media (max-width: 576px) {
-            .brand-icon {
-                width: 190px;
-                display: block;
-                margin: 0 auto 20px auto;
-            }
-        }
-
         @keyframes pulseIcon {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
 
-        .brand-title span {
-            background: linear-gradient(135deg, #fcd34d, #fbbf24);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
         .brand-subtitle {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: rgba(255, 255, 255, 0.8);
             font-weight: 300;
-            line-height: 1.7;
+            line-height: 1.6;
             position: relative;
             z-index: 1;
             max-width: 400px;
         }
 
         .brand-features {
-            margin-top: 40px;
+            margin-top: 30px;
             position: relative;
             z-index: 1;
         }
@@ -193,10 +193,10 @@
         .brand-feature {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             color: rgba(255, 255, 255, 0.85);
-            margin-bottom: 14px;
-            font-size: 0.95rem;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
             transition: var(--transition-smooth);
         }
 
@@ -206,20 +206,21 @@
         }
 
         .brand-feature i {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             background: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             flex-shrink: 0;
         }
 
+        /* ===== PANEL DROIT - FORMULAIRE ===== */
         .verify-form {
             flex: 1 1 50%;
-            padding: 60px 50px;
+            padding: 45px 45px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -227,20 +228,20 @@
         }
 
         .form-header {
-            margin-bottom: 35px;
+            margin-bottom: 25px;
         }
 
         .form-header h2 {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #1a1a2e;
-            margin: 0 0 6px 0;
+            margin: 0 0 4px 0;
             letter-spacing: -0.5px;
         }
 
         .form-header p {
             color: #6b7280;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             margin: 0;
         }
 
@@ -249,17 +250,18 @@
             font-weight: 600;
         }
 
+        /* ===== CHAMPS ===== */
         .form-group {
-            margin-bottom: 22px;
+            margin-bottom: 18px;
             position: relative;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             letter-spacing: 0.3px;
         }
 
@@ -271,9 +273,9 @@
 
         .input-wrapper .input-icon {
             position: absolute;
-            left: 16px;
+            left: 14px;
             color: #9ca3af;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition-smooth);
             pointer-events: none;
             z-index: 1;
@@ -281,18 +283,14 @@
 
         .input-wrapper input {
             width: 100%;
-            padding: 14px 16px 14px 48px;
+            padding: 12px 14px 12px 44px;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-family: 'Inter', sans-serif;
             transition: var(--transition-smooth);
             background: #fafbfc;
             color: #1a1a2e;
-            text-align: center;
-            letter-spacing: 12px;
-            font-weight: 600;
-            font-size: 1.4rem;
         }
 
         .input-wrapper input:focus {
@@ -302,25 +300,40 @@
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
         }
 
-        .input-wrapper input:focus + .input-icon {
+        .input-wrapper input:focus + .input-icon,
+        .input-wrapper input:focus ~ .input-icon {
             color: #667eea;
         }
 
         .input-wrapper input::placeholder {
-            letter-spacing: 2px;
-            font-weight: 400;
-            font-size: 0.95rem;
             color: #9ca3af;
+            font-weight: 400;
         }
 
+        /* OTP Input specific */
+        .otp-input {
+            text-align: center;
+            letter-spacing: 12px;
+            font-weight: 600;
+            font-size: 1.4rem !important;
+            padding-left: 44px !important;
+        }
+
+        .otp-input::placeholder {
+            letter-spacing: 4px;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+
+        /* ===== BOUTON ===== */
         .btn-submit {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             border-radius: 12px;
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             font-family: 'Inter', sans-serif;
             cursor: pointer;
@@ -329,6 +342,8 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
             margin-top: 4px;
         }
 
@@ -343,8 +358,8 @@
 
         .btn-submit .spinner {
             display: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid rgba(255,255,255,0.3);
             border-top: 2px solid #fff;
             border-radius: 50%;
@@ -364,12 +379,13 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* ===== SEPARATEUR ===== */
         .divider {
             display: flex;
             align-items: center;
-            margin: 28px 0;
+            margin: 20px 0;
             color: #9ca3af;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 500;
         }
 
@@ -381,14 +397,15 @@
             background: #e5e7eb;
         }
 
-        .divider::before { margin-right: 16px; }
-        .divider::after { margin-left: 16px; }
+        .divider::before { margin-right: 14px; }
+        .divider::after { margin-left: 14px; }
 
+        /* ===== LIENS ===== */
         .auth-link {
             text-align: center;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #6b7280;
-            margin-top: 6px;
+            margin-top: 4px;
         }
 
         .auth-link a {
@@ -405,13 +422,15 @@
 
         .resend-link {
             text-align: center;
-            margin-top: 12px;
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 4px;
         }
 
         .resend-link a {
             color: #9ca3af;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-weight: 600;
             transition: var(--transition-smooth);
         }
 
@@ -420,12 +439,13 @@
             text-decoration: underline;
         }
 
+        /* ===== MESSAGES ===== */
         .alert {
             border-radius: 12px;
-            padding: 14px 18px;
-            margin-bottom: 20px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
             border: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -442,14 +462,14 @@
         }
 
         .alert i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .alert .close {
             margin-left: auto;
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: inherit;
             opacity: 0.6;
             cursor: pointer;
@@ -460,6 +480,7 @@
             opacity: 1;
         }
 
+        /* ===== VALIDATION ===== */
         .input-wrapper.error input {
             border-color: #dc2626;
             background: #fef2f2;
@@ -471,7 +492,7 @@
 
         .error-message {
             color: #dc2626;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin-top: 4px;
             display: none;
         }
@@ -480,51 +501,56 @@
             display: block;
         }
 
-        /* OTP Input specific */
-        .otp-input {
-            text-align: center;
-            font-size: 2rem !important;
-            letter-spacing: 16px !important;
-            padding: 14px 16px 14px 48px !important;
-        }
-
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .verify-branding {
                 flex: 1 1 100%;
-                min-height: 250px;
-                padding: 40px 35px;
+                min-height: 220px;
+                padding: 35px 30px;
             }
+
             .verify-form {
                 flex: 1 1 100%;
-                padding: 40px 35px;
+                padding: 35px 30px;
             }
-            .brand-title { font-size: 2.2rem; }
-            .brand-features { margin-top: 25px; }
-            .brand-feature { font-size: 0.85rem; }
+
+            .brand-features { margin-top: 20px; }
+            .brand-feature { font-size: 0.8rem; }
+            .verify-card { max-height: 95vh; }
         }
 
         @media (max-width: 576px) {
-            body { padding: 12px; }
-            .verify-card { border-radius: 16px; }
+            body { padding: 10px; }
+
+            .verify-card { border-radius: 16px; max-height: 98vh; }
+
             .verify-branding {
-                padding: 30px 24px;
-                min-height: 200px;
+                padding: 25px 20px;
+                min-height: 180px;
             }
-            .verify-form { padding: 30px 24px; }
-            .brand-title { font-size: 1.8rem; }
-            .brand-subtitle { font-size: 0.95rem; }
+
+            .verify-form {
+                padding: 25px 20px;
+            }
+
+            .brand-subtitle { font-size: 0.85rem; }
             .brand-features { display: none; }
-            .form-header h2 { font-size: 1.5rem; }
-            .input-wrapper input { 
-                padding: 12px 14px 12px 42px; 
-                font-size: 0.9rem;
+
+            .form-header h2 { font-size: 1.3rem; }
+
+            .input-wrapper input {
+                padding: 10px 12px 10px 38px;
+                font-size: 0.85rem;
             }
+
             .otp-input {
-                font-size: 1.5rem !important;
-                letter-spacing: 10px !important;
+                font-size: 1.2rem !important;
+                letter-spacing: 8px !important;
+                padding-left: 38px !important;
             }
         }
 
+        /* ===== ANIMATION D'ENTRÉE ===== */
         .verify-branding > * {
             opacity: 0;
             animation: fadeIn 0.8s ease 0.3s forwards;
@@ -532,6 +558,7 @@
         .verify-branding > *:nth-child(2) { animation-delay: 0.4s; }
         .verify-branding > *:nth-child(3) { animation-delay: 0.5s; }
         .verify-branding > *:nth-child(4) { animation-delay: 0.6s; }
+
         .verify-form > * {
             opacity: 0;
             animation: fadeIn 0.6s ease 0.5s forwards;
@@ -548,6 +575,7 @@
 
 <body>
 
+    <!-- ===== PARTICLES ===== -->
     <div class="particle"></div>
     <div class="particle"></div>
     <div class="particle"></div>
@@ -555,6 +583,7 @@
     <div class="verify-wrapper">
         <div class="verify-card">
 
+            <!-- ===== PANEL GAUCHE ===== -->
             <div class="verify-branding">
                 <img src="{% static 'img/likelemba-logo.svg' %}" alt="Logo Likelemba" class="brand-icon">
                 <p class="brand-subtitle">
@@ -576,15 +605,15 @@
                 </div>
             </div>
 
+            <!-- ===== PANEL DROIT ===== -->
             <div class="verify-form">
 
                 <div class="form-header">
                     <h2>Vérification OTP</h2>
-                    <p>
-                        Entrez le code à 6 chiffres envoyé à votre adresse email
-                    </p>
+                    <p>Entrez le code à 6 chiffres envoyé à votre adresse email</p>
                 </div>
 
+                <!-- ===== MESSAGES ===== -->
                 {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -607,6 +636,7 @@
                     </div>
                 {% endif %}
 
+                <!-- ===== FORMULAIRE ===== -->
                 <form method="POST" id="otpForm" novalidate>
                     {% csrf_token %}
 
@@ -636,11 +666,11 @@
 
                 <div class="divider">OU</div>
 
-                <div class="resend-link">
+                <p class="resend-link">
                     <a href="{% url 'resend_code' %}">
                         <i class="fas fa-redo"></i> Renvoyer le code
                     </a>
-                </div>
+                </p>
 
                 <p class="auth-link">
                     <a href="{% url 'login' %}">
@@ -671,12 +701,6 @@
                     }
                 });
 
-                // Auto-submit when 6 digits are entered
-                code.addEventListener('keyup', function(e) {
-                    if (this.value.length === 6 && e.key !== 'Backspace') {
-                        form.dispatchEvent(new Event('submit'));
-                    }
-                });
             }
 
             if (form) {
