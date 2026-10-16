@@ -61,10 +61,10 @@ def register_view(request):
             })
 
         #Vérifier email déjà existant
-        if Utilisateur.objects.filter(email=email).exists():
-            return render(request, 'register.html', {
-                'error': "Email déjà utilisé"
-            })
+        #if Utilisateur.objects.filter(email=email).exists():
+            #return render(request, 'register.html', {
+                #'error': "Email déjà utilisé"
+            #})
 
         # Définir rôle (par défaut MEMBRE)
         role = request.POST.get('role', 'MEMBRE')
