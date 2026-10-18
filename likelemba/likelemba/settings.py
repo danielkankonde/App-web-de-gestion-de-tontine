@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     'authentification',
     'likelemba_app.apps.LikelembaAppConfig',
     'cloudinary_storage',
-    'django.contrib.staticfiles',
     'cloudinary',
 
 ]
