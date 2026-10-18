@@ -67,8 +67,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentification',
     'likelemba_app.apps.LikelembaAppConfig',
+    'cloudinary_storage',
+    'django.contrib.staticfiles',
+    'cloudinary',
 
 ]
+
+# Configuration Cloudinary (Vous créerez un compte gratuit sur cloudinary.com pour récupérer ces 3 clés)
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'be97luph',
+    'API_KEY': '323286785997132',
+    'API_SECRET': 'ftXi8oDfkNrYFsJPB1KsT9A6sTE',
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
