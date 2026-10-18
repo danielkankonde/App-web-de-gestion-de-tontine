@@ -1,3 +1,6 @@
+import json
+import os
+import requests
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -8,6 +11,30 @@ from django.conf import settings
 from .models import Utilisateur, OTP
 from .models import ResetPasswordOTP
 from django.contrib import messages
+
+from django.conf import settings
+
+
+
+def envoyer_email_via_script(destinataire, sujet, message_html):
+    url_script = os.environ.get("GOOGLE_SCRIPT_URL")
+    if not url_script:
+        print("Erreur : La variable GOOGLE_SCRIPT_URL n'est pas définie !")
+        return False
+
+    payload = {"to": destinataire, "subject": sujet, "message": message_html}
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.post(
+            url_script, data=json.dumps(payload), headers=headers, timeout=15
+        )
+        if response.status_code == 200:
+            return True
+    except Exception as e:
+        print(f"Erreur d'envoi d'e-mail via Google Script : {e}")
+    return False
 
 # Fonction pour se connecter
 def login_view(request):
@@ -37,43 +64,38 @@ def login_view(request):
 # Fonction pour la créer un compte
 def register_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard_membre')
+        return redirect("dashboard_membre")
 
-    if request.method == 'POST':
-
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        telephone = request.POST.get('telephone')
-        photo = request.FILES.get('photo')
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirm_password = request.POST.get("confirm_password")
+        telephone = request.POST.get("telephone")
+        photo = request.FILES.get("photo")
 
         # Validation mot de passe
         if password != confirm_password:
-            return render(request, 'register.html', {
-                'error': "Les mots de passe ne correspondent pas"
-            })
+            return render(
+                request,
+                "register.html",
+                {"error": "Les mots de passe ne correspondent pas"},
+            )
 
         # Vérifier username déjà existant
         if Utilisateur.objects.filter(username=username).exists():
-            return render(request, 'register.html', {
-                'error': "Nom d'utilisateur déjà utilisé"
-            })
-
-        #Vérifier email déjà existant
-        #if Utilisateur.objects.filter(email=email).exists():
-            #return render(request, 'register.html', {
-                #'error': "Email déjà utilisé"
-            #})
+            return render(
+                request,
+                "register.html",
+                {"error": "Nom d'utilisateur déjà utilisé"},
+            )
 
         # Définir rôle (par défaut MEMBRE)
-        role = request.POST.get('role', 'MEMBRE')
+        role = request.POST.get("role", "MEMBRE")
 
         # Création utilisateur
         user = Utilisateur.objects.create_user(
-            username=username,
-            email=email,
-            password=password
+            username=username, email=email, password=password
         )
 
         user.telephone = telephone
@@ -86,18 +108,16 @@ def register_view(request):
         otp = OTP.objects.create(user=user)
         otp.generate_code()
 
-        send_mail(
-            'Code de vérification',
-            f'Votre code est : {otp.code}',
-            settings.DEFAULT_FROM_EMAIL,
-            [email],
-        )
+        # 🚀 Remplacement de send_mail par notre script Google
+        sujet = "Code de vérification - Likelemba"
+        message = f"Bonjour,\n\nVotre code de vérification est : {otp.code}"
+        envoyer_email_via_script(email, sujet, message)
 
-        request.session['user_id'] = user.id
+        request.session["user_id"] = user.id
 
-        return redirect('verify')
+        return redirect("verify")
 
-    return render(request, 'register.html')
+    return render(request, "register.html")
 
 def logout_view(request):
     if request.method == "POST":
@@ -134,9 +154,8 @@ def verify_view(request):
 
 # Fonction pour le mot de passe oublié
 def forgot_password_view(request):
-
-    if request.method == 'POST':
-        email = request.POST.get('email')
+    if request.method == "POST":
+        email = request.POST.get("email")
 
         try:
             user = Utilisateur.objects.get(email=email)
@@ -144,23 +163,21 @@ def forgot_password_view(request):
             otp = ResetPasswordOTP.objects.create(user=user)
             otp.generate_code()
 
-            send_mail(
-                'Réinitialisation mot de passe',
-                f'Votre code est : {otp.code}',
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
-            )
+            # 🚀 Remplacement de send_mail par notre script Google
+            sujet = "Réinitialisation mot de passe - Likelemba"
+            message = f"Bonjour,\n\nVotre code de réinitialisation est : {otp.code}"
+            envoyer_email_via_script(email, sujet, message)
 
-            request.session['reset_user_id'] = user.id
+            request.session["reset_user_id"] = user.id
 
-            return redirect('reset_verify')
+            return redirect("reset_verify")
 
         except Utilisateur.DoesNotExist:
-            return render(request, 'forgot_password.html', {
-                'error': "Email introuvable"
-            })
+            return render(
+                request, "forgot_password.html", {"error": "Email introuvable"}
+            )
 
-    return render(request, 'forgot_password.html')
+    return render(request, "forgot_password.html")
 
 # Fonction pour vérifier le code OTP du mot de passe oublié
 def reset_verify_view(request):
@@ -207,11 +224,10 @@ def reset_password_view(request):
 
 # Renvoyer un code
 def resend_code_view(request):
-
-    user_id = request.session.get('user_id')
+    user_id = request.session.get("user_id")
 
     if not user_id:
-        return redirect('register')
+        return redirect("register")
 
     user = Utilisateur.objects.get(id=user_id)
 
@@ -220,19 +236,17 @@ def resend_code_view(request):
 
     if last_otp and (timezone.now() - last_otp.created_at).seconds < 60:
         messages.error(request, "Attendez 1 minute avant de renvoyer un code")
-        return redirect('verify')
+        return redirect("verify")
 
     # ✅ Générer nouveau OTP
     otp = OTP.objects.create(user=user)
     otp.generate_code()
 
-    send_mail(
-        'Nouveau code de vérification',
-        f'Votre nouveau code est : {otp.code}',
-        settings.DEFAULT_FROM_EMAIL,
-        [user.email],
-    )
+    # 🚀 Remplacement de send_mail par notre script Google
+    sujet = "Nouveau code de vérification - Likelemba"
+    message = f"Bonjour,\n\nVotre nouveau code est : {otp.code}"
+    envoyer_email_via_script(user.email, sujet, message)
 
     messages.success(request, "Un nouveau code a été envoyé")
 
-    return redirect('verify')
+    return redirect("verify")

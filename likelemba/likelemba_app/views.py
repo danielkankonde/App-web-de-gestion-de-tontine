@@ -976,9 +976,8 @@ def liste_tours_view(request, groupe_id):
         'tours': tours,
     })
 
-# ============================================================
-# VUES ADMIN : DEMANDES D'ADHÉSION
-# ============================================================
+
+# Vues admin : DEMANDES D'ADHÉSION
 
 @login_required(login_url="login")
 def liste_demandes_adhesion(request):
@@ -1234,8 +1233,10 @@ def aide_admin(request):
 
     return render(request, 'pages/aide_admin.html')
 
-
+# ============================================================
 # VUES POUR LES UTILISATEURS MEMBRES
+# ============================================================
+
 @login_required
 def groupes_membre_integrer_view(request):
     if request.user.role == 'ADMIN':
