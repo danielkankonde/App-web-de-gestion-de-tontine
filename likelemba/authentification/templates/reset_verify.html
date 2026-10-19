@@ -544,6 +544,53 @@
         @keyframes fadeIn {
             to { opacity: 1; }
         }
+
+                /* ===== CORRECTIFS MOBILE (à coller tout en bas du <style>) ===== */
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;      /* hauteur réelle sur mobile (barre d'adresse) */
+            overflow-x: hidden;
+            overflow-y: auto;        /* la page peut défiler (avant : overflow hidden) */
+        }
+
+        .verify-wrapper { margin: 20px auto; }
+
+        .form-group { min-width: 0; }
+
+        .input-wrapper input {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        @media (max-width: 992px) {
+            .verify-branding { min-height: auto; }
+        }
+
+        @media (max-width: 576px) {
+            .verify-wrapper { margin: 10px auto; }
+
+            .verify-form { padding-left: 16px; padding-right: 16px; }
+
+            /* Code centré : même marge à gauche et à droite */
+            .otp-input { padding-right: 48px !important; }
+
+            .btn-submit { min-height: 48px; }
+        }
+
+        /* Très petits écrans (320 à 360 px) : chiffres un peu plus serrés */
+        @media (max-width: 360px) {
+            .otp-input {
+                font-size: 1.3rem !important;
+                letter-spacing: 6px !important;
+                padding-left: 44px !important;
+                padding-right: 44px !important;
+            }
+        }
     </style>
 </head>
 

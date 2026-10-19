@@ -74,12 +74,19 @@ INSTALLED_APPS = [
 
 # Configuration Cloudinary (Vous créerez un compte gratuit sur cloudinary.com pour récupérer ces 3 clés)
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'be97luph',
-    'API_KEY': '323286785997132',
-    'API_SECRET': 'ftXi8oDfkNrYFsJPB1KsT9A6sTE',
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_STORAGE_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_STORAGE_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_STORAGE_API_SECRET'),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'

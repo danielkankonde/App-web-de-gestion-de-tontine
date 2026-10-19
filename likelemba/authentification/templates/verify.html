@@ -570,6 +570,55 @@
         @keyframes fadeIn {
             to { opacity: 1; }
         }
+
+                /* ===== CORRECTIFS MOBILE (à coller tout en bas du <style>) ===== */
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;      /* hauteur réelle sur mobile (barre d'adresse) */
+            overflow-x: hidden;
+        }
+
+        .form-group { min-width: 0; }
+
+        .input-wrapper input {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        /* Tablette et mobile : un seul défilement (celui de la page) */
+        @media (max-width: 992px) {
+            .verify-card {
+                max-height: none;
+                overflow: hidden;    /* garde les coins arrondis */
+            }
+            .verify-branding { min-height: auto; }
+        }
+
+        @media (max-width: 576px) {
+            .verify-wrapper { margin: 10px auto; }
+
+            .verify-form { padding-left: 16px; padding-right: 16px; }
+
+            /* Code centré : même marge à gauche et à droite */
+            .otp-input { padding-right: 38px !important; }
+
+            .btn-submit { min-height: 48px; }
+        }
+
+        /* Très petits écrans (320 à 360 px) : chiffres un peu plus serrés */
+        @media (max-width: 360px) {
+            .otp-input {
+                font-size: 1.1rem !important;
+                letter-spacing: 5px !important;
+                padding-left: 36px !important;
+                padding-right: 36px !important;
+            }
+        }
     </style>
 </head>
 

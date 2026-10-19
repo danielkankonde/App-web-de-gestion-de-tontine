@@ -662,6 +662,67 @@
         .input-wrapper.error + .error-message {
             display: block;
         }
+
+                /* ===== CORRECTIFS MOBILE (à coller tout en bas du <style>) ===== */
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;      /* hauteur réelle sur mobile (barre d'adresse) */
+            overflow-x: hidden;      /* plus de glissement horizontal */
+        }
+
+        /* Les champs ne dépassent plus de leur colonne */
+        .form-group { min-width: 0; }
+        .form-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+        .input-wrapper input,
+        .input-wrapper select,
+        .file-upload-wrapper input[type="file"] {
+            max-width: 100%;
+            min-width: 0;
+        }
+
+        /* Le texte du mot de passe ne passe plus sous l'icône œil */
+        .input-wrapper:has(.toggle-password) input { padding-right: 46px; }
+
+        /* Nom de fichier long : coupé proprement */
+        .file-upload-wrapper input[type="file"] {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Tablette et mobile : un seul défilement (celui de la page) */
+        @media (max-width: 992px) {
+            .login-card,
+            .register-card {
+                max-height: none;
+                overflow: hidden;    /* garde les coins arrondis */
+            }
+            .login-branding,
+            .register-branding { min-height: auto; }
+        }
+
+        /* Mobile */
+        @media (max-width: 576px) {
+            .login-wrapper,
+            .register-wrapper { margin: 10px auto; }
+
+            .login-form,
+            .register-form { padding-left: 16px; padding-right: 16px; }
+
+            /* 16px évite le zoom automatique d'iPhone quand on touche un champ */
+            .input-wrapper input,
+            .input-wrapper select { font-size: 16px; }
+
+            /* Zones de toucher plus faciles */
+            .toggle-password { right: 4px; padding: 10px; }
+            .btn-login,
+            .btn-register { min-height: 48px; }
+        }
     </style>
 </head>
 
