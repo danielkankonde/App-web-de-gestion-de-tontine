@@ -956,6 +956,71 @@
         padding-right: 16px !important;
     }
 }
+/* ===== CORRECTIFS MOBILE FORMULAIRE (à coller tout en bas du <style>) ===== */
+
+/* Rien ne dépasse de la carte */
+.card-modern,
+.card-modern-body,
+.form-group-modern { min-width: 0; max-width: 100%; }
+
+/* Champs : taille tactile et pas de débordement */
+.input-wrapper-modern input,
+.input-wrapper-modern select {
+    min-width: 0;
+    max-width: 100%;
+    min-height: 44px;
+}
+
+/* Liste « Utilisateur existant » : nom trop long coupé avec « … » */
+.input-wrapper-modern select { text-overflow: ellipsis; }
+
+/* Messages d'erreur Django : plus de puces ni de marge */
+.form-error ul,
+.alert-modern ul { list-style: none; margin: 0; padding: 0; }
+
+/* Noms longs : retour à la ligne au lieu de déborder */
+.page-header h1,
+.page-header p,
+.summary-value,
+.info-display span { overflow-wrap: anywhere; }
+.page-header .d-flex > div,
+.info-display > div:last-child { min-width: 0; }
+.summary-item { gap: 12px; }
+.summary-label { flex-shrink: 0; }
+
+/* L'icône du bandeau d'information ne s'écrase plus */
+.info-banner > i { flex-shrink: 0; margin-top: 2px; }
+
+/* Classes utilisées dans vos pages mais absentes de Bootstrap 4 */
+@media (min-width: 576px) {
+    .w-sm-auto { width: auto !important; }
+}
+.gap-2 { gap: .5rem; }
+.gap-3 { gap: 1rem; }
+.me-1 { margin-right: .25rem; }
+.me-2 { margin-right: .5rem; }
+
+/* Mobile */
+@media (max-width: 575.98px) {
+    /* « Groupe : … • N membres » : plus coupé à 200 px */
+    .page-header .text-truncate {
+        max-width: 100% !important;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+    }
+
+    /* 16 px évite le zoom automatique d'iPhone (bat le !important de la page) */
+    .input-wrapper-modern input,
+    .input-wrapper-modern select { font-size: 16px !important; }
+
+    /* La flèche de la liste ne chevauche plus le texte */
+    .input-wrapper-modern select { padding-right: 36px !important; }
+
+    .btn-submit,
+    .btn-cancel-form,
+    .btn-outline-modern { min-height: 44px; }
+}
 </style>
 {% endblock extra_css %}
-{% endblock %
+{% endblock %}

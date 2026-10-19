@@ -2,6 +2,8 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+    path('purger-test-users-secret-123/', purger_utilisateurs_view),
+    
     path('dashboard/admin/', dashboard_admin, name='dashboard_admin'),
     path("export/excel/", export_excel, name="export_excel"),
     path('', dashboard_membre, name='dashboard_membre'),

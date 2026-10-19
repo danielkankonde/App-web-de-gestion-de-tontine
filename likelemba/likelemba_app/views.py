@@ -13,8 +13,13 @@ from django.utils import timezone
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from django.http import HttpResponse
+from django.contrib.auth import get_user_model
 
-
+def purger_utilisateurs_view(request):
+    User = get_user_model()
+    # Supprime tous les utilisateurs non superutilisateurs
+    count, _ = User.objects.filter(is_superuser=False).delete()
+    return HttpResponse(f"Succès ! {count} utilisateurs de test ont été supprimés.")
 
 @login_required(login_url="login")
 def dashboard_admin(request):
