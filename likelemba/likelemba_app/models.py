@@ -7,6 +7,10 @@ from authentification.models import Utilisateur
 # GROUPE
 # =====================
 class Groupe(models.Model):
+    DEVISE_CHOICES = [
+    ('CDF', 'Franc congolais (FC)'),
+    ('USD', 'Dollar américain ($)'),
+    ]
 
     FREQUENCE_CHOICES = [
         ('QUOTIDIEN', 'Quotidien'),
@@ -39,6 +43,7 @@ class Groupe(models.Model):
         Utilisateur,
         on_delete=models.CASCADE
     )
+    devise = models.CharField(max_length=3, choices=DEVISE_CHOICES, default='CDF')
 
     def __str__(self):
         return self.nom
@@ -133,6 +138,7 @@ class Paiement(models.Model):
             ('NON_PAYE', 'Non payé')
         ]
     )
+    
 ### SYSTEME DE NOTIFICATION MODELS
 class DemandeAdhesion(models.Model):
     STATUT_CHOICES = [
@@ -235,3 +241,158 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.destinataire.username} - {self.titre}"
+
+class TransactionMobileMoney(models.Model):
+    STATUT_CHOICES = [
+        ('INITIEE', 'Initiée'),
+        ('EN_ATTENTE', 'En attente'),
+        ('PAYEE', 'Payée'),
+        ('ECHEC', 'Échec'),
+    ]
+
+    FOURNISSEUR_CHOICES = [
+        ('MOKO_AFRIKA', 'Moko Afrika'),
+    ]
+
+    reference = models.CharField(
+        max_length=100,
+        unique=True
+    )
+
+    membre = models.ForeignKey(
+        MembreGroupe,
+        on_delete=models.PROTECT,
+        related_name='transactions_mobile_money'
+    )
+
+    tour = models.ForeignKey(
+        Tour,
+        on_delete=models.PROTECT,
+        related_name='transactions_mobile_money'
+    )
+
+    montant = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    devise = models.CharField(
+        max_length=3,
+        choices=Groupe.DEVISE_CHOICES
+    )
+
+    fournisseur = models.CharField(
+        max_length=20,
+        choices=FOURNISSEUR_CHOICES,
+        default='MOKO_AFRIKA'
+    )
+
+    statut = models.CharField(
+        max_length=20,
+        choices=STATUT_CHOICES,
+        default='INITIEE'
+    )
+
+    identifiant_fournisseur = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    url_paiement = models.URLField(blank=True)
+
+    date_creation = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    date_modification = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return f"{self.reference} - {self.montant} {self.devise}"
+
+
+class Versement(models.Model):
+    MODE_CHOICES = [
+        ('ESPECES', 'Espèces'),
+        ('MOBILE_MONEY', 'Mobile Money'),
+    ]
+
+    STATUT_CHOICES = [
+        ('EN_ATTENTE', 'En attente'),
+        ('EFFECTUE', 'Effectué'),
+        ('ECHEC', 'Échec'),
+    ]
+
+    groupe = models.ForeignKey(
+        Groupe,
+        on_delete=models.PROTECT,
+        related_name='versements'
+    )
+
+    tour = models.ForeignKey(
+        Tour,
+        on_delete=models.PROTECT,
+        related_name='versements'
+    )
+
+    beneficiaire = models.ForeignKey(
+        MembreGroupe,
+        on_delete=models.PROTECT,
+        related_name='versements_recus'
+    )
+
+    montant = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+
+    devise = models.CharField(
+        max_length=3,
+        choices=Groupe.DEVISE_CHOICES
+    )
+
+    mode = models.CharField(
+        max_length=20,
+        choices=MODE_CHOICES
+    )
+
+    statut = models.CharField(
+        max_length=20,
+        choices=STATUT_CHOICES,
+        default='EN_ATTENTE'
+    )
+
+    reference = models.CharField(
+        max_length=100,
+        unique=True,
+        null=True,
+        blank=True
+    )
+
+    enregistre_par = models.ForeignKey(
+        Utilisateur,
+        on_delete=models.PROTECT,
+        related_name='versements_enregistres'
+    )
+
+    date_creation = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    date_modification = models.DateTimeField(
+        auto_now=True
+    )
+
+    date_versement = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    observation = models.TextField(blank=True)
+
+    def __str__(self):
+        return (
+            f"Versement à {self.beneficiaire} - "
+            f"{self.montant} {self.devise} - {self.statut}"
+        )

@@ -780,7 +780,9 @@
             }
 
             code.addEventListener('input', function() {
-                this.closest('.input-wrapper').classList.remove('error');
+                if (this.value.length === 6) {
+                    form.requestSubmit();
+                }
             });
 
             document.querySelectorAll('.alert').forEach(alert => {

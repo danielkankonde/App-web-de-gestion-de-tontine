@@ -15,11 +15,19 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 
-def purger_utilisateurs_view(request):
-    User = get_user_model()
-    # Supprime tous les utilisateurs non superutilisateurs
-    count, _ = User.objects.filter(is_superuser=False).delete()
-    return HttpResponse(f"Succès ! {count} utilisateurs de test ont été supprimés.")
+from django.views.decorators.http import require_POST
+from django.urls import reverse
+from django.conf import settings
+from uuid import uuid4
+
+from .models import TransactionMobileMoney
+from .services.moko_afrika import initier_cotisation
+
+# def purger_utilisateurs_view(request):
+#     User = get_user_model()
+#     # Supprime tous les utilisateurs non superutilisateurs
+#     count, _ = User.objects.filter(is_superuser=False).delete()
+#     return HttpResponse(f"Succès ! {count} utilisateurs de test ont été supprimés.")
 
 @login_required(login_url="login")
 def dashboard_admin(request):
@@ -1322,6 +1330,127 @@ def mes_tours_groupe(request, groupe_id):
             'membre': membre,
             'tours': tours,
         }
+    )
+# Vues pour initier le paiement mobile money pour un tour
+@require_POST
+@login_required(login_url='login')
+def initier_paiement_mobile_money(request, tour_id):
+
+    if request.user.role != 'MEMBRE':
+        return redirect('dashboard_admin')
+
+    tour = get_object_or_404(
+        Tour.objects.select_related('groupe', 'membre'),
+        id=tour_id,
+        membre__utilisateur=request.user
+    )
+
+    if tour.statut != 'EN_ATTENTE':
+        messages.warning(request, "Ce tour est déjà payé.")
+        return redirect(
+            'mes_tours_groupe',
+            groupe_id=tour.groupe_id
+        )
+
+    # Vérifier qu'un paiement en espèces n'existe pas déjà
+    if Paiement.objects.filter(tour=tour).exists():
+        messages.warning(request, "Un paiement existe déjà pour ce tour.")
+        return redirect(
+            'mes_tours_groupe',
+            groupe_id=tour.groupe_id
+        )
+
+    # Vérifier qu'une transaction est déjà en attente
+    transaction_existante = TransactionMobileMoney.objects.filter(
+        tour=tour,
+        statut__in=['INITIEE', 'EN_ATTENTE']
+    ).first()
+
+    if transaction_existante:
+        messages.info(
+            request,
+            "Une demande de paiement est déjà en cours pour ce tour."
+        )
+        return redirect(
+            'mes_tours_groupe',
+            groupe_id=tour.groupe_id
+        )
+
+    telephone = request.POST.get('telephone', '').strip()
+    methode = request.POST.get('methode', '').strip().lower()
+
+    if not telephone:
+        messages.error(request, "Veuillez saisir un numéro de téléphone.")
+        return redirect(
+            'mes_tours_groupe',
+            groupe_id=tour.groupe_id
+        )
+
+    reference = f"LIKELEMBA-{uuid4().hex[:20]}"
+
+    # Les informations financières viennent du serveur
+    groupe = tour.groupe
+    montant = groupe.montant_cotisation
+    devise = groupe.devise
+
+    transaction_mm = TransactionMobileMoney.objects.create(
+        reference=reference,
+        membre=tour.membre,
+        tour=tour,
+        montant=montant,
+        devise=devise,
+        fournisseur='MOKO_AFRIKA',
+        statut='INITIEE'
+    )
+
+    try:
+        resultat = initier_cotisation(
+            montant=montant,
+            devise=devise,
+            telephone=telephone,
+            prenom=request.user.first_name,
+            nom=request.user.last_name,
+            email=request.user.email,
+            reference=reference,
+            methode=methode,
+            callback_url=request.build_absolute_uri(
+                reverse('moko_webhook')
+            )
+        )
+
+        if resultat.get('Status') != 'Success':
+            transaction_mm.statut = 'ECHEC'
+            transaction_mm.save(update_fields=['statut', 'date_modification'])
+
+            messages.error(
+                request,
+                "Moko Afrika n'a pas accepté la demande de paiement."
+            )
+        else:
+            transaction_mm.statut = 'EN_ATTENTE'
+            transaction_mm.identifiant_fournisseur = str(
+                resultat.get('Transaction_id') or ''
+            )
+            transaction_mm.url_paiement = resultat.get('Payment_url') or ''
+            transaction_mm.save()
+
+            messages.success(
+                request,
+                "Demande envoyée. Veuillez confirmer le paiement sur votre téléphone."
+            )
+
+    except Exception:
+        transaction_mm.statut = 'ECHEC'
+        transaction_mm.save(update_fields=['statut', 'date_modification'])
+
+        messages.error(
+            request,
+            "Impossible d'initier le paiement. Veuillez réessayer."
+        )
+
+    return redirect(
+        'mes_tours_groupe',
+        groupe_id=tour.groupe_id
     )
 
 # Vues pour voir les groupes disponibles pour les membres

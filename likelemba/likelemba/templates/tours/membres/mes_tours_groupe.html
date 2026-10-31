@@ -431,6 +431,86 @@
             padding: 15px;
         }
     }
+
+    /* POPUP MOBILE MONEY */
+    .mobile-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(15, 23, 42, 0.65);
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+    }
+
+    .mobile-modal.active {
+        display: flex;
+    }
+
+    .mobile-modal-content {
+        background: #fff;
+        width: 100%;
+        max-width: 460px;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.2);
+    }
+
+    .mobile-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .mobile-modal-header h5 {
+        margin: 0;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .mobile-modal-close {
+        border: none;
+        background: transparent;
+        font-size: 25px;
+        color: #64748b;
+        cursor: pointer;
+    }
+
+    .mobile-form-group {
+        margin-bottom: 17px;
+    }
+
+    .mobile-form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #334155;
+    }
+
+    .mobile-form-group input,
+    .mobile-form-group select {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+    }
+
+    .btn-mobile-pay {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #16a34a;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .btn-mobile-pay:hover {
+        background: #15803d;
+    }
 </style>
 
 
@@ -630,6 +710,8 @@
 
                                 <th>Statut</th>
 
+                                <th>Actions</th>
+
                             </tr>
 
                         </thead>
@@ -677,6 +759,20 @@
 
                                         {% endif %}
 
+                                    </td>
+                                    <td>
+                                        {% if tour.statut == 'EN_ATTENTE' %}
+                                            <button
+                                                type="button"
+                                                class="btn btn-sm btn-success"
+                                                onclick="ouvrirPopupMobileMoney(this)"
+                                                data-url="{% url 'initier_paiement_mobile_money' tour.id %}">
+                                                <i class="fas fa-mobile-alt mr-1"></i>
+                                                Payer par Mobile Money
+                                            </button>
+                                        {% else %}
+                                            <span class="text-muted">—</span>
+                                        {% endif %}
                                     </td>
 
                                 </tr>

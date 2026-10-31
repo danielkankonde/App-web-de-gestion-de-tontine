@@ -15,6 +15,15 @@ from django.contrib import messages
 from django.conf import settings
 
 
+def valider_mot_de_passe(password):
+    """Renvoie un message d'erreur, ou None si le mot de passe est valide."""
+    if len(password) < 8:
+        return "Le mot de passe doit contenir au moins 8 caractères"
+    if not any(c.isalpha() for c in password):
+        return "Le mot de passe doit contenir au moins une lettre"
+    if not any(c.isdigit() for c in password):
+        return "Le mot de passe doit contenir au moins un chiffre"
+    return None
 
 def envoyer_email_via_script(destinataire, sujet, message_html):
     url_script = os.environ.get("GOOGLE_SCRIPT_URL")
@@ -76,11 +85,13 @@ def register_view(request):
 
         # Validation mot de passe
         if password != confirm_password:
-            return render(
-                request,
-                "register.html",
-                {"error": "Les mots de passe ne correspondent pas"},
-            )
+            return render(request, 'register.html', {
+                'error': "Les mots de passe ne correspondent pas"
+            })
+
+        erreur_mdp = valider_mot_de_passe(password)
+        if erreur_mdp:
+            return render(request, 'register.html', {'error': erreur_mdp})
 
         # Vérifier username déjà existant
         if Utilisateur.objects.filter(username=username).exists():
@@ -89,11 +100,11 @@ def register_view(request):
                 "register.html",
                 {"error": "Nom d'utilisateur déjà utilisé"},
             )
-        # # Vérifier email déjà existant
-        # if Utilisateur.objects.filter(email=email).exists():
-        #     return render(
-        #         request, "register.html", {"error": "Email déjà utilisé"}
-        #     )
+        # Vérifier email déjà existant
+        if Utilisateur.objects.filter(email=email).exists():
+            return render(
+                request, "register.html", {"error": "Email déjà utilisé"}
+            )
 
         # Définir rôle (par défaut MEMBRE)
         role = request.POST.get("role", "MEMBRE")
@@ -159,73 +170,88 @@ def verify_view(request):
 
 # Fonction pour le mot de passe oublié
 def forgot_password_view(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-
+    if request.method == 'POST':
+        email = request.POST.get('email')
         try:
             user = Utilisateur.objects.get(email=email)
 
             otp = ResetPasswordOTP.objects.create(user=user)
             otp.generate_code()
 
-            # 🚀 Remplacement de send_mail par notre script Google
-            sujet = "Réinitialisation mot de passe - Likelemba"
-            message = f"Bonjour,\n\nVotre code de réinitialisation est : {otp.code}"
-            envoyer_email_via_script(email, sujet, message)
-
-            request.session["reset_user_id"] = user.id
-
-            return redirect("reset_verify")
-
-        except Utilisateur.DoesNotExist:
-            return render(
-                request, "forgot_password.html", {"error": "Email introuvable"}
+            send_mail(
+                'Réinitialisation mot de passe',
+                f'Votre code est : {otp.code}',
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
             )
 
-    return render(request, "forgot_password.html")
+            request.session['reset_user_id'] = user.id
+            request.session.pop('reset_verified_for', None)   # NOUVEAU : repartir de zéro
 
-# Fonction pour vérifier le code OTP du mot de passe oublié
+            return redirect('reset_verify')
+
+        except Utilisateur.DoesNotExist:
+            return render(request, 'forgot_password.html', {
+                'error': "Email introuvable"
+            })
+
+    return render(request, 'forgot_password.html')
+
+# Fonction pour la verification du code OTP pour le mot de passe oublié
 def reset_verify_view(request):
-
     user_id = request.session.get('reset_user_id')
+    if not user_id:
+        return redirect('forgot_password')
 
     if request.method == 'POST':
-        code = request.POST.get('code')
+        code = request.POST.get('code', '').strip()
 
-        otp = ResetPasswordOTP.objects.filter(user_id=user_id, code=code).last()
+        # On ne compare qu'avec le DERNIER code envoyé
+        otp = ResetPasswordOTP.objects.filter(user_id=user_id).last()
 
-        if otp:
+        if otp and otp.code == code:
+            # On retient que CET utilisateur a prouvé son code
+            request.session['reset_verified_for'] = user_id
             return redirect('reset_password')
-        else:
-            return render(request, 'reset_verify.html', {
-                'error': 'Code invalide'
-            })
+
+        return render(request, 'reset_verify.html', {'error': 'Code invalide'})
 
     return render(request, 'reset_verify.html')
 
-# Fonction pour réinitialiser le mot de passe
+# Fonction pour la réinitialisation du mot de passe
 def reset_password_view(request):
-
     user_id = request.session.get('reset_user_id')
 
-    if request.method == 'POST':
+    # Accès refusé si le code n'a pas été validé pour cet utilisateur
+    if not user_id or request.session.get('reset_verified_for') != user_id:
+        return redirect('forgot_password')
 
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
 
         if password != confirm_password:
             return render(request, 'reset_password.html', {
                 'error': 'Les mots de passe ne correspondent pas'
             })
 
+        erreur_mdp = valider_mot_de_passe(password)
+        if erreur_mdp:
+            return render(request, 'reset_password.html', {'error': erreur_mdp})
+
         user = Utilisateur.objects.get(id=user_id)
         user.set_password(password)
         user.save()
 
+        # Nettoyage : les codes ne servent qu'une fois
+        ResetPasswordOTP.objects.filter(user_id=user_id).delete()
+        request.session.pop('reset_user_id', None)
+        request.session.pop('reset_verified_for', None)
+
+        messages.success(request, "Mot de passe modifié. Vous pouvez vous connecter.")
         return redirect('login')
 
     return render(request, 'reset_password.html')
-
 
 # Renvoyer un code
 def resend_code_view(request):
