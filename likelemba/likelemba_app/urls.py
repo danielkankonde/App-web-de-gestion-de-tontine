@@ -47,4 +47,6 @@ urlpatterns = [
     path('paiement-mobile-money/<int:tour_id>/', initier_paiement_mobile_money, name='initier_paiement_mobile_money'),
     
     path('aide/membre/', aide_membre, name='aide_membre'),
+
+    path('moko-webhook/', moko_webhook, name='moko_webhook'),
 ]

@@ -21,8 +21,13 @@ from django.conf import settings
 from uuid import uuid4
 
 from .models import TransactionMobileMoney
-from .services.moko_afrika import initier_cotisation
+from .services.moko_afrika import confirmer_cotisation, initier_cotisation
+from django.views.decorators.csrf import csrf_exempt
+import logging
+import json
 
+
+logger = logging.getLogger(__name__)
 # def purger_utilisateurs_view(request):
 #     User = get_user_model()
 #     # Supprime tous les utilisateurs non superutilisateurs
@@ -1377,10 +1382,27 @@ def initier_paiement_mobile_money(request, tour_id):
         )
 
     telephone = request.POST.get('telephone', '').strip()
-    methode = request.POST.get('methode', '').strip().lower()
 
-    if not telephone:
-        messages.error(request, "Veuillez saisir un numéro de téléphone.")
+    if telephone.startswith('0'):
+        telephone = '243' + telephone[1:]
+
+    if not telephone.startswith('243') or len(telephone) != 12 or not telephone.isdigit():
+        messages.error(
+            request,
+            "Veuillez saisir un numéro congolais valide au format 243XXXXXXXXX."
+        )
+        return redirect('mes_tours_groupe', groupe_id=tour.groupe_id)
+    
+    methode = request.POST.get('methode', '').strip().lower()
+    methodes_autorisees = [
+        'mpesa',
+        'orange',
+        'airtel',
+        'afrimoney'
+    ]
+
+    if methode not in methodes_autorisees:
+        messages.error(request, "Veuillez choisir un opérateur valide.")
         return redirect(
             'mes_tours_groupe',
             groupe_id=tour.groupe_id
@@ -1417,6 +1439,7 @@ def initier_paiement_mobile_money(request, tour_id):
                 reverse('moko_webhook')
             )
         )
+        logger.info("Réponse Moko Afrika : %s", resultat)
 
         if resultat.get('Status') != 'Success':
             transaction_mm.statut = 'ECHEC'
@@ -1440,12 +1463,18 @@ def initier_paiement_mobile_money(request, tour_id):
             )
 
     except Exception:
+        logger.exception(
+            "Erreur lors de l'initiation du paiement Moko Afrika"
+        )
+
         transaction_mm.statut = 'ECHEC'
-        transaction_mm.save(update_fields=['statut', 'date_modification'])
+        transaction_mm.save(
+            update_fields=['statut', 'date_modification']
+        )
 
         messages.error(
             request,
-            "Impossible d'initier le paiement. Veuillez réessayer."
+            "Impossible d'initier le paiement. Consultez les journaux du serveur."
         )
 
     return redirect(
@@ -1633,3 +1662,39 @@ def aide_membre(request):
         return redirect('dashboard_admin')
 
     return render(request, 'pages/aide_membre.html')
+
+@csrf_exempt
+@require_POST
+def moko_webhook(request):
+    try:
+        donnees = json.loads(request.body.decode("utf-8"))
+
+        reference = donnees.get("PayDRC_Reference") or donnees.get("Reference")
+
+        if not reference:
+            return HttpResponse(
+                "Référence manquante",
+                status=400
+            )
+
+        transaction_mm = TransactionMobileMoney.objects.filter(
+            reference=reference
+        ).first()
+
+        if not transaction_mm:
+            return HttpResponse(
+                "Transaction introuvable",
+                status=404
+            )
+
+        # Vérification auprès de Moko Afrika
+        confirmer_cotisation(reference)
+
+        return HttpResponse("Webhook reçu", status=200)
+
+    except json.JSONDecodeError:
+        return HttpResponse("JSON invalide", status=400)
+
+    except Exception:
+        logger.exception("Erreur lors du traitement du webhook Moko Afrika")
+        return HttpResponse("Erreur interne", status=500)

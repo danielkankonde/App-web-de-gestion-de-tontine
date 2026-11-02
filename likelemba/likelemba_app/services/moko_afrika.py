@@ -1,14 +1,15 @@
+import logging
 import os
 import requests
 from decimal import Decimal, InvalidOperation
+from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.utils import timezone
-from likelemba_app.models import (
-    TransactionMobileMoney,
-    Paiement,
-    Tour,
-)
-
+from likelemba_app.models import (TransactionMobileMoney, Paiement, Tour,)
+from django.views.decorators.csrf import csrf_exempt
+    
+logger = logging.getLogger(__name__)
 # Fonction pour initier une demande de cotisation auprès de Moko Afrika
 def initier_cotisation(
     montant,
@@ -79,7 +80,14 @@ def initier_cotisation(
         timeout=30,
     )
 
-    reponse.raise_for_status()
+    if not reponse.ok:
+        logger.error(
+            "Erreur Moko Afrika : HTTP %s - Réponse : %s",
+            reponse.status_code,
+            reponse.text
+        )
+        reponse.raise_for_status()
+
     return reponse.json()
 
 # Fonction pour vérifier le statut d'une cotisation auprès de Moko Afrika
@@ -229,3 +237,39 @@ def confirmer_cotisation(reference):
             "succes": True,
             "message": "Cotisation confirmée avec succès."
         }
+    
+@csrf_exempt
+@require_POST
+def moko_webhook(request):
+    try:
+        donnees = json.loads(request.body.decode("utf-8"))
+
+        reference = donnees.get("PayDRC_Reference") or donnees.get("Reference")
+
+        if not reference:
+            return HttpResponse(
+                "Référence manquante",
+                status=400
+            )
+
+        transaction_mm = TransactionMobileMoney.objects.filter(
+            reference=reference
+        ).first()
+
+        if not transaction_mm:
+            return HttpResponse(
+                "Transaction introuvable",
+                status=404
+            )
+
+        # Vérification auprès de Moko Afrika
+        confirmer_cotisation(reference)
+
+        return HttpResponse("Webhook reçu", status=200)
+
+    except json.JSONDecodeError:
+        return HttpResponse("JSON invalide", status=400)
+
+    except Exception:
+        logger.exception("Erreur lors du traitement du webhook Moko Afrika")
+        return HttpResponse("Erreur interne", status=500)
