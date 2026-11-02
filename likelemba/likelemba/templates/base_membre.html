@@ -274,71 +274,6 @@
     </small>
   </footer>
 
-  <!-- POPUP PAIEMENT MOBILE MONEY -->
-  <div class="mobile-modal" id="mobileMoneyModal">
-
-      <div class="mobile-modal-content">
-
-          <div class="mobile-modal-header">
-              <h5>
-                  <i class="fas fa-wallet text-success mr-2"></i>
-                  Paiement Mobile Money
-              </h5>
-
-              <button type="button"
-                      class="mobile-modal-close"
-                      onclick="fermerPopupMobileMoney()">
-                  &times;
-              </button>
-          </div>
-
-          <p class="text-muted mb-4">
-              Vérifiez votre numéro et choisissez votre opérateur.
-          </p>
-
-          <form method="POST" id="mobileMoneyForm">
-              {% csrf_token %}
-
-              <div class="mobile-form-group">
-                  <label for="methode">Opérateur Mobile Money</label>
-
-                  <select name="methode" id="methode" required>
-                      <option value="">Choisir un opérateur</option>
-                      <option value="mpesa">M-Pesa</option>
-                      <option value="orange">Orange Money</option>
-                      <option value="airtel">Airtel Money</option>
-                      <option value="afrimoney">Afrimoney</option>
-                  </select>
-              </div>
-
-              <div class="mobile-form-group">
-                  <label for="telephone">Numéro de téléphone</label>
-
-                  <input
-                      type="tel"
-                      name="telephone"
-                      id="telephone"
-                      value="{{ request.user.telephone }}"
-                      placeholder="243XXXXXXXXX"
-                      required>
-              </div>
-
-              <div class="alert alert-info">
-                  <small>
-                      Le montant et la devise seront récupérés
-                      automatiquement depuis les informations du groupe.
-                  </small>
-              </div>
-
-              <button type="submit" class="btn-mobile-pay">
-                  <i class="fas fa-lock mr-1"></i>
-                  Continuer le paiement
-              </button>
-
-          </form>
-      </div>
-  </div>
-
   <!-- MODAL DE DÉCONNEXION -->
   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
@@ -475,13 +410,15 @@
             .classList.remove('active');
     }
 
-    document.getElementById('mobileMoneyModal')
-        .addEventListener('click', function(event) {
+    const mobileMoneyModal = document.getElementById('mobileMoneyModal');
+
+    if (mobileMoneyModal) {
+        mobileMoneyModal.addEventListener('click', function(event) {
             if (event.target === this) {
                 fermerPopupMobileMoney();
             }
         });
-
+    }
 
   function openDeleteModal(id, nom, groupe) {
     document.getElementById("deleteMembreNom").innerHTML = '"' + nom + '"';
