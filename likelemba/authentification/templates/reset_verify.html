@@ -662,15 +662,15 @@
                         <label for="code">Code de vérification</label>
                         <div class="input-wrapper">
                             <i class="fas fa-qrcode input-icon"></i>
-                            <input type="text" 
-                                   name="code" 
-                                   id="code"
-                                   class="otp-input"
-                                   placeholder="• • • • • •"
-                                   maxlength="6"
-                                   autocomplete="one-time-code"
-                                   required>
-                        </div>
+                                <input type="text" 
+                                    name="code" 
+                                    id="code"
+                                    class="otp-input"
+                                    placeholder="• • • • • •"
+                                    maxlength="6"
+                                    autocomplete="one-time-code"
+                                    required>
+                            </div>
                         <div class="error-message">Veuillez saisir un code valide (6 chiffres)</div>
                     </div>
 
@@ -719,12 +719,6 @@
                     }
                 });
 
-                // Auto-submit when 6 digits are entered
-                code.addEventListener('keyup', function(e) {
-                    if (this.value.length === 6 && e.key !== 'Backspace') {
-                        form.dispatchEvent(new Event('submit'));
-                    }
-                });
             }
 
             if (form) {

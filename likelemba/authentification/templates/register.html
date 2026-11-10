@@ -741,7 +741,6 @@
 
         /* Les champs ne dépassent plus de leur colonne */
         .form-group { min-width: 0; }
-        .form-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
         .input-wrapper input,
         .input-wrapper select,
@@ -786,7 +785,22 @@
             .toggle-password { right: 4px; padding: 10px; }
             .btn-login,
             .btn-register { min-height: 48px; }
+
+            .form-row {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 0;
+            }
         }
+
+        /* ===== CORRECTION BORDURE MOT DE PASSE ===== */
+    #password,
+    #password:focus,
+    .input-wrapper.error #password,
+    .input-wrapper.error #password:focus {
+        border: 2px solid #e5e7eb !important;
+        background: #fafbfc !important;
+        box-shadow: none !important;
+    }
     </style>
 </head>
 
@@ -907,7 +921,7 @@
                                     <i class="fas fa-eye"></i>
                                 </button>
                             </div>
-                            <div class="error-message"><div class="error-message">8 caractères minimum, avec des lettres et des chiffres</div></div>
+                            <div class="error-message">8 caractères minimum, avec des lettres et des chiffres</div>
                         </div>
 
                         <div class="form-group">
@@ -1033,13 +1047,6 @@
             function validatePassword(p) {
                 return p.length >= 8 && /[A-Za-z]/.test(p) && /\d/.test(p);
             }
-                        // Password
-            if (!validatePassword(password.value)) {
-                password.closest('.input-wrapper').classList.add('error');
-                isValid = false;
-            } else {
-                password.closest('.input-wrapper').classList.remove('error');
-            }
 
             if (form) {
                 form.addEventListener('submit', function(e) {
@@ -1062,7 +1069,7 @@
                     }
 
                     // Password
-                    if (password.value.length < 6) {
+                    if (!validatePassword(password.value)) {
                         password.closest('.input-wrapper').classList.add('error');
                         isValid = false;
                     } else {

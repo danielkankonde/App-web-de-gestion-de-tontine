@@ -100,11 +100,12 @@ def register_view(request):
                 "register.html",
                 {"error": "Nom d'utilisateur déjà utilisé"},
             )
-        # Vérifier email déjà existant
-        if Utilisateur.objects.filter(email=email).exists():
-            return render(
-                request, "register.html", {"error": "Email déjà utilisé"}
-            )
+        
+        # # Vérifier email déjà existant
+        # if Utilisateur.objects.filter(email=email).exists():
+        #     return render(
+        #         request, "register.html", {"error": "Email déjà utilisé"}
+        #     )
 
         # Définir rôle (par défaut MEMBRE)
         role = request.POST.get("role", "MEMBRE")
@@ -168,25 +169,28 @@ def verify_view(request):
 
     return render(request, 'verify.html')
 
-# Fonction pour le mot de passe oublié
 def forgot_password_view(request):
     if request.method == 'POST':
         email = request.POST.get('email')
+
         try:
-            user = Utilisateur.objects.get(email=email)
+            user = Utilisateur.objects.get(email__iexact=email)
 
             otp = ResetPasswordOTP.objects.create(user=user)
             otp.generate_code()
 
-            send_mail(
-                'Réinitialisation mot de passe',
-                f'Votre code est : {otp.code}',
-                settings.DEFAULT_FROM_EMAIL,
-                [email],
+            # Envoi avec notre nouveau service Google
+            sujet = "Réinitialisation du mot de passe - Likelemba"
+            message = (
+                f"Bonjour {user.username},\n\n"
+                f"Votre code de réinitialisation est : {otp.code}\n\n"
+                "Utilisez ce code pour réinitialiser votre mot de passe."
             )
 
+            envoyer_email_via_script(email, sujet, message)
+
             request.session['reset_user_id'] = user.id
-            request.session.pop('reset_verified_for', None)   # NOUVEAU : repartir de zéro
+            request.session.pop('reset_verified_for', None)
 
             return redirect('reset_verify')
 
@@ -196,7 +200,6 @@ def forgot_password_view(request):
             })
 
     return render(request, 'forgot_password.html')
-
 # Fonction pour la verification du code OTP pour le mot de passe oublié
 def reset_verify_view(request):
     user_id = request.session.get('reset_user_id')
